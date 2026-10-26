@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<!-- 姓名：张涛，日期：2026-10-26，功能名称：JavaScript程序结构——条件与循环 -->
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>15-2 JavaScript程序结构（条件与循环）</title>
+        <style>
+            :root {
+                --zt-primary: #3498db;
+                --zt-primary-dark: #2c3e50;
+                --zt-bg: #f5f7fa;
+                --zt-card: #ffffff;
+                --zt-gray: #ecf0f1;
+                --zt-text: #2c3e50;
+                --zt-muted: #7f8c8d;
+                --zt-green: #27ae60;
+                --zt-red: #e74c3c;
+                --zt-orange: #f39c12;
+                --zt-border: #dfe6e9;
+            }
+
+            .zt_body {
+                font-family: "Microsoft YaHei", Arial, sans-serif;
+                background-color: var(--zt-bg);
+                color: var(--zt-text);
+                margin: 0;
+                padding: 20px;
+                line-height: 1.8;
+            }
+
+            .zt_container {
+                max-width: 1100px;
+                margin: 0 auto;
+                background-color: var(--zt-card);
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            }
+
+            .zt_title {
+                color: var(--zt-primary-dark);
+                text-align: center;
+                border-bottom: 3px solid var(--zt-primary);
+                padding-bottom: 12px;
+                margin-top: 0;
+            }
+
+            .zt_student {
+                text-align: center;
+                color: var(--zt-muted);
+                margin: 10px 0 25px;
+                font-size: 14px;
+            }
+
+            .zt_desc {
+                margin: 15px 0 25px;
+                padding: 12px 18px;
+                background-color: var(--zt-gray);
+                border-left: 5px solid var(--zt-primary);
+                border-radius: 4px;
+            }
+
+            /* ===== 大模块 ===== */
+            .zt_module {
+                margin: 30px 0;
+                border: 1px solid var(--zt-border);
+                border-radius: 8px;
+                overflow: hidden;
+            }
+
+            .zt_module-head {
+                background-color: var(--zt-primary);
+                color: #fff;
+                padding: 10px 18px;
+                font-size: 18px;
+                font-weight: bold;
+            }
+
+            .zt_module-body {
+                padding: 18px;
+            }
+
+            .zt_card {
+                border: 1px solid var(--zt-border);
+                border-radius: 6px;
+                padding: 14px 16px;
+                margin-bottom: 16px;
+                background-color: #fcfdfe;
+            }
+
+            .zt_card-title {
+                font-weight: bold;
+                color: var(--zt-primary-dark);
+                font-size: 16px;
+                margin-bottom: 8px;
+            }
+
+            .zt_card-title span {
+                display: inline-block;
+                background-color: var(--zt-primary);
+                color: #fff;
+                border-radius: 4px;
+                padding: 0 8px;
+                margin-right: 8px;
+                font-size: 14px;
+            }
+
+            .zt_note {
+                color: var(--zt-muted);
+                font-size: 14px;
+                margin: 6px 0;
+            }
+
+            /* 代码块 */
+            .zt_code {
+                background-color: var(--zt-primary-dark);
+                color: #ecf0f1;
+                padding: 12px 14px;
+                border-radius: 6px;
+                font-family: Consolas, "Courier New", monospace;
+                font-size: 14px;
+                line-height: 1.7;
+                white-space: pre-wrap;
+                word-break: break-all;
+                margin: 10px 0;
+                overflow-x: auto;
+            }
+
+            .zt_code .zt_kw { color: #f1c40f; }
+            .zt_code .zt_str { color: #2ecc71; }
+            .zt_code .zt_com { color: #95a5a6; }
+
+            .zt_runbox {
+                background-color: #f4f9ff;
+                border: 1px dashed var(--zt-primary);
+                border-radius: 6px;
+                padding: 10px 14px;
+                font-family: Consolas, "Courier New", monospace;
+                font-size: 14px;
+                color: var(--zt-primary-dark);
+                white-space: pre-wrap;
+                word-break: break-all;
+            }
+
+            .zt_run {
+                background-color: #f4f9ff;
+                border: 1px dashed var(--zt-primary);
+                border-radius: 6px;
+                padding: 10px 14px;
+                font-family: Consolas, "Courier New", monospace;
+                font-size: 14px;
+                color: var(--zt-primary-dark);
+                white-space: pre-wrap;
+                word-break: break-all;
+            }
+
+            .zt_run b {
+                color: var(--zt-green);
+            }
+
+            .zt_run-line {
+                display: block;
+            }
+
+            /* ===== 交互区 ===== */
+            .zt_play {
+                background-color: #fffdf5;
+                border: 1px solid var(--zt-orange);
+                border-radius: 6px;
+                padding: 14px 16px;
+                margin-bottom: 16px;
+            }
+
+            .zt_form {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 10px;
+                margin: 10px 0;
+            }
+
+            .zt_input {
+                width: 140px;
+                padding: 7px 10px;
+                border: 1px solid var(--zt-border);
+                border-radius: 4px;
+                font-size: 15px;
+                outline: none;
+            }
+
+            .zt_input:focus {
+                border-color: var(--zt-primary);
+            }
+
+            .zt_btn {
+                padding: 8px 18px;
+                background-color: var(--zt-primary);
+                color: #fff;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 15px;
+                font-family: inherit;
+            }
+
+            .zt_btn:hover {
+                background-color: #217dbb;
+            }
+
+            .zt_tip {
+                color: var(--zt-red);
+                font-size: 14px;
+            }
+
+            /* ===== 九九乘法表 ===== */
+            .zt_table {
+                border-collapse: collapse;
+                margin-top: 10px;
+                font-size: 13px;
+            }
+
+            .zt_table td {
+                border: 1px solid var(--zt-border);
+                padding: 4px 8px;
+                text-align: center;
+                white-space: nowrap;
+            }
+
+            .zt_table tr td:first-child {
+                background-color: #eaf4fd;
+                font-weight: bold;
+            }
+
+            /* ===== 标签 / 星星 ===== */
+            .zt_tags {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                margin-top: 8px;
+            }
+
+            .zt_tag {
+                padding: 4px 12px;
+                background-color: #eaf4fd;
+                border: 1px solid var(--zt-primary);
+                border-radius: 20px;
+                color: var(--zt-primary-dark);
+                font-size: 14px;
+            }
+
+            .zt_star {
+                font-family: Consolas, "Courier New", monospace;
+                font-size: 16px;
+                line-height: 1.5;
+                color: var(--zt-orange);
+                background-color: var(--zt-primary-dark);
+                border-radius: 6px;
+                padding: 12px;
+                display: inline-block;
+                min-width: 120px;
+                white-space: pre;
+            }
+
+            .zt_grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 16px;
+            }
+
+            .zt_footer {
+                text-align: center;
+                color: var(--zt-muted);
+                font-size: 13px;
+                margin-top: 30px;
+                border-top: 1px solid var(--zt-border);
+                padding-top: 15px;
+            }
+
+            @media (max-width: 600px) {
+                .zt_container { padding: 15px; }
+                .zt_body { padding: 10px; }
+            }
+        </style>
+    </head>
+    <body class="zt_body">
+        <div class="zt_container">
+            <h1 class="zt_title">JavaScript 程序结构 —— 循环与条件</h1>
+            <div class="zt_student">姓名：张涛　　班级：　　学号：　　日期：2026-10-26</div>
+
+            <div class="zt_desc">
+                JavaScript 程序由三种基本结构组成：<b>顺序结构</b>（从上到下依次执行）、
+                <b>条件结构</b>（根据判断结果选择执行分支）、<b>循环结构</b>（满足条件时重复执行）。
+                本页所有运行结果均由 JavaScript 真实计算后写入页面，打开浏览器控制台（F12）可查看完整输出。
+            </div>
+
+            <!-- ================= 一、顺序结构 ================= -->
+            <div class="zt_module">
+                <div class="zt_module-head">一、顺序结构（默认结构）</div>
+                <div class="zt_module-body">
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>1</span>从上到下，一行一行执行</div>
+                        <div class="zt_note">先声明半径，再声明圆周率，然后计算面积，最后输出——语句按书写顺序执行。</div>
+                        <div class="zt_code">var zt_r = 5;                       // 第1步：半径
+var zt_pi = 3.14159;                // 第2步：圆周率
+var zt_area = zt_pi * zt_r * zt_r;  // 第3步：计算面积
+console.log('圆面积：' + zt_area.toFixed(2));  // 第4步：输出</div>
+                        <div class="zt_runbox">运行结果：<div class="zt_run zt_out-order"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= 二、条件结构 ================= -->
+            <div class="zt_module">
+                <div class="zt_module-head">二、条件结构（分支结构）</div>
+                <div class="zt_module-body">
+                    <div class="zt_grid">
+                        <div class="zt_card">
+                            <div class="zt_card-title"><span>2-1</span>if 单分支</div>
+                            <div class="zt_note">条件为 true 才执行大括号里的代码。</div>
+                            <div class="zt_code">var zt_age = 20;
+if (zt_age >= 18) {
+    console.log('已成年，可以进入');
+}</div>
+                            <div class="zt_runbox">运行结果：<div class="zt_run zt_out-if"></div></div>
+                        </div>
+
+                        <div class="zt_card">
+                            <div class="zt_card-title"><span>2-2</span>if...else 双分支</div>
+                            <div class="zt_note">二选一：条件成立走 if，否则走 else。</div>
+                            <div class="zt_code">var zt_n = 7;
+if (zt_n % 2 === 0) {
+    console.log(zt_n + ' 是偶数');
+} else {
+    console.log(zt_n + ' 是奇数');
+}</div>
+                            <div class="zt_runbox">运行结果：<div class="zt_run zt_out-else"></div></div>
+                        </div>
+
+                        <div class="zt_card">
+                            <div class="zt_card-title"><span>2-3</span>if...else if...else 多分支</div>
+                            <div class="zt_note">成绩分级：90 以上优秀、80 以上良好、60 以上及格、其余不及格。</div>
+                            <div class="zt_code">var zt_score = 86;
+if (zt_score >= 90) {
+    zt_level = '优秀';
+} else if (zt_score >= 80) {
+    zt_level = '良好';
+} else if (zt_score >= 60) {
+    zt_level = '及格';
+} else {
+    zt_level = '不及格';
+}</div>
+                            <div class="zt_runbox">运行结果：<div class="zt_run zt_out-multi"></div></div>
+                        </div>
+
+                        <div class="zt_card">
+                            <div class="zt_card-title"><span>2-4</span>switch 多分支</div>
+                            <div class="zt_note">把一个变量和多个 case 值做全等比较，注意每个 case 后要写 break。</div>
+                            <div class="zt_code">var zt_day = 3;
+switch (zt_day) {
+    case 1: zt_name = '星期一'; break;
+    case 2: zt_name = '星期二'; break;
+    case 3: zt_name = '星期三'; break;
+    case 4: zt_name = '星期四'; break;
+    case 5: zt_name = '星期五'; break;
+    default: zt_name = '周末';
+}</div>
+                            <div class="zt_runbox">运行结果：<div class="zt_run zt_out-switch"></div></div>
+                        </div>
+
+                        <div class="zt_card">
+                            <div class="zt_card-title"><span>2-5</span>三元运算符（简写条件）</div>
+                            <div class="zt_note">格式：条件 ? 成立时的值 : 不成立时的值</div>
+                            <div class="zt_code">var zt_money = 120;
+var zt_msg = zt_money >= 100 ? '可以买单' : '余额不足';</div>
+                            <div class="zt_runbox">运行结果：<div class="zt_run zt_out-ternary"></div></div>
+                        </div>
+
+                        <div class="zt_card">
+                            <div class="zt_card-title"><span>2-6</span>条件的嵌套</div>
+                            <div class="zt_note">判断一个年份是否为闰年：能被 4 整除且不能被 100 整除，或能被 400 整除。</div>
+                            <div class="zt_code">var zt_year = 2024;
+if (zt_year % 4 === 0) {
+    if (zt_year % 100 !== 0 || zt_year % 400 === 0) {
+        zt_res = '闰年';
+    }
+} else {
+    zt_res = '平年';
+}</div>
+                            <div class="zt_runbox">运行结果：<div class="zt_run zt_out-leap"></div></div>
+                        </div>
+                    </div>
+
+                    <!-- 交互：条件结构 -->
+                    <div class="zt_play">
+                        <div class="zt_card-title"><span>试一试</span>输入成绩，用条件结构判断等级</div>
+                        <div class="zt_form">
+                            <input class="zt_input zt_in-score" type="text" value="86" placeholder="请输入0~100的成绩">
+                            <button class="zt_btn zt_btn-score" type="button">判断等级</button>
+                            <span class="zt_tip zt_msg-score"></span>
+                        </div>
+                        <div class="zt_runbox">运行结果：<div class="zt_run zt_out-score"></div></div>
+                        <div class="zt_note">代码：输入值先判断是否合法（0~100 的数字），再用 if...else if...else 逐级判断。</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= 三、循环结构 ================= -->
+            <div class="zt_module">
+                <div class="zt_module-head">三、循环结构（重复结构）</div>
+                <div class="zt_module-body">
+                    <div class="zt_grid">
+                        <div class="zt_card">
+                            <div class="zt_card-title"><span>3-1</span>for 循环</div>
+                            <div class="zt_note">三要素：初始值; 循环条件; 变量更新。下面求 1+2+...+100。</div>
+                            <div class="zt_code">var zt_sum = 0;
+for (var i = 1; i &lt;= 100; i++) {
+    zt_sum += i;
+}</div>
+                            <div class="zt_runbox">运行结果：<div class="zt_run zt_out-for"></div></div>
+                        </div>
+
+                        <div class="zt_card">
+                            <div class="zt_card-title"><span>3-2</span>while 循环</div>
+                            <div class="zt_note">先判断条件再执行，条件不成立一次都不执行。下面求 1~50 的偶数和。</div>
+                            <div class="zt_code">var zt_even = 0, zt_i = 2;
+while (zt_i &lt;= 50) {
+    zt_even += zt_i;
+    zt_i += 2;
+}</div>
+                            <div class="zt_runbox">运行结果：<div class="zt_run zt_out-while"></div></div>
+                        </div>
+
+                        <div class="zt_card">
+                            <div class="zt_card-title"><span>3-3</span>do...while 循环</div>
+                            <div class="zt_note">先执行一次再判断，所以循环体至少执行一次。</div>
+                            <div class="zt_code">var zt_k = 1;
+do {
+    zt_k++;
+} while (zt_k &lt; 1);   // 条件一开始就是假的</div>
+                            <div class="zt_runbox">运行结果：<div class="zt_run zt_out-dowhile"></div></div>
+                        </div>
+
+                        <div class="zt_card">
+                            <div class="zt_card-title"><span>3-4</span>for...in 遍历对象</div>
+                            <div class="zt_note">for...in 拿到的是键名（属性名 / 下标）。</div>
+                            <div class="zt_code">var zt_stu = { zt_name: '张涛', zt_age: 18, zt_class: '软件工程' };
+for (var zt_key in zt_stu) {
+    console.log(zt_key + '：' + zt_stu[zt_key]);
+}</div>
+                            <div class="zt_runbox">运行结果：<div class="zt_run zt_out-forin"></div></div>
+                        </div>
+
+                        <div class="zt_card">
+                            <div class="zt_card-title"><span>3-5</span>for...of 遍历数组</div>
+                            <div class="zt_note">for...of 直接拿到元素值，比 for...in 更适合数组。</div>
+                            <div class="zt_code">var zt_lang = ['HTML', 'CSS', 'JavaScript'];
+for (var zt_item of zt_lang) {
+    console.log(zt_item);
+}</div>
+                            <div class="zt_runbox">运行结果：<div class="zt_run zt_out-forof"></div></div>
+                            <div class="zt_tags zt_out-forof-tags"></div>
+                        </div>
+
+                        <div class="zt_card">
+                            <div class="zt_card-title"><span>3-6</span>break 与 continue</div>
+                            <div class="zt_note">break 跳出整个循环；continue 跳过本次循环，直接进入下一次。</div>
+                            <div class="zt_code">// break：找到第一个能被 9 整除且大于 50 的数
+for (var i = 51; i &lt;= 100; i++) {
+    if (i % 9 === 0) { zt_hit = i; break; }
+}
+// continue：只输出 1~10 中的奇数
+for (var j = 1; j &lt;= 10; j++) {
+    if (j % 2 === 0) { continue; }
+    zt_odd += j + ' ';
+}</div>
+                            <div class="zt_runbox">运行结果：<div class="zt_run zt_out-break"></div></div>
+                        </div>
+                    </div>
+
+                    <!-- 嵌套循环：九九乘法表 -->
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>3-7</span>循环的嵌套 —— 九九乘法表</div>
+                        <div class="zt_note">外层循环控制行（1~9），内层循环控制列（1~当前行），每层都用到循环变量。</div>
+                        <div class="zt_code">for (var i = 1; i &lt;= 9; i++) {          // 外层：行
+    for (var j = 1; j &lt;= i; j++) {      // 内层：列
+        zt_html += j + '×' + i + '=' + (i * j) + '  ';
+    }
+    zt_html += '\n';
+}</div>
+                        <div class="zt_out-table"></div>
+                    </div>
+
+                    <!-- 交互：循环结构 -->
+                    <div class="zt_play">
+                        <div class="zt_card-title"><span>试一试</span>输入行数，用嵌套循环打印星号三角形</div>
+                        <div class="zt_form">
+                            <input class="zt_input zt_in-rows" type="text" value="6" placeholder="请输入1~15的行数">
+                            <button class="zt_btn zt_btn-star" type="button">生成图案</button>
+                            <span class="zt_tip zt_msg-star"></span>
+                        </div>
+                        <div class="zt_out-star"></div>
+                        <div class="zt_note">第 i 行先循环打印 (rows - i) 个空格，再循环打印 (2i - 1) 个星号。</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="zt_footer">张涛 · JavaScript 程序结构演示（顺序 / 条件 / 循环）</div>
+        </div>
+
+        <script>
+            /* ========== 工具函数 ========== */
+            // 把结果显示到指定的 class 容器里（不使用 id 选择器）
+            function zt_set(zt_cls, zt_html) {
+                document.querySelector('.zt_out-' + zt_cls).innerHTML = zt_html;
+            }
+            function zt_line(zt_text) {
+                return '<span class="zt_run-line">' + zt_text + '</span>';
+            }
+
+            /* ========== 一、顺序结构 ========== */
+            var zt_r = 5;
+            var zt_pi = 3.14159;
+            var zt_area = zt_pi * zt_r * zt_r;
+            console.log('【顺序结构】半径为5的圆面积：', zt_area.toFixed(2));
+            zt_set('order', zt_line('半径为 ' + zt_r + ' 的圆面积 = ' + zt_pi + ' × ' + zt_r + ' × ' + zt_r + ' = <b>' + zt_area.toFixed(2) + '</b>'));
+
+            /* ========== 二、条件结构 ========== */
+            // 2-1 if 单分支
+            var zt_age = 20;
+            var zt_ifOut = '';
+            if (zt_age >= 18) {
+                zt_ifOut = zt_age + ' 岁：已成年，可以进入';
+            }
+            console.log('【if】', zt_ifOut);
+            zt_set('if', zt_line('<b>' + zt_ifOut + '</b>'));
+
+            // 2-2 if...else 双分支
+            var zt_n = 7;
+            var zt_elseOut = '';
+            if (zt_n % 2 === 0) {
+                zt_elseOut = zt_n + ' 是偶数';
+            } else {
+                zt_elseOut = zt_n + ' 是奇数';
+            }
+            console.log('【if...else】', zt_elseOut);
+            zt_set('else', zt_line('<b>' + zt_elseOut + '</b>'));
+
+            // 2-3 if...else if...else 多分支
+            var zt_score = 86;
+            var zt_level = '';
+            if (zt_score >= 90) {
+                zt_level = '优秀';
+            } else if (zt_score >= 80) {
+                zt_level = '良好';
+            } else if (zt_score >= 60) {
+                zt_level = '及格';
+            } else {
+                zt_level = '不及格';
+            }
+            console.log('【多分支】成绩', zt_score, '→', zt_level);
+            zt_set('multi', zt_line('成绩 ' + zt_score + ' 分 → 等级：<b>' + zt_level + '</b>'));
+
+            // 2-4 switch 多分支
+            var zt_day = 3;
+            var zt_dayName = '';
+            switch (zt_day) {
+                case 1: zt_dayName = '星期一'; break;
+                case 2: zt_dayName = '星期二'; break;
+                case 3: zt_dayName = '星期三'; break;
+                case 4: zt_dayName = '星期四'; break;
+                case 5: zt_dayName = '星期五'; break;
+                case 6: zt_dayName = '星期六'; break;
+                case 7: zt_dayName = '星期日'; break;
+                default: zt_dayName = '输入不合法';
+            }
+            console.log('【switch】', zt_day, '→', zt_dayName);
+            zt_set('switch', zt_line('zt_day = ' + zt_day + ' → <b>' + zt_dayName + '</b>'));
+
+            // 2-5 三元运算符
+            var zt_money = 120;
+            var zt_msg = zt_money >= 100 ? '可以买单' : '余额不足';
+            console.log('【三元运算符】', zt_msg);
+            zt_set('ternary', zt_line('余额 ' + zt_money + ' 元 → <b>' + zt_msg + '</b>'));
+
+            // 2-6 条件的嵌套（闰年判断）
+            var zt_year = 2024;
+            var zt_leap = '';
+            if (zt_year % 4 === 0) {
+                if (zt_year % 100 !== 0 || zt_year % 400 === 0) {
+                    zt_leap = '闰年';
+                } else {
+                    zt_leap = '平年';
+                }
+            } else {
+                zt_leap = '平年';
+            }
+            console.log('【嵌套条件】', zt_year, '是', zt_leap);
+            zt_set('leap', zt_line(zt_year + ' 年是 <b>' + zt_leap + '</b>（2月有 29 天）'));
+
+            // 交互 1：成绩等级判断
+            document.querySelector('.zt_btn-score').addEventListener('click', function () {
+                var zt_in = document.querySelector('.zt_in-score').value;
+                var zt_msgNode = document.querySelector('.zt_msg-score');
+                var zt_outNode = document.querySelector('.zt_out-score');
+                var zt_val = Number(zt_in);
+                zt_msgNode.innerHTML = '';
+
+                // 条件判断：先验证输入是否合法
+                if (zt_in === '' || isNaN(zt_val)) {
+                    zt_msgNode.innerHTML = '请输入数字！';
+                    zt_outNode.innerHTML = '';
+                    return;
+                }
+                if (zt_val < 0 || zt_val > 100) {
+                    zt_msgNode.innerHTML = '成绩必须在 0~100 之间！';
+                    zt_outNode.innerHTML = '';
+                    return;
+                }
+
+                // 多分支条件：判断等级
+                var zt_lv = '';
+                var zt_comment = '';
+                if (zt_val >= 90) {
+                    zt_lv = '优秀';
+                    zt_comment = '继续保持！';
+                } else if (zt_val >= 80) {
+                    zt_lv = '良好';
+                    zt_comment = '还有提升空间。';
+                } else if (zt_val >= 70) {
+                    zt_lv = '中等';
+                    zt_comment = '再加把劲。';
+                } else if (zt_val >= 60) {
+                    zt_lv = '及格';
+                    zt_comment = '刚好及格，需要努力。';
+                } else {
+                    zt_lv = '不及格';
+                    zt_comment = '需要补考。';
+                }
+                console.log('【交互·条件】输入 ' + zt_val + ' → ' + zt_lv);
+                zt_outNode.innerHTML = zt_line('成绩 <b>' + zt_val + '</b> 分 → 等级：<b>' + zt_lv + '</b>　' + zt_comment);
+            });
+
+            /* ========== 三、循环结构 ========== */
+            // 3-1 for 循环
+            var zt_sum = 0;
+            for (var zt_i = 1; zt_i <= 100; zt_i++) {
+                zt_sum += zt_i;
+            }
+            console.log('【for】1+2+...+100 =', zt_sum);
+            zt_set('for', zt_line('1 + 2 + ... + 100 = <b>' + zt_sum + '</b>'));
+
+            // 3-2 while 循环
+            var zt_even = 0;
+            var zt_w = 2;
+            while (zt_w <= 50) {
+                zt_even += zt_w;
+                zt_w += 2;
+            }
+            console.log('【while】2+4+...+50 =', zt_even);
+            zt_set('while', zt_line('2 + 4 + ... + 50 = <b>' + zt_even + '</b>（最后一次 zt_w = ' + zt_w + '，条件不成立退出）'));
+
+            // 3-3 do...while 循环
+            var zt_k = 1;
+            var zt_times = 0;
+            do {
+                zt_k++;
+                zt_times++;
+            } while (zt_k < 1);
+            console.log('【do...while】执行次数 =', zt_times, '，zt_k =', zt_k);
+            zt_set('dowhile', zt_line('循环条件 zt_k &lt; 1 一开始就不成立，但循环体仍执行了 <b>' + zt_times + '</b> 次，zt_k = ' + zt_k));
+
+            // 3-4 for...in 遍历对象
+            var zt_stu = { zt_name: '张涛', zt_age: 18, zt_class: '软件工程' };
+            var zt_forinHtml = '';
+            for (var zt_key in zt_stu) {
+                console.log('【for...in】', zt_key, '：', zt_stu[zt_key]);
+                zt_forinHtml += zt_line(zt_key + ' ： <b>' + zt_stu[zt_key] + '</b>');
+            }
+            zt_set('forin', zt_forinHtml);
+
+            // 3-5 for...of 遍历数组
+            var zt_lang = ['HTML', 'CSS', 'JavaScript'];
+            var zt_forofHtml = '';
+            var zt_tagHtml = '';
+            for (var zt_item of zt_lang) {
+                console.log('【for...of】', zt_item);
+                zt_forofHtml += zt_line('当前元素： <b>' + zt_item + '</b>');
+                zt_tagHtml += '<span class="zt_tag">' + zt_item + '</span>';
+            }
+            zt_set('forof', zt_forofHtml);
+            document.querySelector('.zt_out-forof-tags').innerHTML = zt_tagHtml;
+
+            // 3-6 break 与 continue
+            var zt_hit = 0;
+            for (var zt_a = 51; zt_a <= 100; zt_a++) {
+                if (zt_a % 9 === 0) {
+                    zt_hit = zt_a;
+                    break;          // 找到就跳出循环
+                }
+            }
+            var zt_odd = '';
+            for (var zt_b = 1; zt_b <= 10; zt_b++) {
+                if (zt_b % 2 === 0) {
+                    continue;       // 偶数跳过
+                }
+                zt_odd += zt_b + ' ';
+            }
+            console.log('【break】第一个结果 =', zt_hit, '【continue】奇数 =', zt_odd);
+            zt_set('break', zt_line('break：51~100 中第一个能被 9 整除的数是 <b>' + zt_hit + '</b>')
+                + zt_line('continue：1~10 中的奇数有 <b>' + zt_odd + '</b>'));
+
+            // 3-7 嵌套循环：九九乘法表
+            var zt_table = '<table class="zt_table"><tbody>';
+            for (var zt_row = 1; zt_row <= 9; zt_row++) {
+                zt_table += '<tr>';
+                for (var zt_col = 1; zt_col <= zt_row; zt_col++) {
+                    zt_table += '<td>' + zt_col + '×' + zt_row + '=' + (zt_col * zt_row) + '</td>';
+                }
+                zt_table += '</tr>';
+            }
+            zt_table += '</tbody></table>';
+            console.log('【嵌套循环】九九乘法表生成完毕');
+            document.querySelector('.zt_out-table').innerHTML = zt_table;
+
+            // 交互 2：嵌套循环生成星号三角形
+            function zt_drawStar(zt_rows) {
+                var zt_pic = '';
+                // 外层循环：控制行数
+                for (var zt_i = 1; zt_i <= zt_rows; zt_i++) {
+                    // 内层循环 1：打印空格
+                    for (var zt_s = 1; zt_s <= zt_rows - zt_i; zt_s++) {
+                        zt_pic += '&nbsp;';
+                    }
+                    // 内层循环 2：打印星号
+                    for (var zt_t = 1; zt_t <= 2 * zt_i - 1; zt_t++) {
+                        zt_pic += '*';
+                    }
+                    zt_pic += '\n';
+                }
+                return zt_pic;
+            }
+
+            document.querySelector('.zt_btn-star').addEventListener('click', function () {
+                var zt_in = document.querySelector('.zt_in-rows').value;
+                var zt_msgNode = document.querySelector('.zt_msg-star');
+                var zt_outNode = document.querySelector('.zt_out-star');
+                var zt_val = Number(zt_in);
+                zt_msgNode.innerHTML = '';
+
+                // 条件判断：校验输入
+                if (zt_in === '' || isNaN(zt_val) || zt_val < 1 || zt_val > 15 || zt_val % 1 !== 0) {
+                    zt_msgNode.innerHTML = '请输入 1~15 之间的整数！';
+                    zt_outNode.innerHTML = '';
+                    return;
+                }
+                console.log('【交互·循环】生成 ' + zt_val + ' 行星号三角形');
+                zt_outNode.innerHTML = '<div class="zt_star">' + zt_drawStar(zt_val) + '</div>';
+            });
+
+            // 页面加载后先生成一张默认图案
+            document.querySelector('.zt_out-star').innerHTML = '<div class="zt_star">' + zt_drawStar(6) + '</div>';
+
+            console.log('===== 15-2 JavaScript程序结构（顺序、条件、循环）演示完毕 =====');
+        </script>
+    </body>
+</html>
