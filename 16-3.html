@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<!-- 姓名：张涛，日期：2026-10-29，功能名称：16-3 热榜列表卡片（还原设计图） -->
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>16-3 热榜列表卡片</title>
+        <style>
+            :root {
+                --zt-red: #f5503f;
+                --zt-red-light: #f9897d;
+                --zt-text: #1f1f1f;
+                --zt-gray-text: #4a4a4a;
+                --zt-gray-bg: #efefef;
+                --zt-gray-bg-text: #5a5a5a;
+                --zt-page-bg: #f2f3f5;
+                --zt-card-bg: #ffffff;
+                --zt-card-radius: 14px;
+                --zt-rank-size: 34px;
+                --zt-row-gap: 14px;
+            }
+
+            .zt-body {
+                font-family: "PingFang SC", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+                background-color: var(--zt-page-bg);
+                margin: 0;
+                padding: 24px 16px 40px;
+                display: flex;
+                justify-content: center;
+                align-items: flex-start;
+                min-height: 100vh;
+                box-sizing: border-box;
+                -webkit-font-smoothing: antialiased;
+            }
+
+            /* ===== 卡片容器 ===== */
+            .zt-card {
+                width: 100%;
+                max-width: 600px;
+                background-color: var(--zt-card-bg);
+                border-radius: var(--zt-card-radius);
+                padding: 30px 30px 26px;
+                box-sizing: border-box;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, .06);
+            }
+
+            /* ===== 卡片头部：火焰 + 热榜 + 更多 ===== */
+            .zt-card-head {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 26px;
+            }
+
+            .zt-fire {
+                width: 34px;
+                height: 34px;
+                flex-shrink: 0;
+                display: block;
+            }
+
+            .zt-card-title {
+                font-size: 26px;
+                font-weight: 800;
+                color: var(--zt-text);
+                margin: 0;
+                letter-spacing: 1px;
+                line-height: 1;
+            }
+
+            .zt-more {
+                margin-left: auto;
+                display: flex;
+                align-items: center;
+                color: var(--zt-gray-text);
+                cursor: pointer;
+                padding: 4px 2px;
+            }
+
+            .zt-more .zt-icon {
+                width: 22px;
+                height: 22px;
+                fill: currentColor;
+                /* iconfont 库中 icon-gengduo 自带蓝色填充，用滤镜转为深灰以贴合设计稿 */
+                filter: grayscale(1) brightness(.42);
+            }
+
+            .zt-more:hover { color: #000; }
+
+            /* ===== 榜单列表 ===== */
+            .zt-list {
+                list-style: none;
+                margin: 0;
+                padding: 0;
+            }
+
+            .zt-item {
+                display: flex;
+                align-items: center;
+                gap: 20px;
+                padding: var(--zt-row-gap) 4px;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: background-color .2s;
+            }
+
+            .zt-item:hover { background-color: #fafafa; }
+
+            /* 名次数字块 */
+            .zt-rank {
+                width: var(--zt-rank-size);
+                height: var(--zt-rank-size);
+                flex-shrink: 0;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 17px;
+                font-weight: 700;
+                background-color: var(--zt-gray-bg);
+                color: var(--zt-gray-bg-text);
+                line-height: 1;
+                box-sizing: border-box;
+            }
+
+            /* 前三名：红色块 + 白色数字 */
+            .zt-rank-top {
+                background: linear-gradient(135deg, #f9836f, #f5503f);
+                color: #ffffff;
+            }
+
+            /* 第 3 名颜色略浅，贴近设计稿 */
+            .zt-rank-third {
+                background: linear-gradient(135deg, #fba79c, #f97a6a);
+            }
+
+            /* 榜单文字 */
+            .zt-item-text {
+                flex: 1;
+                min-width: 0;
+                margin: 0;
+                font-size: 22px;
+                font-weight: 700;
+                color: var(--zt-text);
+                line-height: 1.4;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                letter-spacing: .5px;
+            }
+
+            /* ===== 底部指示圆点 ===== */
+            .zt-dots {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 22px;
+                margin-top: 30px;
+            }
+
+            .zt-dot {
+                width: 9px;
+                height: 9px;
+                border-radius: 50%;
+                background-color: #dcdcdc;
+                display: block;
+            }
+
+            .zt-dot-active { background-color: #8c8c8c; }
+
+            /* ===== 响应式：窄屏缩放字号 ===== */
+            @media (max-width: 520px) {
+                .zt-body { padding: 12px 10px 30px; }
+                .zt-card { padding: 22px 18px 20px; }
+                .zt-card-title { font-size: 22px; }
+                .zt-fire { width: 25px; height: 25px; }
+                .zt-rank { width: 30px; height: 30px; font-size: 15px; border-radius: 7px; }
+                .zt-item { gap: 14px; padding: 10px 2px; }
+                .zt-item-text { font-size: 17px; }
+            }
+        </style>
+    </head>
+    <body class="zt_body">
+
+        <!-- 火焰图标（iconfont 图标库中没有火焰，用内联 SVG symbol 自绘） -->
+        <svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+            <defs>
+                <linearGradient id="zt-fire-grad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#ff9a5a" />
+                    <stop offset="55%" stop-color="#f9683f" />
+                    <stop offset="100%" stop-color="#e8402c" />
+                </linearGradient>
+            </defs>
+            <symbol id="zt-icon-fire" viewBox="0 0 24 24">
+                <path fill="url(#zt-fire-grad)" d="M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.77-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z" />
+            </symbol>
+        </svg>
+
+        <div class="zt-card">
+            <!-- 卡片头部 -->
+            <div class="zt-card-head">
+                <svg class="zt-fire" aria-hidden="true"><use xlink:href="#zt-icon-fire"></use></svg>
+                <h2 class="zt-card-title">热榜</h2>
+                <span class="zt-more" title="更多">
+                    <svg class="zt-icon" aria-hidden="true"><use xlink:href="#icon-gengduo"></use></svg>
+                </span>
+            </div>
+
+            <!-- 榜单列表 -->
+            <ul class="zt-list">
+                <li class="zt-item">
+                    <span class="zt-rank zt-rank-top">1</span>
+                    <p class="zt-item-text">特大暴雪！新一轮冷空气将登场</p>
+                </li>
+                <li class="zt-item">
+                    <span class="zt-rank zt-rank-top">2</span>
+                    <p class="zt-item-text">西班牙宣布全国哀悼3天</p>
+                </li>
+                <li class="zt-item">
+                    <span class="zt-rank zt-rank-third">3</span>
+                    <p class="zt-item-text">多地以旧换新上新 最高补贴2千元</p>
+                </li>
+                <li class="zt-item">
+                    <span class="zt-rank">4</span>
+                    <p class="zt-item-text">乔布斯嘲讽的触屏笔记本真出了</p>
+                </li>
+                <li class="zt-item">
+                    <span class="zt-rank">5</span>
+                    <p class="zt-item-text">詹姆斯13分5板10助攻0失误</p>
+                </li>
+                <li class="zt-item">
+                    <span class="zt-rank">6</span>
+                    <p class="zt-item-text">女子参加面试却被下单高端酒水</p>
+                </li>
+            </ul>
+
+            <!-- 底部指示圆点 -->
+            <div class="zt-dots">
+                <span class="zt-dot zt-dot-active"></span>
+                <span class="zt-dot"></span>
+            </div>
+        </div>
+
+        <!-- iconfont symbol 注入（图标来自 font 目录） -->
+        <script src="font/font_5244728_4l6o9j3r8rt/iconfont.js"></script>
+    </body>
+</html>

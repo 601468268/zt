@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<!-- 姓名：张涛，日期：2026-10-29，功能名称：16-4 文学社科图书频道（还原设计图 · 三栏+Tab切换） -->
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>16-4 文学社科 · 图书频道</title>
+        <style>
+            :root {
+                --zt-green: #6ab04c;
+                --zt-green-dark: #5a9a3f;
+                --zt-text: #333333;
+                --zt-text-gray: #888888;
+                --zt-text-light: #999999;
+                --zt-price: #ff6c00;
+                --zt-red: #f56060;
+                --zt-line: #e6e6e6;
+                --zt-line-light: #f0f0f0;
+                --zt-page-bg: #f5f5f5;
+                --zt-card-bg: #ffffff;
+                --zt-side-w: 200px;
+                --zt-rank-w: 220px;
+            }
+
+            .zt-body {
+                font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+                background-color: var(--zt-page-bg);
+                color: var(--zt-text);
+                margin: 0;
+                padding: 24px 16px 40px;
+                font-size: 14px;
+                -webkit-font-smoothing: antialiased;
+            }
+
+            .zt-wrap {
+                max-width: 1000px;
+                margin: 0 auto;
+                background-color: var(--zt-card-bg);
+                border: 1px solid var(--zt-line);
+            }
+
+            /* ===== 频道标题 ===== */
+            .zt-head {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 12px 18px;
+                border-bottom: 1px solid var(--zt-line);
+            }
+
+            .zt-head-bar {
+                width: 4px;
+                height: 20px;
+                background-color: var(--zt-green);
+                border-radius: 2px;
+                display: block;
+            }
+
+            .zt-head-title {
+                font-size: 22px;
+                font-weight: 400;
+                color: #555555;
+                margin: 0;
+                letter-spacing: 1px;
+            }
+
+            .zt-head-more {
+                margin-left: auto;
+                display: flex;
+                align-items: center;
+                color: #bbbbbb;
+                cursor: pointer;
+            }
+
+            .zt-head-more .zt-icon {
+                width: 18px;
+                height: 18px;
+                fill: currentColor;
+                /* iconfont 库中 icon-gengduo 自带蓝色填充，用滤镜改为浅灰 */
+                filter: grayscale(1) brightness(1.5);
+            }
+
+            .zt-head-more:hover { color: #888888; }
+
+            /* ===== 三栏主体 ===== */
+            .zt-main {
+                display: flex;
+                align-items: stretch;
+                min-height: 470px;
+            }
+
+            /* ---------- 左栏：主编推荐 ---------- */
+            .zt-side {
+                width: var(--zt-side-w);
+                flex-shrink: 0;
+                border-right: 1px solid var(--zt-line);
+                padding: 0 16px 20px;
+                box-sizing: border-box;
+            }
+
+            .zt-side-title {
+                font-size: 16px;
+                font-weight: 400;
+                color: var(--zt-text);
+                text-align: center;
+                margin: 0;
+                padding: 16px 0 14px;
+                border-bottom: 1px solid var(--zt-line-light);
+            }
+
+            .zt-rec { padding-top: 16px; }
+
+            .zt-cover-wrap {
+                position: relative;
+                width: 120px;
+                margin: 0 auto;
+            }
+
+            .zt-rec-cover {
+                width: 120px;
+                height: 168px;
+                object-fit: cover;
+                display: block;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, .18);
+            }
+
+            .zt-badge {
+                position: absolute;
+                top: 0;
+                left: 0;
+                background-color: var(--zt-green);
+                color: #ffffff;
+                font-size: 12px;
+                font-style: italic;
+                line-height: 1;
+                padding: 4px 7px 4px 5px;
+            }
+
+            .zt-rec-name {
+                font-size: 14px;
+                font-weight: 700;
+                color: var(--zt-text);
+                text-align: center;
+                margin: 12px 0 10px;
+                line-height: 1.5;
+            }
+
+            .zt-rec-desc {
+                font-size: 12px;
+                color: var(--zt-text-light);
+                line-height: 1.9;
+                margin: 0 0 12px;
+                text-align: justify;
+            }
+
+            .zt-rec-list {
+                list-style: none;
+                margin: 0;
+                padding: 0;
+            }
+
+            .zt-rec-list li {
+                font-size: 12px;
+                color: #666666;
+                line-height: 1.9;
+                padding-left: 10px;
+                position: relative;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .zt-rec-list li::before {
+                content: "";
+                position: absolute;
+                left: 0;
+                top: 9px;
+                width: 4px;
+                height: 4px;
+                border-radius: 50%;
+                background-color: #bbbbbb;
+            }
+
+            /* ---------- 中栏：Tab + 书单 ---------- */
+            .zt-center {
+                flex: 1;
+                min-width: 0;
+                padding: 0 18px 20px;
+            }
+
+            .zt-tabs {
+                display: flex;
+                gap: 26px;
+                border-bottom: 1px solid var(--zt-line);
+                padding: 0 0 0 2px;
+            }
+
+            .zt-tab {
+                position: relative;
+                background: none;
+                border: none;
+                font-family: inherit;
+                font-size: 16px;
+                color: var(--zt-text);
+                padding: 16px 0 12px;
+                cursor: pointer;
+                outline: none;
+                transition: color .2s;
+            }
+
+            .zt-tab:hover { color: var(--zt-green); }
+
+            .zt-tab.zt-active {
+                color: var(--zt-green);
+                font-weight: 700;
+            }
+
+            .zt-tab.zt-active::after {
+                content: "";
+                position: absolute;
+                left: 0;
+                right: 0;
+                bottom: -1px;
+                height: 2px;
+                background-color: var(--zt-green);
+            }
+
+            /* 书单网格：2 行 4 列 */
+            .zt-books {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 18px 14px;
+                padding-top: 18px;
+            }
+
+            .zt-book {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                cursor: pointer;
+            }
+
+            /* 第一行书单下方加虚线分隔，与设计图一致 */
+            .zt-book:nth-child(-n+4) {
+                border-bottom: 1px dashed var(--zt-line);
+                padding-bottom: 14px;
+            }
+
+            .zt-book-cover {
+                width: 100%;
+                height: 150px;
+                object-fit: contain;
+                object-position: center;
+                display: block;
+                transition: transform .2s;
+            }
+
+            .zt-book:hover .zt-book-cover { transform: translateY(-3px); }
+
+            .zt-book-name {
+                font-size: 13px;
+                color: var(--zt-text);
+                line-height: 1.6;
+                margin: 8px 0 2px;
+                width: 100%;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .zt-book:hover .zt-book-name { color: var(--zt-green-dark); }
+
+            .zt-price {
+                font-size: 14px;
+                color: var(--zt-price);
+                font-weight: 700;
+                line-height: 1.4;
+            }
+
+            .zt-price .zt-yen {
+                font-size: 12px;
+                font-weight: 400;
+                margin-right: 2px;
+            }
+
+            /* ---------- 右栏：订阅榜 ---------- */
+            .zt-rank {
+                width: var(--zt-rank-w);
+                flex-shrink: 0;
+                border-left: 1px solid var(--zt-line);
+                padding: 0 14px 20px;
+                box-sizing: border-box;
+            }
+
+            .zt-rank-title {
+                font-size: 15px;
+                font-weight: 700;
+                color: var(--zt-text);
+                margin: 0;
+                padding: 16px 0 12px;
+                border-bottom: 1px solid var(--zt-line-light);
+            }
+
+            .zt-rank-list {
+                list-style: none;
+                margin: 0;
+                padding: 6px 0 0;
+            }
+
+            .zt-rank-item {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 6px 0;
+                cursor: pointer;
+            }
+
+            .zt-rank-num {
+                width: 17px;
+                height: 17px;
+                flex-shrink: 0;
+                border: 1px solid #cccccc;
+                color: #888888;
+                font-size: 11px;
+                line-height: 1;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-sizing: border-box;
+            }
+
+            .zt-rank-top {
+                border-color: var(--zt-red);
+                color: var(--zt-red);
+            }
+
+            .zt-rank-text {
+                font-size: 12px;
+                color: #444444;
+                line-height: 1.6;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .zt-rank-item:hover .zt-rank-text { color: var(--zt-green-dark); }
+
+            /* ===== 响应式 ===== */
+            @media (max-width: 900px) {
+                .zt-main { flex-wrap: wrap; }
+                .zt-side { width: 100%; border-right: none; border-bottom: 1px solid var(--zt-line); }
+                .zt-cover-wrap, .zt-rec-cover { width: 100px; }
+                .zt-rec-cover { height: 140px; }
+                .zt-center { order: 1; width: 100%; flex: none; }
+                .zt-books { grid-template-columns: repeat(3, 1fr); }
+                .zt-rank { width: 100%; border-left: none; border-top: 1px solid var(--zt-line); order: 2; }
+            }
+
+            @media (max-width: 520px) {
+                .zt-body { padding: 10px 8px 30px; }
+                .zt-books { grid-template-columns: repeat(2, 1fr); }
+                .zt-book-cover { height: 130px; }
+                .zt-tabs { gap: 16px; }
+                .zt-tab { font-size: 15px; }
+            }
+        </style>
+    </head>
+    <body class="zt_body">
+        <div class="zt-wrap">
+            <!-- 频道标题 -->
+            <div class="zt-head">
+                <span class="zt-head-bar"></span>
+                <h2 class="zt-head-title">文学社科</h2>
+                <span class="zt-head-more" title="更多分类">
+                    <svg class="zt-icon" aria-hidden="true"><use xlink:href="#icon-gengduo"></use></svg>
+                </span>
+            </div>
+
+            <div class="zt-main">
+                <!-- 左栏：主编推荐 -->
+                <aside class="zt-side">
+                    <h3 class="zt-side-title">主编推荐</h3>
+                    <div class="zt-rec">
+                        <div class="zt-cover-wrap">
+                            <img class="zt-rec-cover" src="4/img/rui.jpg" alt="虚实之间">
+                            <span class="zt-badge">★力荐</span>
+                        </div>
+                        <h4 class="zt-rec-name">芮成钢：《虚实之间》</h4>
+                        <p class="zt-rec-desc">有十年记者生涯对东西方文化的洞悉，又有与奥巴马等政要零距离接触…</p>
+                        <ul class="zt-rec-list">
+                            <li>兄弟我在义乌的发财史</li>
+                            <li>读佛即是拜佛：唐僧传</li>
+                            <li>二战苏联陆军单兵装备</li>
+                        </ul>
+                    </div>
+                </aside>
+
+                <!-- 中栏：Tab + 书单 -->
+                <section class="zt-center">
+                    <div class="zt-tabs zt-tab-group">
+                        <button class="zt-tab zt-active" type="button" data-key="a">流行小说</button>
+                        <button class="zt-tab" type="button" data-key="b">社科历史</button>
+                        <button class="zt-tab" type="button" data-key="c">文学艺术</button>
+                    </div>
+                    <div class="zt-books zt-book-grid"></div>
+                </section>
+
+                <!-- 右栏：订阅榜 -->
+                <aside class="zt-rank">
+                    <h3 class="zt-rank-title zt-rank-title-text">流行小说订阅榜</h3>
+                    <ol class="zt-rank-list zt-rank-ol"></ol>
+                </aside>
+            </div>
+        </div>
+
+        <!-- iconfont symbol 注入（图标来自 font 目录） -->
+        <script src="font/font_5244728_4l6o9j3r8rt/iconfont.js"></script>
+        <script>
+            // ===== 数据：三个 tab 对应的书单与订阅榜（图片来自 4/img 目录） =====
+            var zt_data = {
+                a: {
+                    rankTitle: '流行小说订阅榜',
+                    books: [
+                        { img: 'a1.jpg', name: '省长的女婿', price: '5.98' },
+                        { img: 'a2.jpg', name: '辛夷坞：致青春', price: '5.00' },
+                        { img: 'a3.jpg', name: '越位', price: '2.99' },
+                        { img: 'a4.jpg', name: '扫黑', price: '6.40' },
+                        { img: 'a5.jpg', name: '我的帝王生涯', price: '4.00' },
+                        { img: 'a6.jpg', name: '南水北调书记', price: '5.98' },
+                        { img: 'a7.jpg', name: '1/14第一季', price: '4.00' },
+                        { img: 'a8.jpg', name: '辛夷坞：原来', price: '4.50' }
+                    ],
+                    rank: [
+                        '山西煤老板（全文）',
+                        '你不可不知的人性（全二',
+                        '到爱的距离',
+                        '梅雨的季节（全文）',
+                        '大清相国（全文）',
+                        '借势（全文）',
+                        '省委班子2（全文）',
+                        '静水流深（全文）',
+                        '生死疲劳（全文）',
+                        '金瓶梅（全文）'
+                    ]
+                },
+                b: {
+                    rankTitle: '社科历史订阅榜',
+                    books: [
+                        { img: 'b1.jpg', name: '奋斗的仕途', price: '3.00' },
+                        { img: 'b2.jpg', name: '历史选择了邓小平', price: '6.00' },
+                        { img: 'b3.jpg', name: '钱穆看中国文化', price: '8.00' },
+                        { img: 'b4.jpg', name: '刺秦 林肯', price: '3.00' },
+                        { img: 'b5.jpg', name: '资本论', price: '3.00' },
+                        { img: 'b6.jpg', name: '为什么是朱元璋', price: '4.00' },
+                        { img: 'b7.jpg', name: '阎崇年：大故宫', price: '5.00' },
+                        { img: 'b8.jpg', name: '皇后隐历史', price: '4.00' }
+                    ],
+                    rank: [
+                        '博弈与社会（全文）',
+                        '激荡三十年：中国企业',
+                        '我承认我不曾历经沧桑',
+                        '吴敬琏传（全文）',
+                        '世界因你不同：李开复自传',
+                        '我们台湾这些年（全文）',
+                        '课本上不说的历史',
+                        '重口味心理学（揭开日常行',
+                        '微表情心理学（最流行、最',
+                        '法网冠军李娜自传：独自上'
+                    ]
+                },
+                c: {
+                    rankTitle: '文学艺术订阅榜',
+                    books: [
+                        { img: 'c1.jpg', name: '武昌城', price: '4.50' },
+                        { img: 'c2.jpg', name: '贾平凹作品选', price: '3.00' },
+                        { img: 'c3.jpg', name: '最后一个匈奴', price: '4.00' },
+                        { img: 'c4.jpg', name: '岁月与性情', price: '8.00' },
+                        { img: 'c5.jpg', name: '浮生六记', price: '3.00' },
+                        { img: 'c6.jpg', name: '周国平：宝贝', price: '8.00' },
+                        { img: 'c7.jpg', name: '岳飞传', price: '3.00' },
+                        { img: 'c8.jpg', name: '撒哈拉的眼泪', price: '5.96' }
+                    ],
+                    rank: [
+                        '2012诺贝尔文学奖得主莫言',
+                        '奕：2012年诺贝尔文学奖得',
+                        '逃离：2013诺贝尔文学奖得',
+                        '青春（韩寒2011最新作品）',
+                        '教你幽默到心田',
+                        '宝贝，宝贝',
+                        '白鹿原——白桦的十二年',
+                        '中国式关系（全文）',
+                        '于丹：重温最美古诗词（17',
+                        '妞妞：一个父亲的札记'
+                    ]
+                }
+            };
+
+            var zt_grid = document.querySelector('.zt-book-grid');
+            var zt_rankOl = document.querySelector('.zt-rank-ol');
+            var zt_rankTitle = document.querySelector('.zt-rank-title-text');
+
+            // 渲染书单（4 列 2 行）
+            function zt_renderBooks(zt_key) {
+                var zt_html = '';
+                zt_data[zt_key].books.forEach(function (zt_b) {
+                    zt_html += '<div class="zt-book">'
+                        + '<img class="zt-book-cover" src="4/img/' + zt_b.img + '" alt="' + zt_b.name + '">'
+                        + '<p class="zt-book-name" title="' + zt_b.name + '">' + zt_b.name + '</p>'
+                        + '<span class="zt-price"><span class="zt-yen">¥</span>' + zt_b.price + '</span>'
+                        + '</div>';
+                });
+                zt_grid.innerHTML = zt_html;
+            }
+
+            // 渲染右侧订阅榜（前三名红框）
+            function zt_renderRank(zt_key) {
+                var zt_item = zt_data[zt_key];
+                zt_rankTitle.textContent = zt_item.rankTitle;
+                var zt_html = '';
+                zt_item.rank.forEach(function (zt_text, zt_index) {
+                    var zt_cls = zt_index < 3 ? 'zt-rank-num zt-rank-top' : 'zt-rank-num';
+                    zt_html += '<li class="zt-rank-item">'
+                        + '<span class="' + zt_cls + '">' + (zt_index + 1) + '</span>'
+                        + '<span class="zt-rank-text" title="' + zt_text + '">' + zt_text + '</span>'
+                        + '</li>';
+                });
+                zt_rankOl.innerHTML = zt_html;
+            }
+
+            // 切换 tab：更新书单、榜单标题与内容
+            function zt_switch(zt_key) {
+                document.querySelectorAll('.zt-tab').forEach(function (zt_btn) {
+                    zt_btn.classList.toggle('zt-active', zt_btn.dataset.key === zt_key);
+                });
+                zt_renderBooks(zt_key);
+                zt_renderRank(zt_key);
+                console.log('切换到：', zt_data[zt_key].rankTitle);
+            }
+
+            // 事件委托：在 tab 容器上绑定一次
+            document.querySelector('.zt-tab-group').addEventListener('click', function (zt_e) {
+                var zt_btn = zt_e.target.closest('.zt-tab');
+                if (zt_btn) { zt_switch(zt_btn.dataset.key); }
+            });
+
+            // 初始化：默认显示「流行小说」
+            zt_switch('a');
+        </script>
+    </body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<!-- 姓名：张涛，日期：2026-10-26，功能名称：数字7规则——100个盒子展示 -->
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>15-1 数字7规则百盒子</title>
+        <style>
+            .zt_body {
+                font-family: "Microsoft YaHei", Arial, sans-serif;
+                background-color: #f5f5f5;
+                margin: 0;
+                padding: 20px;
+            }
+            .zt_container {
+                max-width: 1000px;
+                margin: 0 auto;
+                background-color: #ffffff;
+                padding: 30px;
+                border-radius: 8px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+            .zt_title {
+                color: #2c3e50;
+                text-align: center;
+                border-bottom: 2px solid #3498db;
+                padding-bottom: 10px;
+            }
+            .zt_desc {
+                margin: 15px 0;
+                padding: 12px 15px;
+                background-color: #ecf0f1;
+                border-left: 4px solid #3498db;
+                border-radius: 4px;
+                color: #2c3e50;
+                line-height: 1.8;
+            }
+            .zt_legend {
+                margin: 15px 0;
+                text-align: center;
+            }
+            .zt_legend span {
+                display: inline-block;
+                margin: 0 15px;
+                color: #555;
+            }
+            .zt_demo-num {
+                display: inline-block;
+                width: 26px;
+                height: 26px;
+                line-height: 26px;
+                text-align: center;
+                vertical-align: middle;
+                border: 1px solid #3498db;
+                border-radius: 4px;
+                color: #2c3e50;
+                background-color: #eaf4fd;
+                font-weight: bold;
+            }
+            .zt_demo-empty {
+                display: inline-block;
+                width: 26px;
+                height: 26px;
+                vertical-align: middle;
+                border: 1px dashed #b1c9d9;
+                border-radius: 4px;
+                background-color: #fafcfe;
+            }
+            .zt_boxes {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                justify-content: center;
+                margin-top: 20px;
+            }
+            .zt_box {
+                width: 60px;
+                height: 60px;
+                line-height: 60px;
+                text-align: center;
+                border: 1px solid #3498db;
+                border-radius: 6px;
+                background-color: #eaf4fd;
+                color: #2c3e50;
+                font-size: 18px;
+                font-weight: bold;
+                box-sizing: border-box;
+            }
+            /* 满足数字7规则的盒子：显示为空盒子 */
+            .zt_box.zt_empty {
+                border: 1px dashed #b1c9d9;
+                background-color: #fafcfe;
+                color: transparent;
+            }
+        </style>
+    </head>
+    <body class="zt_body">
+        <div class="zt_container">
+            <h1 class="zt_title">张涛的JavaScript - 数字7规则百盒子</h1>
+
+            <div class="zt_desc">
+                页面中共有 100 个盒子，编号 1~100。<br>
+                <b>数字7的规则（逢7过）</b>：凡是 <b>7 的倍数</b> 或者 <b>数字中包含 7</b> 的盒子满足规则，显示为空盒子；不满足规则的盒子正常显示数字。
+            </div>
+
+            <div class="zt_legend">
+                <span>普通盒子：<i class="zt_demo-num">8</i></span>
+                <span>满足规则（空盒子）：<i class="zt_demo-empty"></i>（如 7、14、17、27……）</span>
+            </div>
+
+            <div id="zt_boxes" class="zt_boxes"></div>
+        </div>
+
+        <script>
+            // 获取盒子容器
+            var zt_boxes = document.getElementById('zt_boxes');
+
+            // 判断一个数是否满足数字7规则：是7的倍数 或 数字中包含7
+            function zt_isSevenRule(zt_num) {
+                // 7 的倍数
+                if (zt_num % 7 === 0) {
+                    return true;
+                }
+                // 数字中包含 7（按字符逐位检查）
+                var zt_str = String(zt_num);
+                for (var i = 0; i < zt_str.length; i++) {
+                    if (zt_str.charAt(i) === '7') {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            // 用 for 循环生成 100 个盒子
+            for (var zt_i = 1; zt_i <= 100; zt_i++) {
+                var zt_box = document.createElement('div');
+                zt_box.className = 'zt_box';
+                zt_box.innerHTML = zt_i;
+
+                if (zt_isSevenRule(zt_i)) {
+                    // 满足数字7规则：显示空盒子
+                    zt_box.className = 'zt_box zt_empty';
+                    zt_box.innerHTML = '';
+                    console.log(zt_i + ' 满足数字7规则，显示空盒子');
+                }
+
+                zt_boxes.appendChild(zt_box);
+            }
+
+            console.log('100个盒子生成完毕，满足规则的盒子已显示为空。');
+        </script>
+    </body>
+</html>

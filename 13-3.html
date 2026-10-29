@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>13-3 移动端底部导航 · 字体图标（iconfont）</title>
+    <!-- 字体图标方式：CSS + 图标字体文件（font/font_5244728_4l6o9j3r8rt/iconfont.css） -->
+    <link rel="stylesheet" href="font/font_5244728_4l6o9j3r8rt/iconfont.css">
+    <style>
+        /* ============================================================
+           全局 CSS 设计（本页所有自定义类名统一使用姓名缩写前缀 zt-）
+           学号：____________        姓名：____________
+           1) :root 中定义全局 CSS 变量（主题色、导航高度等），全站复用
+           2) * 重置盒模型与移动端点击高亮，作用于所有元素
+           3) 全程使用 class 选择器，未使用 id 选择器
+           4) 字体图标基础类 .iconfont 由 iconfont.css 提供
+           ============================================================ */
+        :root {
+            --primary: #4a7fd4;
+            --primary-grad: linear-gradient(135deg, #4a7fd4, #38b6ff);
+            --danger: #ff4d4f;
+            --text: #2d3748;
+            --text-light: #a0aabd;
+            --bg: #f4f6fa;
+            --zt-tabbar-h: 58px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+            background: #dfe4ec;
+            display: flex;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        /* ========== 手机壳：宽度自适应，最大 480px ========== */
+        .phone {
+            width: 100%;
+            max-width: 480px;
+            height: 100vh;
+            height: 100dvh;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 0 40px rgba(0, 0, 0, .15);
+        }
+
+        /* ========== 内容区（可滚动） ========== */
+        main {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .zt-page { display: none; padding-bottom: 16px; }
+        .zt-page.zt-active { display: block; animation: fadeIn .25s ease; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: none; }
+        }
+
+        /* ========== 各位置图标尺寸 ==========
+           iconfont.css 里 .iconfont{font-size:16px}，这里逐个覆盖 */
+        .appbar-right .iconfont { font-size: 22px; }
+        .search .iconfont { font-size: 16px; }
+        .banner > .iconfont { font-size: 34px; }
+        .grid-item .iconfont { font-size: 22px; color: var(--primary); }
+        .section-title .iconfont { font-size: 15px; }
+        .job-logo .iconfont { font-size: 20px; }
+        .company-item .job-logo .iconfont { font-size: 16px; }
+        .msg-avatar .iconfont { font-size: 19px; }
+        .avatar .iconfont { font-size: 26px; }
+        .menu-item .iconfont { font-size: 18px; }
+        .zt-tab-item .iconfont { font-size: 21px; }
+        /* 「返回」是左箭头，旋转 180° 当右箭头用 */
+        .zt-arrow { transform: rotate(180deg); }
+
+        /* ========== 顶部栏 ========== */
+        .appbar {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: var(--primary-grad);
+            color: #fff;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: calc(14px + env(safe-area-inset-top));
+        }
+
+        .appbar h1 { font-size: 18px; font-weight: 600; }
+        .appbar-right { position: relative; display: flex; cursor: pointer; }
+
+        .zt-badge-dot {
+            position: absolute;
+            top: -3px;
+            right: -5px;
+            width: 9px;
+            height: 9px;
+            background: var(--danger);
+            border-radius: 50%;
+            border: 1.5px solid #fff;
+        }
+
+        /* ========== 通用组件 ========== */
+        .search {
+            margin: 14px 16px 0;
+            background: #fff;
+            border-radius: 20px;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        .banner {
+            margin: 14px 16px 0;
+            background: var(--primary-grad);
+            border-radius: 14px;
+            padding: 22px 20px;
+            color: #fff;
+            overflow: hidden;
+        }
+        .banner h3 { font-size: 18px; margin-bottom: 6px; }
+        .banner p { font-size: 12px; opacity: .9; }
+        .banner > .iconfont { float: right; opacity: .4; }
+
+        .grid-nav {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin: 14px 16px 0;
+        }
+
+        .grid-item {
+            background: #fff;
+            border-radius: 12px;
+            padding: 14px 4px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text);
+        }
+        .grid-item .iconfont { display: block; margin-bottom: 6px; }
+
+        .section-title {
+            margin: 20px 16px 10px;
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-title .iconfont { color: var(--primary); }
+
+        .job-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin: 0 16px 10px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .job-logo {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            background: #eef4fd;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .job-info { flex: 1; min-width: 0; }
+        .job-info h4 {
+            font-size: 15px;
+            margin-bottom: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .job-info p { font-size: 12px; color: var(--text-light); }
+        .job-salary { color: #fa8c16; font-size: 14px; font-weight: 600; white-space: nowrap; }
+
+        /* ========== 发现页 ========== */
+        .tags { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px; }
+        .tag {
+            background: #fff;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 13px;
+        }
+        .tag.hot { background: var(--primary); color: #fff; }
+
+        .company-list { margin: 0 16px; background: #fff; border-radius: 12px; overflow: hidden; }
+        .company-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            border-bottom: 1px solid #eef1f6;
+            font-size: 14px;
+        }
+        .company-item:last-child { border-bottom: none; }
+        .company-item .job-logo { width: 34px; height: 34px; }
+        .company-item .rank { margin-left: auto; font-size: 12px; color: var(--text-light); }
+
+        /* ========== 消息页 ========== */
+        .msg-item {
+            background: #fff;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #eef1f6;
+        }
+
+        .msg-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .msg-body { flex: 1; min-width: 0; }
+        .msg-body h4 {
+            font-size: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .msg-body h4 time { font-size: 11px; color: var(--text-light); font-weight: normal; }
+        .msg-body p {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .msg-badge { margin-left: 8px; flex-shrink: 0; }
+
+        /* ========== 我的页 ========== */
+        .profile {
+            background: var(--primary-grad);
+            color: #fff;
+            padding: 26px 18px 30px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile h3 { font-size: 17px; }
+        .profile p { font-size: 12px; opacity: .9; margin-top: 3px; }
+
+        .menu {
+            margin: -14px 16px 0;
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 16px;
+            border-bottom: 1px solid #eef1f6;
+            font-size: 14px;
+        }
+        .menu-item:last-child { border-bottom: none; }
+        .menu-item > .iconfont:first-child { color: var(--primary); }
+        .menu-item .zt-arrow { margin-left: auto; color: #cbd5e0; font-size: 14px; }
+
+        /* ========== 底部导航（核心） ==========
+           自适应宽度：flex 布局，每项 flex:1 自动等分
+           固定：main 滚动，zt-tabbar 始终贴在底部
+        */
+        .zt-tabbar {
+            display: flex;
+            height: calc(var(--zt-tabbar-h) + env(safe-area-inset-bottom));
+            padding-bottom: env(safe-area-inset-bottom);
+            background: #fff;
+            border-top: 1px solid #e8ecf3;
+            flex-shrink: 0;
+        }
+
+        .zt-tab-item {
+            flex: 1;                     /* 自适应宽度 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            color: var(--text-light);
+            text-decoration: none;
+            cursor: pointer;
+            user-select: none;
+            transition: color .18s;
+        }
+
+        .zt-tab-item .zt-icon-wrap {
+            position: relative;          /* 徽章定位参照 */
+            line-height: 1;
+        }
+
+        .zt-tab-label { font-size: 11px; }
+        .zt-tab-item.zt-active { color: var(--primary); }
+        .zt-tab-item:active { opacity: .6; }
+
+        /* ---------- 右上角徽章 ---------- */
+        .zt-badge-num {
+            position: absolute;
+            top: -7px;
+            left: 60%;
+            background: var(--danger);
+            color: #fff;
+            font-size: 10px;
+            line-height: 1;
+            padding: 3px 5px;
+            border-radius: 9px;
+            min-width: 16px;
+            text-align: center;
+            font-weight: 600;
+            border: 1.5px solid #fff;
+            white-space: nowrap;
+        }
+
+        .zt-tab-item .zt-badge-dot { top: -2px; right: -7px; border-color: #fff; }
+
+        /* ========== 说明区 ========== */
+        .note {
+            margin: 16px;
+            background: #eef4fd;
+            border-left: 3px solid var(--primary);
+            border-radius: 0 10px 10px 0;
+            padding: 14px 16px;
+            font-size: 12px;
+            line-height: 1.9;
+            color: #4a5568;
+        }
+        .note code {
+            background: #fff;
+            padding: 1px 6px;
+            border-radius: 4px;
+            color: #c53030;
+            font-family: ui-monospace, Consolas, monospace;
+        }
+    </style>
+</head>
+<body>
+
+<div class="phone">
+
+    <!-- ================= 内容区 ================= -->
+    <main class="zt-main">
+
+        <!-- ---------- 首页 ---------- -->
+        <section class="zt-page zt-active" data-page="home">
+            <div class="appbar">
+                <h1>招聘首页</h1>
+                <div class="appbar-right">
+                    <i class="iconfont icon-iconfonticon3"></i><!-- 消息 -->
+                    <span class="zt-badge-dot"></span>
+                </div>
+            </div>
+
+            <div class="search">
+                <i class="iconfont icon-sousuo"></i>
+                <span>搜索职位 / 公司</span>
+            </div>
+
+            <div class="banner">
+                <i class="iconfont icon-doubao1"></i><!-- AI 助手 -->
+                <h3>春招专场 · 3 万+ 岗位</h3>
+                <p>AI 智能匹配 · 极速入职 · 靠谱 offer</p>
+            </div>
+
+            <div class="grid-nav">
+                <div class="grid-item"><i class="iconfont icon-sousuo"></i>找职位</div>
+                <div class="grid-item"><i class="iconfont icon-shoucang"></i>收藏夹</div>
+                <div class="grid-item"><i class="iconfont icon-zengjia"></i>发简历</div>
+                <div class="grid-item"><i class="iconfont icon-doubao1"></i>AI 推荐</div>
+            </div>
+
+            <h2 class="section-title"><i class="iconfont icon-zengjia"></i>推荐职位</h2>
+
+            <div class="job-card">
+                <div class="job-logo"><i class="iconfont icon-shangcheng"></i></div>
+                <div class="job-info">
+                    <h4>Java 开发工程师</h4>
+                    <p>阿里巴巴 · 杭州 · 3-5 年</p>
+                </div>
+                <div class="job-salary">15-30K</div>
+            </div>
+
+            <div class="job-card">
+                <div class="job-logo"><i class="iconfont icon-daohangdizhi"></i></div>
+                <div class="job-info">
+                    <h4>前端开发工程师</h4>
+                    <p>腾讯科技 · 深圳 · 1-3 年</p>
+                </div>
+                <div class="job-salary">18-30K</div>
+            </div>
+
+            <div class="job-card">
+                <div class="job-logo"><i class="iconfont icon-iconfontpic"></i></div>
+                <div class="job-info">
+                    <h4>Go 后端工程师</h4>
+                    <p>字节跳动 · 北京 · 3-5 年</p>
+                </div>
+                <div class="job-salary">20-40K</div>
+            </div>
+
+            <div class="job-card">
+                <div class="job-logo"><i class="iconfont icon-paizhao"></i></div>
+                <div class="job-info">
+                    <h4>数据分析师</h4>
+                    <p>美团 · 上海 · 1-3 年</p>
+                </div>
+                <div class="job-salary">12-20K</div>
+            </div>
+        </section>
+
+        <!-- ---------- 发现 ---------- -->
+        <section class="zt-page" data-page="discover">
+            <div class="appbar">
+                <h1>发现</h1>
+                <div class="appbar-right"><i class="iconfont icon-zengjia"></i></div>
+            </div>
+
+            <h2 class="section-title"><i class="iconfont icon-shoucang"></i>热门标签</h2>
+            <div class="tags">
+                <span class="tag hot">Java</span>
+                <span class="tag">前端</span>
+                <span class="tag">Python</span>
+                <span class="tag hot">实习</span>
+                <span class="tag">产品</span>
+                <span class="tag">运营</span>
+                <span class="tag">算法</span>
+                <span class="tag">测试</span>
+            </div>
+
+            <h2 class="section-title"><i class="iconfont icon-shangcheng"></i>热门公司</h2>
+            <div class="company-list">
+                <div class="company-item">
+                    <div class="job-logo"><i class="iconfont icon-shangcheng"></i></div>
+                    <span>蚂蚁集团</span>
+                    <span class="rank">128 个在招</span>
+                </div>
+                <div class="company-item">
+                    <div class="job-logo"><i class="iconfont icon-weixin"></i></div>
+                    <span>开源科技</span>
+                    <span class="rank">86 个在招</span>
+                </div>
+                <div class="company-item">
+                    <div class="job-logo"><i class="iconfont icon-iconfont"></i></div>
+                    <span>云计算有限公司</span>
+                    <span class="rank">54 个在招</span>
+                </div>
+                <div class="company-item">
+                    <div class="job-logo"><i class="iconfont icon-shezhi"></i></div>
+                    <span>网络安全研究院</span>
+                    <span class="rank">31 个在招</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ---------- 消息 ---------- -->
+        <section class="zt-page" data-page="message">
+            <div class="appbar">
+                <h1>消息</h1>
+                <div class="appbar-right"><i class="iconfont icon-gengduo"></i></div>
+            </div>
+
+            <div class="msg-item">
+                <div class="msg-avatar" style="background:#4a7fd4"><i class="iconfont icon-doubao1"></i></div>
+                <div class="msg-body">
+                    <h4>HR 小助手 <time>09:24</time></h4>
+                    <p>您投递的 Java 岗位已进入面试环节</p>
+                </div>
+                <span class="msg-badge"><span class="zt-badge-num" style="position:static">2</span></span>
+            </div>
+
+            <div class="msg-item">
+                <div class="msg-avatar" style="background:#38a169"><i class="iconfont icon-shangcheng"></i></div>
+                <div class="msg-body">
+                    <h4>阿里巴巴 <time>昨天</time></h4>
+                    <p>您好，方便明天下午 3 点面试吗？</p>
+                </div>
+                <span class="msg-badge"><span class="zt-badge-dot" style="position:static"></span></span>
+            </div>
+
+            <div class="msg-item">
+                <div class="msg-avatar" style="background:#fa8c16"><i class="iconfont icon-gengduo"></i></div>
+                <div class="msg-body">
+                    <h4>系统通知 <time>周一</time></h4>
+                    <p>您的简历完整度已达 90%，继续保持</p>
+                </div>
+                <span class="msg-badge"><span class="zt-badge-dot" style="position:static"></span></span>
+            </div>
+
+            <div class="msg-item">
+                <div class="msg-avatar" style="background:#805ad5"><i class="iconfont icon-my"></i></div>
+                <div class="msg-body">
+                    <h4>猎头 Alex <time>上周</time></h4>
+                    <p>有个外企的机会想和您聊聊</p>
+                </div>
+            </div>
+
+            <div class="note">
+                <b>字体图标写法：</b><code>&lt;i class="iconfont icon-index"&gt;&lt;/i&gt;</code><br>
+                <code>.iconfont</code> 指定字体族，<code>.icon-index</code> 的
+                <code>::before</code> 用 <code>content:"\e60f"</code> 插入字符。<br>
+                <b>徽章：</b>图标外层 <code>.zt-icon-wrap{position:relative}</code>，
+                徽章 <code>position:absolute</code> 定位到右上角。
+            </div>
+        </section>
+
+        <!-- ---------- 我的 ---------- -->
+        <section class="zt-page" data-page="me">
+            <div class="profile">
+                <div class="avatar"><i class="iconfont icon-my"></i></div>
+                <div>
+                    <h3>张同学</h3>
+                    <p>求职中 · 简历完整度 90%</p>
+                </div>
+            </div>
+
+            <div class="menu">
+                <div class="menu-item">
+                    <i class="iconfont icon-bianji"></i>我的简历
+                    <i class="iconfont icon-fanhui zt-arrow"></i>
+                </div>
+                <div class="menu-item">
+                    <i class="iconfont icon-shoucang"></i>收藏的职位
+                    <i class="iconfont icon-fanhui zt-arrow"></i>
+                    <span class="zt-badge-dot" style="position:static;margin-left:6px"></span>
+                </div>
+                <div class="menu-item">
+                    <i class="iconfont icon-zengjia"></i>投递记录
+                    <i class="iconfont icon-fanhui zt-arrow"></i>
+                </div>
+                <div class="menu-item">
+                    <i class="iconfont icon-iconfonticon3"></i>消息提醒
+                    <span class="zt-badge-num" style="position:static;margin-left:6px">6</span>
+                    <i class="iconfont icon-fanhui zt-arrow"></i>
+                </div>
+                <div class="menu-item">
+                    <i class="iconfont icon-shezhi"></i>设置
+                    <i class="iconfont icon-fanhui zt-arrow"></i>
+                    <span class="zt-badge-dot" style="position:static;margin-left:6px"></span>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ================= 底部导航（固定 + 自适应宽度） ================= -->
+    <nav class="zt-tabbar">
+        <a class="zt-tab-item zt-active" data-page="home">
+            <span class="zt-icon-wrap"><i class="iconfont icon-index"></i></span>
+            <span class="zt-tab-label">首页</span>
+        </a>
+
+        <a class="zt-tab-item" data-page="discover">
+            <span class="zt-icon-wrap"><i class="iconfont icon-faxian"></i></span>
+            <span class="zt-tab-label">发现</span>
+        </a>
+
+        <a class="zt-tab-item" data-page="message">
+            <span class="zt-icon-wrap">
+                <i class="iconfont icon-iconfonticon3"></i>
+                <span class="zt-badge-num">6</span><!-- 数字徽章 -->
+            </span>
+            <span class="zt-tab-label">消息</span>
+        </a>
+
+        <a class="zt-tab-item" data-page="me">
+            <span class="zt-icon-wrap">
+                <i class="iconfont icon-my"></i>
+                <span class="zt-badge-dot"></span><!-- 红点 -->
+            </span>
+            <span class="zt-tab-label">我的</span>
+        </a>
+    </nav>
+
+</div>
+
+<script>
+    const tabs = document.querySelectorAll('.zt-tab-item');
+    const main = document.querySelector('.zt-main');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelector('.zt-tab-item.zt-active')?.classList.remove('zt-active');
+            tab.classList.add('zt-active');
+
+            document.querySelectorAll('.zt-page').forEach(p => p.classList.remove('zt-active'));
+            document.querySelector('.zt-page[data-page="' + tab.dataset.page + '"]')?.classList.add('zt-active');
+            main.scrollTop = 0;
+
+            // 进入「消息」页 = 已读，移除数字徽章
+            if (tab.dataset.page === 'message') {
+                tab.querySelector('.zt-badge-num')?.remove();
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

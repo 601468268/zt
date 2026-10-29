@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<!-- 姓名：张涛，日期：2026-10-29，功能名称：JavaScript DOM操作与事件 -->
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>16-2 JavaScript DOM操作与事件</title>
+        <style>
+            :root {
+                --zt-primary: #3498db;
+                --zt-primary-dark: #2c3e50;
+                --zt-bg: #f5f7fa;
+                --zt-card: #ffffff;
+                --zt-gray: #ecf0f1;
+                --zt-text: #2c3e50;
+                --zt-muted: #7f8c8d;
+                --zt-green: #27ae60;
+                --zt-red: #e74c3c;
+                --zt-orange: #f39c12;
+                --zt-purple: #805ad5;
+                --zt-border: #dfe6e9;
+            }
+
+            .zt_body {
+                font-family: "Microsoft YaHei", Arial, sans-serif;
+                background-color: var(--zt-bg);
+                color: var(--zt-text);
+                margin: 0;
+                padding: 20px;
+                line-height: 1.8;
+            }
+
+            .zt_container {
+                max-width: 1100px;
+                margin: 0 auto;
+                background-color: var(--zt-card);
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            }
+
+            .zt_title {
+                color: var(--zt-primary-dark);
+                text-align: center;
+                border-bottom: 3px solid var(--zt-primary);
+                padding-bottom: 12px;
+                margin-top: 0;
+            }
+
+            .zt_student {
+                text-align: center;
+                color: var(--zt-muted);
+                margin: 10px 0 25px;
+                font-size: 14px;
+            }
+
+            .zt_desc {
+                margin: 15px 0 25px;
+                padding: 12px 18px;
+                background-color: var(--zt-gray);
+                border-left: 5px solid var(--zt-primary);
+                border-radius: 4px;
+            }
+
+            /* ===== 大模块 ===== */
+            .zt_module {
+                margin: 30px 0;
+                border: 1px solid var(--zt-border);
+                border-radius: 8px;
+                overflow: hidden;
+            }
+
+            .zt_module-head {
+                background-color: var(--zt-primary);
+                color: #fff;
+                padding: 10px 18px;
+                font-size: 18px;
+                font-weight: bold;
+            }
+
+            .zt_module-body { padding: 18px; }
+
+            .zt_card {
+                border: 1px solid var(--zt-border);
+                border-radius: 6px;
+                padding: 14px 16px;
+                margin-bottom: 16px;
+                background-color: #fcfdfe;
+            }
+
+            .zt_card-title {
+                font-weight: bold;
+                color: var(--zt-primary-dark);
+                font-size: 16px;
+                margin-bottom: 8px;
+            }
+
+            .zt_card-title span {
+                display: inline-block;
+                background-color: var(--zt-primary);
+                color: #fff;
+                border-radius: 4px;
+                padding: 0 8px;
+                margin-right: 8px;
+                font-size: 14px;
+            }
+
+            .zt_note {
+                color: var(--zt-muted);
+                font-size: 14px;
+                margin: 6px 0;
+            }
+
+            .zt_code {
+                background-color: var(--zt-primary-dark);
+                color: #ecf0f1;
+                padding: 12px 14px;
+                border-radius: 6px;
+                font-family: Consolas, "Courier New", monospace;
+                font-size: 14px;
+                line-height: 1.7;
+                white-space: pre-wrap;
+                word-break: break-all;
+                margin: 10px 0;
+                overflow-x: auto;
+            }
+
+            .zt_runbox {
+                background-color: #f4f9ff;
+                border: 1px dashed var(--zt-primary);
+                border-radius: 6px;
+                padding: 10px 14px;
+                font-family: Consolas, "Courier New", monospace;
+                font-size: 14px;
+                color: var(--zt-primary-dark);
+                white-space: pre-wrap;
+                word-break: break-all;
+            }
+
+            .zt_runbox b { color: var(--zt-green); }
+
+            .zt_run-line { display: block; }
+
+            /* ===== 交互区 ===== */
+            .zt_play {
+                background-color: #fffdf5;
+                border: 1px solid var(--zt-orange);
+                border-radius: 6px;
+                padding: 14px 16px;
+                margin-bottom: 16px;
+            }
+
+            .zt_form {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 10px;
+                margin: 10px 0;
+            }
+
+            .zt_input {
+                width: 180px;
+                padding: 7px 10px;
+                border: 1px solid var(--zt-border);
+                border-radius: 4px;
+                font-size: 15px;
+                outline: none;
+            }
+
+            .zt_input:focus { border-color: var(--zt-primary); }
+
+            .zt_select {
+                padding: 7px 10px;
+                border: 1px solid var(--zt-border);
+                border-radius: 4px;
+                font-size: 15px;
+            }
+
+            .zt_btn {
+                padding: 8px 18px;
+                background-color: var(--zt-primary);
+                color: #fff;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 15px;
+                font-family: inherit;
+            }
+
+            .zt_btn:hover { background-color: #217dbb; }
+            .zt_btn.zt-btn-red { background-color: var(--zt-red); }
+            .zt_btn.zt-btn-green { background-color: var(--zt-green); }
+
+            .zt_tip { color: var(--zt-red); font-size: 14px; }
+
+            /* ===== 演示元素 ===== */
+            .zt-demo-box {
+                display: inline-block;
+                padding: 8px 16px;
+                background-color: var(--zt-gray);
+                border-radius: 4px;
+                color: var(--zt-primary-dark);
+                font-weight: bold;
+            }
+
+            .zt-demo-tag {
+                display: inline-block;
+                margin: 0 6px 6px 0;
+                padding: 4px 12px;
+                border: 1px solid var(--zt-primary);
+                border-radius: 20px;
+                font-size: 14px;
+                color: var(--zt-primary-dark);
+            }
+
+            .zt_target {
+                min-height: 30px;
+                padding: 10px 14px;
+                background-color: #fff;
+                border: 1px solid var(--zt-border);
+                border-radius: 4px;
+                margin: 8px 0;
+            }
+
+            .zt_style-box {
+                width: 180px;
+                height: 60px;
+                line-height: 60px;
+                text-align: center;
+                background-color: var(--zt-gray);
+                border: 2px solid var(--zt-border);
+                border-radius: 6px;
+                color: var(--zt-text);
+                transition: all .25s;
+            }
+
+            .zt_style-box.zt-highlight {
+                background-color: #ffeaa7;
+                border-color: var(--zt-orange);
+                color: #c0392b;
+                font-weight: bold;
+                transform: scale(1.05);
+            }
+
+            /* ===== 列表 ===== */
+            .zt_list {
+                list-style: none;
+                padding: 0;
+                margin: 10px 0;
+                min-height: 40px;
+                border: 1px dashed var(--zt-border);
+                border-radius: 6px;
+                background-color: #fff;
+            }
+
+            .zt_list li {
+                padding: 8px 14px;
+                border-bottom: 1px solid var(--zt-border);
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                cursor: pointer;
+            }
+
+            .zt_list li:last-child { border-bottom: none; }
+            .zt_list li:hover { background-color: #f4f9ff; }
+            .zt_list .zt-del { margin-left: auto; color: var(--zt-red); font-size: 13px; }
+
+            /* ===== 事件流 ===== */
+            .zt_flow {
+                padding: 18px;
+                border-radius: 8px;
+                text-align: center;
+                color: #fff;
+                cursor: pointer;
+                font-size: 14px;
+            }
+
+            .zt-flow-out { background-color: var(--zt-primary); padding: 24px; border-radius: 10px; }
+            .zt-flow-mid { background-color: var(--zt-green); }
+            .zt-flow-in { background-color: var(--zt-red); }
+
+            .zt_log {
+                background-color: var(--zt-primary-dark);
+                color: #ecf0f1;
+                border-radius: 6px;
+                padding: 10px 14px;
+                font-family: Consolas, "Courier New", monospace;
+                font-size: 13px;
+                min-height: 40px;
+                max-height: 160px;
+                overflow-y: auto;
+                white-space: pre-wrap;
+                margin-top: 10px;
+            }
+
+            /* ===== Todo ===== */
+            .zt_todo-list { list-style: none; padding: 0; margin: 10px 0; }
+
+            .zt_todo-item {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 10px 14px;
+                background-color: #fff;
+                border: 1px solid var(--zt-border);
+                border-radius: 6px;
+                margin-bottom: 8px;
+            }
+
+            .zt_todo-text { flex: 1; cursor: pointer; }
+            .zt_todo-item.zt-done .zt_todo-text {
+                text-decoration: line-through;
+                color: var(--zt-muted);
+            }
+
+            .zt_todo-del {
+                color: var(--zt-red);
+                cursor: pointer;
+                font-size: 13px;
+                border: 1px solid var(--zt-red);
+                border-radius: 4px;
+                padding: 2px 8px;
+            }
+
+            .zt_stat {
+                display: flex;
+                gap: 16px;
+                font-size: 14px;
+                color: var(--zt-muted);
+                margin-top: 8px;
+            }
+
+            .zt_stat b { color: var(--zt-primary); }
+
+            .zt_grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+                gap: 16px;
+            }
+
+            .zt_footer {
+                text-align: center;
+                color: var(--zt-muted);
+                font-size: 13px;
+                margin-top: 30px;
+                border-top: 1px solid var(--zt-border);
+                padding-top: 15px;
+            }
+
+            @media (max-width: 600px) {
+                .zt_container { padding: 15px; }
+                .zt_body { padding: 10px; }
+            }
+        </style>
+    </head>
+    <body class="zt_body">
+        <div class="zt_container">
+            <h1 class="zt_title">JavaScript DOM 操作与事件</h1>
+            <div class="zt_student">姓名：张涛　　班级：　　学号：　　日期：2026-10-29</div>
+
+            <div class="zt_desc">
+                DOM（文档对象模型）把网页看成一棵节点树，JavaScript 通过 DOM 可以<b>获取元素、修改内容与属性、操作 class 与样式、增删改节点</b>；
+                再通过<b>事件</b>（点击、鼠标、键盘、输入、提交等）让页面真正"动"起来。
+                本页所有结果均由 JavaScript 真实操作 DOM 后写入，打开控制台（F12）可查看完整输出。
+                页面自定义类名统一使用姓名缩写 <b>zt-</b> 前缀，全程使用 class 选择器。
+            </div>
+
+            <!-- ================= 一、获取元素 ================= -->
+            <div class="zt_module">
+                <div class="zt_module-head">一、获取元素（查找 DOM 节点）</div>
+                <div class="zt_module-body">
+                    <div class="zt_grid">
+                        <div class="zt_card">
+                            <div class="zt_card-title"><span>1-1</span>querySelector：取第一个匹配的元素</div>
+                            <div class="zt_note">参数是 CSS 选择器，本页统一用 class 选择器，例如 <b>.zt-demo-box</b>。</div>
+                            <div class="zt_code">var zt_box = document.querySelector('.zt-demo-box');
+console.log(zt_box.textContent);</div>
+                            <div class="zt-demo-box">我是被查找的盒子</div>
+                            <div class="zt_runbox">运行结果：<div class="zt_runbox zt_out-query"></div></div>
+                        </div>
+
+                        <div class="zt_card">
+                            <div class="zt_card-title"><span>1-2</span>querySelectorAll：取所有匹配的元素</div>
+                            <div class="zt_note">返回 NodeList（类数组），可以用 forEach 遍历，也可以用下标访问。</div>
+                            <div class="zt_code">var zt_tags = document.querySelectorAll('.zt-demo-tag');
+zt_tags.forEach(function (el) { console.log(el.textContent); });</div>
+                            <div class="zt_tags-demo">
+                                <span class="zt-demo-tag">HTML</span>
+                                <span class="zt-demo-tag">CSS</span>
+                                <span class="zt-demo-tag">JavaScript</span>
+                            </div>
+                            <div class="zt_runbox">运行结果：<div class="zt_runbox zt_out-queryall"></div></div>
+                        </div>
+
+                        <div class="zt_card">
+                            <div class="zt_card-title"><span>1-3</span>按标签名 / 类名获取（动态集合）</div>
+                            <div class="zt_note">getElementsByClassName、getElementsByTagName 返回的是<b>动态</b>集合，元素变化会实时反映。</div>
+                            <div class="zt_code">var zt_li = document.getElementsByClassName('zt-todo-item');
+var zt_p = document.getElementsByTagName('div');
+console.log('todo 数量：' + zt_li.length);
+console.log('div 数量：' + zt_p.length);</div>
+                            <div class="zt_runbox">运行结果：<div class="zt_runbox zt_out-getby"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= 二、修改内容与属性 ================= -->
+            <div class="zt_module">
+                <div class="zt_module-head">二、修改元素的内容与属性</div>
+                <div class="zt_module-body">
+                    <div class="zt_grid">
+                        <div class="zt_card">
+                            <div class="zt_card-title"><span>2-1</span>innerHTML 与 textContent 的区别</div>
+                            <div class="zt_note">innerHTML 会解析 HTML 标签；textContent 把内容当纯文本，更安全。</div>
+                            <div class="zt_code">var zt_html = '&lt;b&gt;加粗&lt;/b&gt;文字';
+el.innerHTML    = zt_html;   // 解析标签，显示加粗
+el2.textContent = zt_html;   // 原样输出，不解析</div>
+                            <div class="zt_target zt_out-html">（等待写入）</div>
+                            <div class="zt_target zt_out-text">（等待写入）</div>
+                        </div>
+
+                        <div class="zt_card">
+                            <div class="zt_card-title"><span>2-2</span>属性的读取与修改</div>
+                            <div class="zt_note">getAttribute / setAttribute / removeAttribute，也可以直接改 el.src、el.href、el.value。</div>
+                            <div class="zt_code">var zt_link = document.querySelector('.zt-demo-link');
+zt_link.setAttribute('title', '这是用 setAttribute 加的提示');
+zt_link.textContent = '张涛的主页链接';
+console.log(zt_link.getAttribute('href'));</div>
+                            <div>
+                                <a class="zt-demo-link" href="#top">原始链接文字</a>
+                            </div>
+                            <div class="zt_runbox">运行结果：<div class="zt_runbox zt_out-attr"></div></div>
+                        </div>
+
+                        <div class="zt_card">
+                            <div class="zt_card-title"><span>2-3</span>表单元素的 value</div>
+                            <div class="zt_note">input / textarea 的内容用 <b>value</b> 读写，不是 innerHTML。</div>
+                            <div class="zt_code">var zt_inp = document.querySelector('.zt-in-value');
+zt_inp.value = '用 JS 写入的默认值';
+console.log(zt_inp.value);</div>
+                            <div class="zt_form">
+                                <input class="zt_input zt-in-value" type="text" placeholder="这里会被 JS 写入">
+                                <button class="zt_btn zt-btn-readvalue" type="button">读取当前值</button>
+                            </div>
+                            <div class="zt_runbox">运行结果：<div class="zt_runbox zt_out-value"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= 三、class 与样式 ================= -->
+            <div class="zt_module">
+                <div class="zt_module-head">三、操作 class 与样式（交互一）</div>
+                <div class="zt_module-body">
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>3-1</span>classList：add / remove / toggle / contains</div>
+                        <div class="zt_note">toggle 表示"有就删、没有就加"，做开关效果最方便；contains 用来判断有没有某个 class。</div>
+                        <div class="zt_code">var zt_box = document.querySelector('.zt-style-box');
+zt_box.classList.add('zt-highlight');       // 添加
+zt_box.classList.remove('zt-highlight');    // 移除
+zt_box.classList.toggle('zt-highlight');    // 切换（开关）
+zt_box.classList.contains('zt-highlight');  // 判断是否包含</div>
+                        <div class="zt_form">
+                            <div class="zt_style-box">点按钮改变我</div>
+                        </div>
+                        <div class="zt_form">
+                            <button class="zt_btn zt-btn-add" type="button">add 添加高亮</button>
+                            <button class="zt_btn zt-btn-remove" type="button">remove 移除高亮</button>
+                            <button class="zt_btn zt-btn-toggle" type="button">toggle 切换</button>
+                            <button class="zt_btn zt-btn-contains" type="button">contains 判断</button>
+                        </div>
+                        <div class="zt_runbox">运行结果：<div class="zt_runbox zt_out-class"></div></div>
+                    </div>
+
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>3-2</span>style 直接改行内样式</div>
+                        <div class="zt_note">CSS 里的短横线写法在 JS 中要改成小驼峰：background-color → backgroundColor。</div>
+                        <div class="zt_code">var zt_box = document.querySelector('.zt-style-box');
+zt_box.style.backgroundColor = '#ffeaa7';
+zt_box.style.fontSize = '20px';
+zt_box.style.borderRadius = '12px';</div>
+                        <div class="zt_form">
+                            <button class="zt_btn zt-btn-style" type="button">随机换颜色</button>
+                            <button class="zt_btn zt-btn-resetstyle" type="button">清除行内样式</button>
+                        </div>
+                        <div class="zt_runbox">运行结果：<div class="zt_runbox zt_out-stylelog"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= 四、节点增删改 ================= -->
+            <div class="zt_module">
+                <div class="zt_module-head">四、增删改节点（交互二 · 事件委托）</div>
+                <div class="zt_module-body">
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>4-1</span>创建与插入：createElement + appendChild / insertBefore</div>
+                        <div class="zt_note">创建元素 → 设置内容与 class → 挂到父节点上；insertBefore(新节点, 参照节点) 可插到最前面。</div>
+                        <div class="zt_code">var zt_li = document.createElement('li');        // 1. 创建
+zt_li.textContent = '新增：' + zt_text;
+zt_li.innerHTML += '&lt;span class="zt-del"&gt;删除&lt;/span&gt;';
+zt_list.appendChild(zt_li);                      // 2. 追加到末尾
+// 插到最前面：zt_list.insertBefore(zt_li, zt_list.firstElementChild);</div>
+                        <div class="zt_form">
+                            <input class="zt_input zt-in-fruit" type="text" placeholder="输入水果名称" value="香蕉">
+                            <button class="zt_btn zt-btn-addfruit" type="button">appendChild 追加</button>
+                            <button class="zt_btn zt-btn-insertfruit" type="button">insertBefore 插到最前</button>
+                            <button class="zt_btn zt-btn-clearfruit" type="button">清空列表</button>
+                        </div>
+                    </div>
+
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>4-2</span>删除节点 + 事件委托（只在父元素上绑定一次）</div>
+                        <div class="zt_note">
+                            列表里的项目是后来动态新增的，如果给每个 li 单独绑定事件，新增的 li 就点不动。
+                            把事件绑定在<b>父元素 ul</b> 上，用 <b>event.target</b> 判断点的是谁，这就是<b>事件委托</b>。
+                        </div>
+                        <div class="zt_code">zt_list.addEventListener('click', function (e) {
+    if (e.target.classList.contains('zt-del')) {
+        e.target.closest('li').remove();          // 点删除：移除整行
+    } else {
+        console.log('点击了：' + e.target.textContent);
+    }
+});</div>
+                        <ul class="zt_list zt-fruit-list">
+                            <li>苹果<span class="zt-del">删除</span></li>
+                            <li>橘子<span class="zt-del">删除</span></li>
+                            <li>葡萄<span class="zt-del">删除</span></li>
+                        </ul>
+                        <div class="zt_runbox">运行结果：<div class="zt_runbox zt_out-node"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= 五、常用事件与事件对象 ================= -->
+            <div class="zt_module">
+                <div class="zt_module-head">五、常用事件与事件对象 event</div>
+                <div class="zt_module-body">
+                    <div class="zt_grid">
+                        <div class="zt_card">
+                            <div class="zt_card-title"><span>5-1</span>click 鼠标点击 + 事件对象</div>
+                            <div class="zt_note">e.target 是真正被点到的元素；e.clientX / e.clientY 是鼠标坐标；e.type 是事件类型。</div>
+                            <div class="zt_code">zt_btn.addEventListener('click', function (e) {
+    console.log('事件类型：' + e.type);
+    console.log('被点元素：' + e.target.tagName);
+    console.log('鼠标坐标：' + e.clientX + ', ' + e.clientY);
+});</div>
+                            <div class="zt_form">
+                                <button class="zt_btn zt-btn-click" type="button">点我看事件对象</button>
+                            </div>
+                            <div class="zt_runbox">运行结果：<div class="zt_runbox zt_out-click"></div></div>
+                        </div>
+
+                        <div class="zt_card">
+                            <div class="zt_card-title"><span>5-2</span>mouseenter / mouseleave 鼠标移入移出</div>
+                            <div class="zt_note">mouseover / mouseout 会在子元素间冒泡触发，enter / leave 不会，做悬浮效果更稳定。</div>
+                            <div class="zt_code">zt_area.addEventListener('mouseenter', function () {
+    this.style.background = '#eaf4fd';
+    this.textContent = '鼠标进来了';
+});
+zt_area.addEventListener('mouseleave', function () {
+    this.style.background = '#fff';
+    this.textContent = '鼠标移出去了';
+});</div>
+                            <div class="zt_target zt-hover-area" style="text-align:center">把鼠标移到这里</div>
+                            <div class="zt_runbox">运行结果：<div class="zt_runbox zt_out-hover"></div></div>
+                        </div>
+
+                        <div class="zt_card">
+                            <div class="zt_card-title"><span>5-3</span>input 与 change（输入 / 选择变化）</div>
+                            <div class="zt_note">input 每敲一个字就触发；change 在失去焦点或选项改变后触发。</div>
+                            <div class="zt_code">zt_input.addEventListener('input', function (e) {
+    console.log('正在输入：' + e.target.value);
+});
+zt_select.addEventListener('change', function (e) {
+    console.log('选择了：' + e.target.value);
+});</div>
+                            <div class="zt_form">
+                                <input class="zt_input zt-in-live" type="text" placeholder="边打字边显示">
+                                <select class="zt_select zt-sel-city">
+                                    <option value="大连">大连</option>
+                                    <option value="北京">北京</option>
+                                    <option value="上海">上海</option>
+                                    <option value="深圳">深圳</option>
+                                </select>
+                            </div>
+                            <div class="zt_runbox">运行结果：<div class="zt_runbox zt_out-input"></div></div>
+                        </div>
+
+                        <div class="zt_card">
+                            <div class="zt_card-title"><span>5-4</span>keydown 键盘事件</div>
+                            <div class="zt_note">e.key 得到按键名（如 Enter、a），e.keyCode 得到编码（回车是 13），回车提交最常用。</div>
+                            <div class="zt_code">zt_input.addEventListener('keydown', function (e) {
+    console.log('按下：' + e.key + '  编码：' + e.keyCode);
+    if (e.key === 'Enter') { /* 回车执行提交 */ }
+});</div>
+                            <div class="zt_form">
+                                <input class="zt_input zt-in-key" type="text" placeholder="在这里敲键盘（试试回车）">
+                            </div>
+                            <div class="zt_runbox">运行结果：<div class="zt_runbox zt_out-key"></div></div>
+                        </div>
+
+                        <div class="zt_card">
+                            <div class="zt_card-title"><span>5-5</span>submit 表单提交 + preventDefault 阻止默认行为</div>
+                            <div class="zt_note">表单默认提交会刷新页面，用 e.preventDefault() 可以拦下来，自己用 JS 处理数据。</div>
+                            <div class="zt_code">zt_form.addEventListener('submit', function (e) {
+    e.preventDefault();          // 阻止页面刷新
+    console.log('提交了姓名：' + zt_name.value);
+});</div>
+                            <form class="zt-form-tag">
+                                <div class="zt_form">
+                                    <input class="zt_input zt-in-name" type="text" placeholder="请输入姓名">
+                                    <button class="zt_btn zt-btn-green" type="submit">提交</button>
+                                </div>
+                            </form>
+                            <div class="zt_runbox">运行结果：<div class="zt_runbox zt_out-submit"></div></div>
+                        </div>
+
+                        <div class="zt_card">
+                            <div class="zt_card-title"><span>5-6</span>DOMContentLoaded：等 DOM 就绪再执行</div>
+                            <div class="zt_note">脚本写在 body 末尾时 DOM 已存在；若脚本写在 head 里，就要等这个事件，否则取不到元素。</div>
+                            <div class="zt_code">document.addEventListener('DOMContentLoaded', function () {
+    console.log('DOM 加载完成，可以安全操作元素了');
+});</div>
+                            <div class="zt_runbox">运行结果：<div class="zt_runbox zt_out-ready"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= 六、事件流 ================= -->
+            <div class="zt_module">
+                <div class="zt_module-head">六、事件流：冒泡、捕获与 stopPropagation</div>
+                <div class="zt_module-body">
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>6-1</span>点击内层盒子，看事件一层层向外传（冒泡）</div>
+                        <div class="zt_note">
+                            事件默认按 <b>冒泡</b> 顺序传播：内层 → 中层 → 外层。
+                            addEventListener 第三个参数传 true 表示在<b>捕获</b>阶段触发（外层 → 内层）。
+                        </div>
+                        <div class="zt_code">zt_in.addEventListener('click', function (e) {
+    console.log('内层被点');
+    if (zt_stop) { e.stopPropagation(); }   // 阻止继续向外传播
+});
+zt_mid.addEventListener('click', function () { console.log('中层被点'); });
+zt_out.addEventListener('click', function () { console.log('外层被点'); });</div>
+
+                        <div class="zt_flow zt-flow-out zt-flow-outer">
+                            外层
+                            <div class="zt_flow zt-flow-mid zt-flow-middle">
+                                中层
+                                <div class="zt_flow zt-flow-in zt-flow-inner">内层（点我）</div>
+                            </div>
+                        </div>
+
+                        <div class="zt_form">
+                            <label><input class="zt-check-stop" type="checkbox"> 在内层调用 stopPropagation（阻止冒泡）</label>
+                            <button class="zt_btn zt-btn-clearlog" type="button">清空日志</button>
+                        </div>
+                        <div class="zt_log zt-out-flowlog"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= 七、综合案例 ================= -->
+            <div class="zt_module">
+                <div class="zt_module-head">七、综合案例：待办清单 Todo（增删改 + 事件委托 + 键盘回车）</div>
+                <div class="zt_module-body">
+                    <div class="zt_card">
+                        <div class="zt_note">
+                            用到的知识点：createElement 创建节点、appendChild 插入、remove 删除、
+                            classList.toggle 切换完成样式、事件委托处理动态列表、keydown 回车添加、DOM 实时更新统计。
+                        </div>
+                        <div class="zt_code">// 回车也能添加
+zt_todoInput.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { zt_addTodo(); }
+});
+
+// 事件委托：列表容器上只绑一次，动态新增的项也能响应
+zt_todoList.addEventListener('click', function (e) {
+    if (e.target.classList.contains('zt_todo-del')) {
+        e.target.closest('.zt_todo-item').remove();
+    } else if (e.target.classList.contains('zt_todo-text')) {
+        e.target.closest('.zt_todo-item').classList.toggle('zt-done');
+    }
+    zt_updateStat();     // 每次操作后更新统计
+});</div>
+
+                        <div class="zt_form">
+                            <input class="zt_input zt-in-todo" type="text" placeholder="输入待办事项，回车也能添加">
+                            <button class="zt_btn zt-btn-addtodo" type="button">添加</button>
+                            <button class="zt_btn zt-btn-cleardone" type="button">清除已完成</button>
+                        </div>
+
+                        <ul class="zt_todo-list zt-todo-list">
+                            <li class="zt_todo-item">
+                                <span class="zt_todo-text">复习 DOM 操作</span>
+                                <span class="zt_todo-del">删除</span>
+                            </li>
+                            <li class="zt_todo-item zt-done">
+                                <span class="zt_todo-text">完成 15-2 程序结构</span>
+                                <span class="zt_todo-del">删除</span>
+                            </li>
+                        </ul>
+
+                        <div class="zt_stat">
+                            <span>总数：<b class="zt-stat-total">0</b></span>
+                            <span>已完成：<b class="zt-stat-done">0</b></span>
+                            <span>未完成：<b class="zt-stat-undone">0</b></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="zt_footer">张涛 · JavaScript DOM 操作与事件演示</div>
+        </div>
+
+        <script>
+            /* ========== 工具函数（不使用 id 选择器，统一 class + querySelector） ========== */
+            function zt_set(zt_cls, zt_html) {
+                var zt_node = document.querySelector('.zt_out-' + zt_cls);
+                if (zt_node) { zt_node.innerHTML = zt_html; }
+            }
+            function zt_line(zt_text) {
+                return '<span class="zt_run-line">' + zt_text + '</span>';
+            }
+
+            /* ========== 一、获取元素 ========== */
+            // 1-1 querySelector
+            var zt_box = document.querySelector('.zt-demo-box');
+            console.log('【querySelector】找到元素，内容：', zt_box.textContent);
+            zt_set('query', zt_line('找到元素 &lt;' + zt_box.tagName + '&gt;，内容：<b>' + zt_box.textContent + '</b>'));
+
+            // 1-2 querySelectorAll
+            var zt_tags = document.querySelectorAll('.zt-demo-tag');
+            var zt_tagHtml = '';
+            zt_tags.forEach(function (zt_el, zt_index) {
+                console.log('【querySelectorAll】第' + (zt_index + 1) + '个：', zt_el.textContent);
+                zt_tagHtml += zt_line('第 ' + (zt_index + 1) + ' 个：<b>' + zt_el.textContent + '</b>');
+            });
+            zt_set('queryall', zt_tagHtml + zt_line('共找到 <b>' + zt_tags.length + '</b> 个元素（NodeList，可用 forEach 遍历）'));
+
+            // 1-3 按类名 / 标签名获取（动态集合）
+            var zt_todoByClass = document.getElementsByClassName('zt_todo-item');
+            var zt_divs = document.getElementsByTagName('div');
+            console.log('【getElementsByClassName】待办项数：', zt_todoByClass.length);
+            console.log('【getElementsByTagName】div 数量：', zt_divs.length);
+            zt_set('getby', zt_line('getElementsByClassName(".zt_todo-item") → <b>' + zt_todoByClass.length + '</b> 个待办项')
+                + zt_line('getElementsByTagName("div") → 本页共 <b>' + zt_divs.length + '</b> 个 div'));
+
+            /* ========== 二、修改内容与属性 ========== */
+            // 2-1 innerHTML vs textContent
+            var zt_demoStr = '<b>加粗</b>文字';
+            document.querySelector('.zt_out-html').innerHTML = zt_demoStr;
+            document.querySelector('.zt_out-text').textContent = zt_demoStr;
+            console.log('【innerHTML】解析标签 → ', document.querySelector('.zt_out-html').innerHTML);
+            console.log('【textContent】当作纯文本 → ', document.querySelector('.zt_out-text').textContent);
+
+            // 2-2 属性操作
+            var zt_link = document.querySelector('.zt-demo-link');
+            zt_link.setAttribute('title', '这是用 setAttribute 加的提示');
+            zt_link.textContent = '张涛的主页链接（文字已被 JS 修改）';
+            console.log('【属性】href =', zt_link.getAttribute('href'), '，title =', zt_link.getAttribute('title'));
+            zt_set('attr', zt_line('href 属性值：<b>' + zt_link.getAttribute('href') + '</b>')
+                + zt_line('title（刚添加的）：<b>' + zt_link.getAttribute('title') + '</b>')
+                + zt_line('修改后的文字：<b>' + zt_link.textContent + '</b>'));
+
+            // 2-3 value
+            var zt_inp = document.querySelector('.zt-in-value');
+            zt_inp.value = '用 JS 写入的默认值';
+            console.log('【value】写入并读取：', zt_inp.value);
+            zt_set('value', zt_line('JS 已写入输入框，当前 value = <b>' + zt_inp.value + '</b>（改一改再点按钮读取）'));
+            document.querySelector('.zt-btn-readvalue').addEventListener('click', function () {
+                var zt_v = document.querySelector('.zt-in-value').value;
+                console.log('【读取 value】', zt_v);
+                zt_set('value', zt_line('当前输入框 value = <b>' + zt_v + '</b>'));
+            });
+
+            /* ========== 三、class 与样式 ========== */
+            var zt_styleBox = document.querySelector('.zt_style-box');
+
+            document.querySelector('.zt-btn-add').addEventListener('click', function () {
+                zt_styleBox.classList.add('zt-highlight');
+                console.log('【classList.add】当前 class：', zt_styleBox.className);
+                zt_set('class', zt_line('已 add，当前 class：<b>' + zt_styleBox.className + '</b>'));
+            });
+
+            document.querySelector('.zt-btn-remove').addEventListener('click', function () {
+                zt_styleBox.classList.remove('zt-highlight');
+                console.log('【classList.remove】当前 class：', zt_styleBox.className);
+                zt_set('class', zt_line('已 remove，当前 class：<b>' + zt_styleBox.className + '</b>'));
+            });
+
+            document.querySelector('.zt-btn-toggle').addEventListener('click', function () {
+                var zt_has = zt_styleBox.classList.contains('zt-highlight');
+                zt_styleBox.classList.toggle('zt-highlight');
+                console.log('【classList.toggle】切换前有高亮吗：', zt_has, '→ 现在：', zt_styleBox.classList.contains('zt-highlight'));
+                zt_set('class', zt_line('toggle 前是否高亮：<b>' + zt_has + '</b>　toggle 后：<b>' + zt_styleBox.classList.contains('zt-highlight') + '</b>'));
+            });
+
+            document.querySelector('.zt-btn-contains').addEventListener('click', function () {
+                var zt_has = zt_styleBox.classList.contains('zt-highlight');
+                console.log('【classList.contains】', zt_has);
+                zt_set('class', zt_line('contains("zt-highlight") 的结果：<b>' + zt_has + '</b>'));
+            });
+
+            // 3-2 style 行内样式
+            var zt_colors = ['#ffeaa7', '#d5f5e3', '#fdebd0', '#e8daef', '#d6eaf8'];
+            document.querySelector('.zt-btn-style').addEventListener('click', function () {
+                var zt_c = zt_colors[Math.floor(Math.random() * zt_colors.length)];
+                zt_styleBox.style.backgroundColor = zt_c;
+                zt_styleBox.style.fontSize = '20px';
+                zt_styleBox.style.borderRadius = '14px';
+                console.log('【style】设置背景色：', zt_c);
+                zt_set('stylelog', zt_line('已设置 style.backgroundColor = <b>' + zt_c + '</b>，fontSize = 20px，borderRadius = 14px'));
+            });
+
+            document.querySelector('.zt-btn-resetstyle').addEventListener('click', function () {
+                zt_styleBox.style.backgroundColor = '';
+                zt_styleBox.style.fontSize = '';
+                zt_styleBox.style.borderRadius = '';
+                console.log('【style】清除行内样式');
+                zt_set('stylelog', zt_line('行内样式已清空（style.xxx = ""）'));
+            });
+
+            /* ========== 四、节点增删改 + 事件委托 ========== */
+            var zt_fruitList = document.querySelector('.zt-fruit-list');
+
+            function zt_makeFruit(zt_name) {
+                var zt_li = document.createElement('li');           // 1. 创建节点
+                zt_li.innerHTML = zt_name + '<span class="zt-del">删除</span>';  // 2. 设置内容
+                return zt_li;
+            }
+
+            function zt_showNodeInfo(zt_msg) {
+                var zt_li = zt_fruitList.querySelectorAll('li');
+                var zt_names = [];
+                zt_li.forEach(function (el) { zt_names.push(el.firstChild.textContent); });
+                console.log('【节点】', zt_msg, '当前列表：', zt_names);
+                zt_set('node', zt_line(zt_msg + ' → 当前共 <b>' + zt_li.length + '</b> 项：<b>' + zt_names.join('、') + '</b>'));
+            }
+
+            document.querySelector('.zt-btn-addfruit').addEventListener('click', function () {
+                var zt_val = document.querySelector('.zt-in-fruit').value.trim();
+                if (zt_val === '') {
+                    zt_set('node', zt_line('请先输入水果名称！'));
+                    return;
+                }
+                zt_fruitList.appendChild(zt_makeFruit(zt_val));      // 追加到末尾
+                zt_showNodeInfo('appendChild 追加「' + zt_val + '」');
+            });
+
+            document.querySelector('.zt-btn-insertfruit').addEventListener('click', function () {
+                var zt_val = document.querySelector('.zt-in-fruit').value.trim();
+                if (zt_val === '') {
+                    zt_set('node', zt_line('请先输入水果名称！'));
+                    return;
+                }
+                // insertBefore：插到第一个子元素之前
+                zt_fruitList.insertBefore(zt_makeFruit(zt_val), zt_fruitList.firstElementChild);
+                zt_showNodeInfo('insertBefore 把「' + zt_val + '」插到最前');
+            });
+
+            document.querySelector('.zt-btn-clearfruit').addEventListener('click', function () {
+                zt_fruitList.innerHTML = '';                          // 清空子节点
+                zt_showNodeInfo('innerHTML = "" 清空列表');
+            });
+
+            // 事件委托：事件绑定在父元素 ul 上，动态新增的 li 也能响应
+            zt_fruitList.addEventListener('click', function (zt_e) {
+                if (zt_e.target.classList.contains('zt-del')) {
+                    var zt_row = zt_e.target.closest('li');
+                    console.log('【事件委托】删除节点：', zt_row.firstChild.textContent);
+                    zt_row.remove();
+                    zt_showNodeInfo('remove() 删除了一个节点');
+                } else {
+                    console.log('【事件委托】点击了项目：', zt_e.target.textContent);
+                    zt_set('node', zt_line('点击了项目：<b>' + zt_e.target.textContent.replace('删除', '') + '</b>（事件由父元素 ul 委托处理）'));
+                }
+            });
+
+            zt_showNodeInfo('页面初始状态');
+
+            /* ========== 五、常用事件与事件对象 ========== */
+            // 5-1 click
+            document.querySelector('.zt-btn-click').addEventListener('click', function (zt_e) {
+                console.log('【click】type:', zt_e.type, '，target:', zt_e.target.tagName, '，坐标:', zt_e.clientX, zt_e.clientY);
+                zt_set('click', zt_line('事件类型 e.type = <b>' + zt_e.type + '</b>')
+                    + zt_line('被点元素 e.target = <b>&lt;' + zt_e.target.tagName + '&gt;</b>')
+                    + zt_line('鼠标坐标 e.clientX / e.clientY = <b>' + zt_e.clientX + ', ' + zt_e.clientY + '</b>'));
+            });
+
+            // 5-2 鼠标移入移出
+            var zt_hover = document.querySelector('.zt-hover-area');
+            zt_hover.addEventListener('mouseenter', function () {
+                this.style.background = '#eaf4fd';
+                this.textContent = '鼠标进来了（mouseenter 触发）';
+                console.log('【mouseenter】鼠标移入');
+                zt_set('hover', zt_line('触发 <b>mouseenter</b>，背景已改、文字已换'));
+            });
+            zt_hover.addEventListener('mouseleave', function () {
+                this.style.background = '#fff';
+                this.textContent = '鼠标移出去了（mouseleave 触发）';
+                console.log('【mouseleave】鼠标移出');
+                zt_set('hover', zt_line('触发 <b>mouseleave</b>，样式已还原'));
+            });
+
+            // 5-3 input 与 change
+            document.querySelector('.zt-in-live').addEventListener('input', function (zt_e) {
+                console.log('【input】正在输入：', zt_e.target.value);
+                zt_set('input', zt_line('input 事件：当前输入 <b>' + zt_e.target.value + '</b>（长度 ' + zt_e.target.value.length + '）'));
+            });
+            document.querySelector('.zt-sel-city').addEventListener('change', function (zt_e) {
+                console.log('【change】选择了：', zt_e.target.value);
+                zt_set('input', zt_line('change 事件：选择了 <b>' + zt_e.target.value + '</b>'));
+            });
+
+            // 5-4 keydown
+            document.querySelector('.zt-in-key').addEventListener('keydown', function (zt_e) {
+                console.log('【keydown】按键：', zt_e.key, '，编码：', zt_e.keyCode);
+                var zt_extra = (zt_e.key === 'Enter') ? '　→ 这是回车键，常用来提交表单' : '';
+                zt_set('key', zt_line('按下 e.key = <b>' + zt_e.key + '</b>，e.keyCode = <b>' + zt_e.keyCode + '</b>' + zt_extra));
+            });
+
+            // 5-5 submit + preventDefault
+            document.querySelector('.zt-form-tag').addEventListener('submit', function (zt_e) {
+                zt_e.preventDefault();                                 // 阻止表单默认刷新
+                var zt_name = document.querySelector('.zt-in-name').value.trim();
+                console.log('【submit】已阻止默认提交，姓名：', zt_name);
+                if (zt_name === '') {
+                    zt_set('submit', zt_line('姓名不能为空！'));
+                    return;
+                }
+                zt_set('submit', zt_line('已调用 e.preventDefault()，<b>页面没有刷新</b>')
+                    + zt_line('提交的姓名：<b>' + zt_name + '</b>'));
+            });
+
+            // 5-6 DOMContentLoaded
+            function zt_onReady() {
+                console.log('【DOMContentLoaded】DOM 加载完成，readyState =', document.readyState);
+                zt_set('ready', zt_line('DOM 就绪（readyState = <b>' + document.readyState + '</b>）：可以安全操作元素了'));
+            }
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', zt_onReady);
+            } else {
+                zt_onReady();   // DOM 已就绪，直接执行
+            }
+
+            /* ========== 六、事件流：冒泡与阻止 ========== */
+            var zt_flowOut = document.querySelector('.zt-flow-outer');
+            var zt_flowMid = document.querySelector('.zt-flow-middle');
+            var zt_flowIn = document.querySelector('.zt-flow-inner');
+            var zt_logBox = document.querySelector('.zt-out-flowlog');
+
+            function zt_addLog(zt_text) {
+                zt_logBox.textContent += zt_text + '\n';
+                zt_logBox.scrollTop = zt_logBox.scrollHeight;
+            }
+
+            zt_flowIn.addEventListener('click', function (zt_e) {
+                zt_addLog('→ 内层响应（target：' + zt_e.target.className.replace('zt-flow-in', '内层') + '）');
+                if (document.querySelector('.zt-check-stop').checked) {
+                    zt_e.stopPropagation();                           // 阻止继续向外冒泡
+                    zt_addLog('   ↑ 已调用 stopPropagation()，事件到此为止');
+                }
+            });
+            zt_flowMid.addEventListener('click', function () { zt_addLog('→ 中层响应'); });
+            zt_flowOut.addEventListener('click', function () { zt_addLog('→ 外层响应（冒泡结束）'); });
+            // 捕获阶段：第三个参数 true
+            zt_flowOut.addEventListener('click', function () { zt_addLog('  [捕获] 外层先收到'); }, true);
+
+            document.querySelector('.zt-btn-clearlog').addEventListener('click', function () {
+                zt_logBox.textContent = '';
+                console.log('【日志】已清空');
+            });
+            zt_addLog('点击内层盒子，观察执行顺序（默认冒泡：内 → 中 → 外）');
+
+            /* ========== 七、综合案例：Todo ========== */
+            var zt_todoInput = document.querySelector('.zt-in-todo');
+            var zt_todoList = document.querySelector('.zt-todo-list');
+
+            function zt_updateStat() {
+                var zt_all = zt_todoList.querySelectorAll('.zt_todo-item').length;
+                var zt_done = zt_todoList.querySelectorAll('.zt_todo-item.zt-done').length;
+                document.querySelector('.zt-stat-total').textContent = zt_all;
+                document.querySelector('.zt-stat-done').textContent = zt_done;
+                document.querySelector('.zt-stat-undone').textContent = zt_all - zt_done;
+                console.log('【Todo 统计】总数：', zt_all, '，已完成：', zt_done, '，未完成：', zt_all - zt_done);
+            }
+
+            function zt_addTodo() {
+                var zt_text = zt_todoInput.value.trim();
+                if (zt_text === '') {
+                    console.log('【Todo】内容为空，不添加');
+                    return;
+                }
+                var zt_li = document.createElement('li');
+                zt_li.className = 'zt_todo-item';
+                zt_li.innerHTML = '<span class="zt_todo-text">' + zt_text + '</span>'
+                                + '<span class="zt_todo-del">删除</span>';
+                zt_todoList.appendChild(zt_li);
+                zt_todoInput.value = '';
+                console.log('【Todo】添加：', zt_text);
+                zt_updateStat();
+            }
+
+            document.querySelector('.zt-btn-addtodo').addEventListener('click', zt_addTodo);
+
+            // 回车添加
+            zt_todoInput.addEventListener('keydown', function (zt_e) {
+                if (zt_e.key === 'Enter') {
+                    zt_addTodo();
+                }
+            });
+
+            // 事件委托：容器上绑定一次，新增的项同样有效
+            zt_todoList.addEventListener('click', function (zt_e) {
+                if (zt_e.target.classList.contains('zt_todo-del')) {
+                    var zt_item = zt_e.target.closest('.zt_todo-item');
+                    console.log('【Todo】删除：', zt_item.querySelector('.zt_todo-text').textContent);
+                    zt_item.remove();
+                } else if (zt_e.target.classList.contains('zt_todo-text')) {
+                    var zt_row = zt_e.target.closest('.zt_todo-item');
+                    zt_row.classList.toggle('zt-done');
+                    console.log('【Todo】切换完成状态：', zt_e.target.textContent);
+                }
+                zt_updateStat();
+            });
+
+            // 清除已完成
+            document.querySelector('.zt-btn-cleardone').addEventListener('click', function () {
+                var zt_doneItems = zt_todoList.querySelectorAll('.zt_todo-item.zt-done');
+                console.log('【Todo】清除已完成：', zt_doneItems.length, '项');
+                zt_doneItems.forEach(function (el) { el.remove(); });
+                zt_updateStat();
+            });
+
+            zt_updateStat();
+
+            console.log('===== 16-2 JavaScript DOM 操作与事件 演示完毕 =====');
+        </script>
+    </body>
+</html>

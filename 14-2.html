@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<!-- 姓名：张涛，日期：2026-10-22，功能名称：JavaScript基本数据类型演示 -->
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>14-2 JavaScript基本数据类型</title>
+        <style>
+            .zt_body {
+                font-family: "Microsoft YaHei", Arial, sans-serif;
+                background-color: #f5f5f5;
+                margin: 0;
+                padding: 20px;
+            }
+            .zt_container {
+                max-width: 900px;
+                margin: 0 auto;
+                background-color: #ffffff;
+                padding: 30px;
+                border-radius: 8px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+            .zt_title {
+                color: #2c3e50;
+                text-align: center;
+                border-bottom: 2px solid #3498db;
+                padding-bottom: 10px;
+            }
+            .zt_section {
+                margin: 20px 0;
+                padding: 15px;
+                background-color: #ecf0f1;
+                border-left: 4px solid #3498db;
+                border-radius: 4px;
+            }
+            .zt_type-name {
+                font-weight: bold;
+                color: #e74c3c;
+                font-size: 18px;
+            }
+            .zt_code {
+                background-color: #2c3e50;
+                color: #ecf0f1;
+                padding: 10px;
+                border-radius: 4px;
+                font-family: Consolas, monospace;
+                margin: 8px 0;
+                white-space: pre-wrap;
+            }
+            .zt_result {
+                color: #27ae60;
+                font-weight: bold;
+            }
+        </style>
+    </head>
+    <body class="zt_body">
+        <div class="zt_container">
+            <h1 class="zt_title">张涛的JavaScript - 基本数据类型</h1>
+            <div id="zt_output"></div>
+        </div>
+
+        <script>
+            // 获取输出容器
+            var zt_output = document.getElementById('zt_output');
+
+            // 封装输出函数，把内容显示到页面上
+            function zt_show(zt_html) {
+                zt_output.innerHTML += zt_html;
+            }
+
+            // ========== 1. String 字符串类型 ==========
+            var zt_str = '你好，张涛';
+            console.log('String类型:', zt_str, typeof zt_str);
+            zt_show('<div class="zt_section"><span class="zt_type-name">1. String 字符串类型</span>'
+                + '<div class="zt_code">var zt_str = \'你好，张涛\';</div>'
+                + '<div>值：<span class="zt_result">' + zt_str + '</span></div>'
+                + '<div>类型：<span class="zt_result">' + typeof zt_str + '</span></div>'
+                + '</div>');
+
+            // ========== 2. Number 数字类型 ==========
+            var zt_num = 100;
+            var zt_float = 3.14;
+            console.log('Number类型:', zt_num, typeof zt_num);
+            zt_show('<div class="zt_section"><span class="zt_type-name">2. Number 数字类型</span>'
+                + '<div class="zt_code">var zt_num = 100;\nvar zt_float = 3.14;</div>'
+                + '<div>整数：<span class="zt_result">' + zt_num + '</span>，类型：' + typeof zt_num + '</div>'
+                + '<div>浮点数：<span class="zt_result">' + zt_float + '</span>，类型：' + typeof zt_float + '</div>'
+                + '</div>');
+
+            // ========== 3. Boolean 布尔类型 ==========
+            var zt_bool = true;
+            console.log('Boolean类型:', zt_bool, typeof zt_bool);
+            zt_show('<div class="zt_section"><span class="zt_type-name">3. Boolean 布尔类型</span>'
+                + '<div class="zt_code">var zt_bool = true;</div>'
+                + '<div>值：<span class="zt_result">' + zt_bool + '</span></div>'
+                + '<div>类型：<span class="zt_result">' + typeof zt_bool + '</span></div>'
+                + '</div>');
+
+            // ========== 4. Null 空类型 ==========
+            var zt_null = null;
+            console.log('Null类型:', zt_null, typeof zt_null);
+            zt_show('<div class="zt_section"><span class="zt_type-name">4. Null 空类型</span>'
+                + '<div class="zt_code">var zt_null = null;</div>'
+                + '<div>值：<span class="zt_result">' + zt_null + '</span></div>'
+                + '<div>typeof 检测结果：<span class="zt_result">' + typeof zt_null + '</span>（历史遗留问题，实际为 null）</div>'
+                + '</div>');
+
+            // ========== 5. Undefined 未定义类型 ==========
+            var zt_undef;
+            console.log('Undefined类型:', zt_undef, typeof zt_undef);
+            zt_show('<div class="zt_section"><span class="zt_type-name">5. Undefined 未定义类型</span>'
+                + '<div class="zt_code">var zt_undef;  // 声明了但未赋值</div>'
+                + '<div>值：<span class="zt_result">' + zt_undef + '</span></div>'
+                + '<div>类型：<span class="zt_result">' + typeof zt_undef + '</span></div>'
+                + '</div>');
+
+            // ========== 6. Symbol 符号类型（ES6 新增） ==========
+            var zt_sym = Symbol('zt_symbol');
+            console.log('Symbol类型:', zt_sym, typeof zt_sym);
+            zt_show('<div class="zt_section"><span class="zt_type-name">6. Symbol 符号类型（ES6新增）</span>'
+                + '<div class="zt_code">var zt_sym = Symbol(\'zt_symbol\');</div>'
+                + '<div>值：<span class="zt_result">' + zt_sym.toString() + '</span></div>'
+                + '<div>类型：<span class="zt_result">' + typeof zt_sym + '</span></div>'
+                + '</div>');
+
+            // ========== 7. BigInt 大整数类型（ES2020 新增） ==========
+            var zt_big = 9007199254740991n;
+            console.log('BigInt类型:', zt_big, typeof zt_big);
+            zt_show('<div class="zt_section"><span class="zt_type-name">7. BigInt 大整数类型（ES2020新增）</span>'
+                + '<div class="zt_code">var zt_big = 9007199254740991n;</div>'
+                + '<div>值：<span class="zt_result">' + zt_big + '</span></div>'
+                + '<div>类型：<span class="zt_result">' + typeof zt_big + '</span></div>'
+                + '</div>');
+
+            // ========== 8. Object 对象类型（引用类型） ==========
+            var zt_obj = { zt_name: '张涛', zt_age: 18 };
+            var zt_arr = [1, 2, 3];
+            console.log('Object类型:', zt_obj, typeof zt_obj);
+            console.log('Array类型:', zt_arr, typeof zt_arr);
+            zt_show('<div class="zt_section"><span class="zt_type-name">8. Object 对象类型（引用类型）</span>'
+                + '<div class="zt_code">var zt_obj = { zt_name: \'张涛\', zt_age: 18 };\nvar zt_arr = [1, 2, 3];</div>'
+                + '<div>对象：<span class="zt_result">' + JSON.stringify(zt_obj) + '</span>，typeof：' + typeof zt_obj + '</div>'
+                + '<div>数组：<span class="zt_result">' + JSON.stringify(zt_arr) + '</span>，typeof：' + typeof zt_arr + '（数组本质也是对象）</div>'
+                + '</div>');
+
+            // 提示在控制台查看完整输出
+            console.log('所有基本数据类型演示完毕，请查看上方页面内容。');
+        </script>
+    </body>
+</html>

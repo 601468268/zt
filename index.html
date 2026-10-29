@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<!-- 姓名：张涛，日期：2026-10-29，功能名称：网页作业作品集首页（自动读取仓库里的 html 页面） -->
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>张涛 · 网页作品集</title>
+    <style>
+        :root {
+            --zt-primary: #3b82f6;
+            --zt-primary-dark: #1d4ed8;
+            --zt-bg: #f6f7f9;
+            --zt-card: #ffffff;
+            --zt-text: #1f2937;
+            --zt-muted: #6b7280;
+            --zt-border: #e5e7eb;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", -apple-system, "Segoe UI", sans-serif;
+            background: var(--zt-bg);
+            color: var(--zt-text);
+            min-height: 100vh;
+            padding: 48px 20px 60px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .zt-wrap { max-width: 1080px; margin: 0 auto; }
+
+        /* ===== 头部 ===== */
+        .zt-header { margin-bottom: 32px; }
+
+        .zt-title {
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: .5px;
+            margin-bottom: 8px;
+        }
+
+        .zt-subtitle {
+            font-size: 14px;
+            color: var(--zt-muted);
+            line-height: 1.8;
+        }
+
+        .zt-subtitle b { color: var(--zt-primary); font-weight: 600; }
+
+        .zt-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 22px;
+        }
+
+        .zt-search {
+            flex: 1;
+            min-width: 220px;
+            max-width: 340px;
+            padding: 11px 16px;
+            border: 1px solid var(--zt-border);
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            background: #fff;
+            transition: border-color .2s, box-shadow .2s;
+        }
+
+        .zt-search:focus {
+            border-color: var(--zt-primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, .12);
+        }
+
+        .zt-count { font-size: 13px; color: var(--zt-muted); }
+
+        .zt-status {
+            font-size: 13px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: #eff6ff;
+            color: var(--zt-primary-dark);
+        }
+
+        .zt-status.zt-warn { background: #fff7ed; color: #b45309; }
+
+        /* ===== 卡片网格 ===== */
+        .zt-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 16px;
+        }
+
+        .zt-card {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+            background: var(--zt-card);
+            border: 1px solid var(--zt-border);
+            border-radius: 14px;
+            padding: 20px 20px 18px;
+            transition: transform .18s, box-shadow .18s, border-color .18s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .zt-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 26px rgba(17, 24, 39, .10);
+            border-color: #c7d7fe;
+        }
+
+        .zt-card::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, #60a5fa, #3b82f6);
+            opacity: 0;
+            transition: opacity .18s;
+        }
+
+        .zt-card:hover::after { opacity: 1; }
+
+        .zt-card-no {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--zt-primary);
+            background: #eff6ff;
+            border-radius: 6px;
+            padding: 3px 8px;
+            margin-bottom: 12px;
+        }
+
+        .zt-card-name {
+            font-size: 17px;
+            font-weight: 700;
+            line-height: 1.4;
+            margin-bottom: 6px;
+            word-break: break-all;
+        }
+
+        .zt-card-desc {
+            font-size: 13px;
+            color: var(--zt-muted);
+            line-height: 1.7;
+            min-height: 22px;
+        }
+
+        .zt-card-file {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 14px;
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .zt-card-file svg { width: 13px; height: 13px; fill: currentColor; }
+
+        .zt-empty {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: var(--zt-muted);
+            font-size: 14px;
+            padding: 40px 0;
+        }
+
+        .zt-footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--zt-border);
+            font-size: 13px;
+            color: var(--zt-muted);
+            line-height: 1.9;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="zt-wrap">
+        <header class="zt-header">
+            <h1 class="zt-title">张涛 · 网页作品集</h1>
+            <p class="zt-subtitle">
+                学号 24001010104 ·《高级网页设计I》作业页面<br>
+                列表<b>自动读取</b>仓库文件，新推送一个 <b>.html</b> 页面，刷新本页就会自动出现。
+            </p>
+
+            <div class="zt-toolbar">
+                <input class="zt-search" type="text" placeholder="搜索页面名称，如 16-4、热榜…">
+                <span class="zt-count"></span>
+                <span class="zt-status">正在读取仓库…</span>
+            </div>
+        </header>
+
+        <main class="zt-grid"></main>
+
+        <footer class="zt-footer">
+            数据来源：GitHub 仓库 601468268/zt · 由 GitHub Pages 自动发布
+        </footer>
+    </div>
+
+    <script>
+        // ===== 配置 =====
+        var ZT_OWNER = '601468268';
+        var ZT_REPO = 'zt';
+        var ZT_API = 'https://api.github.com/repos/' + ZT_OWNER + '/' + ZT_REPO + '/contents/';
+
+        // 已知页面的中文说明（未收录的页面显示默认说明，不影响使用）
+        var ZT_DESC = {
+            '13-3': '移动端底部导航 · 字体图标版',
+            '13-4': '移动端底部导航 · SVG Symbol 图标版',
+            '14-2': 'JavaScript 基本数据类型',
+            '15-1': '数字 7 规则 · 100 个盒子',
+            '15-2': 'JavaScript 程序结构（顺序 / 条件 / 循环）',
+            '16-2': 'JavaScript DOM 操作与事件',
+            '16-3': '热榜列表卡片',
+            '16-4': '文学社科图书频道（三栏 + Tab 切换）',
+            '16-4-单文件版': '文学社科图书频道（图片内嵌版）'
+        };
+
+        // 接口失败时的兜底列表
+        var ZT_FALLBACK = ['16-4-单文件版.html', '16-4.html', '16-3.html', '16-2.html', '15-2.html', '15-1.html', '14-2.html', '13-4.html', '13-3.html'];
+
+        var ztGrid = document.querySelector('.zt-grid');
+        var ztSearch = document.querySelector('.zt-search');
+        var ztCount = document.querySelector('.zt-count');
+        var ztStatus = document.querySelector('.zt-status');
+        var ztAll = [];
+
+        // 自然排序：13-3 < 14-2 < 15-10 < 16-4
+        function zt_sortNames(a, b) {
+            return a.localeCompare(b, 'zh-CN', { numeric: true, sensitivity: 'base' });
+        }
+
+        // 渲染卡片
+        function zt_render(list, keyword) {
+            var kw = (keyword || '').trim().toLowerCase();
+            var show = list.filter(function (name) {
+                return name.toLowerCase().indexOf(kw) > -1;
+            });
+            // 新的（编号大的）排在前面
+            show.sort(zt_sortNames).reverse();
+
+            if (show.length === 0) {
+                ztGrid.innerHTML = '<p class="zt-empty">没有匹配的页面</p>';
+                ztCount.textContent = '共 ' + list.length + ' 个页面';
+                return;
+            }
+
+            var html = '';
+            show.forEach(function (name) {
+                var base = name.replace(/\.html?$/i, '');
+                var no = base.split('-')[0] || '·';
+                var desc = ZT_DESC[base] || '网页作业页面';
+                html += '<a class="zt-card" href="' + encodeURI(name) + '" target="_blank" rel="noopener">'
+                    + '<span class="zt-card-no">' + no + '</span>'
+                    + '<h2 class="zt-card-name">' + base + '</h2>'
+                    + '<p class="zt-card-desc">' + desc + '</p>'
+                    + '<span class="zt-card-file">'
+                    + '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm0 2 4 4h-4V4z"/></svg>'
+                    + name + '</span></a>';
+            });
+            ztGrid.innerHTML = html;
+            ztCount.textContent = '共 ' + list.length + ' 个页面';
+        }
+
+        // 读取仓库根目录的 html 文件
+        function zt_load() {
+            fetch(ZT_API, { headers: { 'Accept': 'application/vnd.github+json' } })
+                .then(function (res) {
+                    if (!res.ok) { throw new Error('HTTP ' + res.status); }
+                    return res.json();
+                })
+                .then(function (data) {
+                    var names = data
+                        .filter(function (f) { return f.type === 'file' && /\.html?$/i.test(f.name) && f.name !== 'index.html'; })
+                        .map(function (f) { return f.name; });
+                    ztAll = names;
+                    zt_render(ztAll, ztSearch.value);
+                    ztStatus.textContent = '已同步仓库 · ' + new Date().toLocaleTimeString('zh-CN', { hour12: false });
+                    ztStatus.classList.remove('zt-warn');
+                })
+                .catch(function (err) {
+                    console.warn('读取仓库文件失败，使用内置列表：', err);
+                    ztAll = ZT_FALLBACK.slice();
+                    zt_render(ztAll, ztSearch.value);
+                    ztStatus.textContent = '接口暂时不可用，显示内置列表';
+                    ztStatus.classList.add('zt-warn');
+                });
+        }
+
+        // 搜索
+        ztSearch.addEventListener('input', function () {
+            zt_render(ztAll, ztSearch.value);
+        });
+
+        // 先用兜底列表占位，避免白屏
+        zt_render(ZT_FALLBACK, '');
+        ztStatus.textContent = '正在读取仓库…';
+        zt_load();
+    </script>
+</body>
+</html>
