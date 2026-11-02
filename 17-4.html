@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<!-- 姓名：张涛，日期：2026-11-02，功能名称：17-4 远程接口测试工具（GET/POST/PUT/PATCH/DELETE） -->
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>17-4 远程接口测试工具</title>
+        <style>
+            :root {
+                --zt-primary: #3498db;
+                --zt-primary-dark: #2c3e50;
+                --zt-bg: #f5f7fa;
+                --zt-card: #ffffff;
+                --zt-gray: #ecf0f1;
+                --zt-text: #2c3e50;
+                --zt-muted: #7f8c8d;
+                --zt-green: #27ae60;
+                --zt-red: #e74c3c;
+                --zt-orange: #f39c12;
+                --zt-purple: #8e44ad;
+                --zt-border: #dfe6e9;
+            }
+
+            .zt_body {
+                font-family: "Microsoft YaHei", Arial, sans-serif;
+                background-color: var(--zt-bg);
+                color: var(--zt-text);
+                margin: 0;
+                padding: 20px;
+                line-height: 1.8;
+            }
+
+            .zt_container {
+                max-width: 1150px;
+                margin: 0 auto;
+                background-color: var(--zt-card);
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            }
+
+            .zt_title {
+                color: var(--zt-primary-dark);
+                text-align: center;
+                border-bottom: 3px solid var(--zt-primary);
+                padding-bottom: 12px;
+                margin-top: 0;
+            }
+
+            .zt_student {
+                text-align: center;
+                color: var(--zt-muted);
+                margin: 10px 0 25px;
+                font-size: 14px;
+            }
+
+            .zt_desc {
+                margin: 15px 0 25px;
+                padding: 12px 18px;
+                background-color: var(--zt-gray);
+                border-left: 5px solid var(--zt-primary);
+                border-radius: 4px;
+            }
+
+            .zt_module {
+                margin: 30px 0;
+                border: 1px solid var(--zt-border);
+                border-radius: 8px;
+                overflow: hidden;
+            }
+
+            .zt_module-head {
+                background-color: var(--zt-primary);
+                color: #fff;
+                padding: 10px 18px;
+                font-size: 18px;
+                font-weight: bold;
+            }
+
+            .zt_module-body { padding: 18px; }
+
+            .zt_card {
+                border: 1px solid var(--zt-border);
+                border-radius: 6px;
+                padding: 14px 16px;
+                margin-bottom: 16px;
+                background-color: #fcfdfe;
+            }
+
+            .zt_card-title {
+                font-weight: bold;
+                color: var(--zt-primary-dark);
+                font-size: 16px;
+                margin-bottom: 8px;
+            }
+
+            .zt_card-title span {
+                display: inline-block;
+                background-color: var(--zt-primary);
+                color: #fff;
+                border-radius: 4px;
+                padding: 0 8px;
+                margin-right: 8px;
+                font-size: 14px;
+            }
+
+            .zt_note { color: var(--zt-muted); font-size: 14px; margin: 6px 0; }
+
+            .zt_code {
+                background-color: var(--zt-primary-dark);
+                color: #ecf0f1;
+                padding: 12px 14px;
+                border-radius: 6px;
+                font-family: Consolas, "Courier New", monospace;
+                font-size: 13.5px;
+                line-height: 1.7;
+                white-space: pre-wrap;
+                word-break: break-all;
+                margin: 10px 0;
+                overflow-x: auto;
+            }
+
+            /* ===== 请求行 ===== */
+            .zt_reqbar {
+                display: flex;
+                gap: 10px;
+                flex-wrap: wrap;
+                align-items: stretch;
+            }
+
+            .zt_method {
+                padding: 0 14px;
+                border: 2px solid var(--zt-primary);
+                border-radius: 6px;
+                background: #eaf4fd;
+                color: var(--zt-primary-dark);
+                font-weight: 700;
+                font-size: 15px;
+                font-family: Consolas, monospace;
+                outline: none;
+                cursor: pointer;
+            }
+
+            .zt_url-input {
+                flex: 1;
+                min-width: 240px;
+                padding: 12px 14px;
+                border: 2px solid var(--zt-border);
+                border-radius: 6px;
+                font-size: 14px;
+                font-family: Consolas, monospace;
+                outline: none;
+                transition: border-color .2s;
+            }
+
+            .zt_url-input:focus { border-color: var(--zt-primary); }
+
+            .zt_btn {
+                padding: 10px 22px;
+                background-color: var(--zt-primary);
+                color: #fff;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 15px;
+                font-family: inherit;
+                white-space: nowrap;
+            }
+
+            .zt_btn:hover { background-color: #217dbb; }
+            .zt_btn.zt-btn-green { background-color: var(--zt-green); }
+            .zt_btn.zt-btn-gray { background-color: var(--zt-muted); }
+            .zt_btn.zt-btn-red { background-color: var(--zt-red); }
+            .zt_btn:disabled { background-color: #bdc3c7; cursor: not-allowed; }
+
+            .zt_btn-sm {
+                padding: 5px 12px;
+                font-size: 13px;
+            }
+
+            /* ===== 请求体 ===== */
+            .zt_body-wrap { margin-top: 12px; }
+
+            .zt_body-wrap.zt-disabled { opacity: .5; pointer-events: none; }
+
+            .zt_textarea {
+                width: 100%;
+                min-height: 130px;
+                padding: 12px 14px;
+                border: 1px solid var(--zt-border);
+                border-radius: 6px;
+                font-family: Consolas, monospace;
+                font-size: 13.5px;
+                line-height: 1.7;
+                resize: vertical;
+                box-sizing: border-box;
+                outline: none;
+                background: #fff;
+            }
+
+            .zt_textarea:focus { border-color: var(--zt-primary); }
+
+            .zt_row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 10px 0; }
+
+            .zt_presets { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+
+            .zt_preset {
+                font-size: 12.5px;
+                padding: 5px 12px;
+                border: 1px solid var(--zt-primary);
+                color: var(--zt-primary);
+                background: #fff;
+                border-radius: 20px;
+                cursor: pointer;
+                font-family: inherit;
+            }
+
+            .zt_preset:hover { background: #eaf4fd; }
+
+            /* ===== 状态条 ===== */
+            .zt_statusbar {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 12px;
+            }
+
+            .zt_badge {
+                font-size: 13px;
+                padding: 4px 12px;
+                border-radius: 999px;
+                background-color: var(--zt-gray);
+                color: var(--zt-primary-dark);
+                font-family: Consolas, monospace;
+            }
+
+            .zt_badge.zt-ok { background: #e8f8ef; color: var(--zt-green); }
+            .zt_badge.zt-err { background: #fdecea; color: var(--zt-red); }
+            .zt_badge.zt-warn { background: #fff5e6; color: var(--zt-orange); }
+            .zt_badge.zt-info { background: #eaf4fd; color: var(--zt-primary); }
+
+            /* ===== 响应区 ===== */
+            .zt_tabs { display: flex; gap: 6px; border-bottom: 1px solid var(--zt-border); margin-bottom: 12px; }
+
+            .zt_tab {
+                border: none;
+                background: none;
+                font-family: inherit;
+                font-size: 14px;
+                padding: 8px 16px;
+                cursor: pointer;
+                color: var(--zt-muted);
+                border-bottom: 2px solid transparent;
+                margin-bottom: -1px;
+            }
+
+            .zt_tab.zt-active {
+                color: var(--zt-primary);
+                border-bottom-color: var(--zt-primary);
+                font-weight: 700;
+            }
+
+            .zt_jsonview {
+                background-color: #1e2a36;
+                color: #ecf0f1;
+                border-radius: 6px;
+                padding: 14px 16px;
+                font-family: Consolas, monospace;
+                font-size: 13px;
+                line-height: 1.7;
+                max-height: 420px;
+                overflow: auto;
+                white-space: pre;
+            }
+
+            .zt-json-key { color: #7fd1ff; }
+            .zt-json-str { color: #a8e6a1; }
+            .zt-json-num { color: #ffb86c; }
+            .zt-json-bool { color: #ff7f9f; }
+
+            .zt_textview {
+                background: #1e2a36;
+                color: #cfd8e3;
+                border-radius: 6px;
+                padding: 14px 16px;
+                font-family: Consolas, monospace;
+                font-size: 13px;
+                line-height: 1.7;
+                max-height: 420px;
+                overflow: auto;
+                white-space: pre-wrap;
+                word-break: break-all;
+            }
+
+            .zt_headers {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 13px;
+                font-family: Consolas, monospace;
+            }
+
+            .zt_headers td {
+                border: 1px solid var(--zt-border);
+                padding: 6px 10px;
+                word-break: break-all;
+            }
+
+            .zt_headers td:first-child {
+                width: 220px;
+                background: #f7fafd;
+                color: var(--zt-muted);
+            }
+
+            /* ===== 错误提示 ===== */
+            .zt_error {
+                display: none;
+                background: #fff5f5;
+                border: 1px solid #f5b7b1;
+                border-left: 5px solid var(--zt-red);
+                border-radius: 6px;
+                padding: 12px 16px;
+                margin-bottom: 14px;
+                font-size: 14px;
+                color: #922b21;
+            }
+
+            .zt_error.zt-show { display: block; }
+
+            .zt_error b { color: var(--zt-red); }
+
+            .zt_error ul { margin: 8px 0 0; padding-left: 20px; font-size: 13px; color: #7b241c; }
+
+            /* ===== 历史 ===== */
+            .zt_history { list-style: none; margin: 0; padding: 0; }
+
+            .zt_history li {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 8px 12px;
+                border: 1px solid var(--zt-border);
+                border-radius: 6px;
+                margin-bottom: 8px;
+                font-size: 13px;
+                cursor: pointer;
+                background: #fff;
+            }
+
+            .zt_history li:hover { border-color: var(--zt-primary); background: #f7fbff; }
+
+            .zt_hmethod {
+                font-family: Consolas, monospace;
+                font-weight: 700;
+                font-size: 12px;
+                padding: 1px 8px;
+                border-radius: 4px;
+                background: #eaf4fd;
+                color: var(--zt-primary);
+                flex-shrink: 0;
+            }
+
+            .zt_hurl {
+                flex: 1;
+                min-width: 0;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                font-family: Consolas, monospace;
+                font-size: 12.5px;
+                color: #44525f;
+            }
+
+            .zt_hcode {
+                font-family: Consolas, monospace;
+                font-size: 12px;
+                padding: 1px 8px;
+                border-radius: 4px;
+                flex-shrink: 0;
+            }
+
+            .zt_hcode.zt-ok { background: #e8f8ef; color: var(--zt-green); }
+            .zt_hcode.zt-err { background: #fdecea; color: var(--zt-red); }
+
+            .zt_footer {
+                text-align: center;
+                color: var(--zt-muted);
+                font-size: 13px;
+                margin-top: 30px;
+                border-top: 1px solid var(--zt-border);
+                padding-top: 15px;
+            }
+
+            @media (max-width: 600px) {
+                .zt_container { padding: 15px; }
+                .zt_body { padding: 10px; }
+                .zt_method { min-height: 44px; }
+            }
+        </style>
+    </head>
+    <body class="zt_body">
+        <div class="zt_container">
+            <h1 class="zt_title">远程接口测试工具</h1>
+            <div class="zt_student">姓名：张涛　　班级：　　学号：　　日期：2026-11-02</div>
+
+            <div class="zt_desc">
+                本页是一个简易版的接口测试工具：选择请求方法（<b>GET / POST / PUT / PATCH / DELETE</b>）、
+                填写接口地址、按需填写 JSON 请求体，点击「发送请求」后用原生 <b>fetch</b> 发出请求，
+                页面会显示<b>状态码、状态文本、耗时、响应大小、响应头</b>和<b>响应数据</b>（JSON 自动格式化高亮）；
+                请求失败时给出<b>具体的错误原因和排查建议</b>。
+            </div>
+
+            <!-- ================= 一、请求配置 ================= -->
+            <div class="zt_module">
+                <div class="zt_module-head">一、发请求</div>
+                <div class="zt_module-body">
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>1-1</span>方法 + 地址</div>
+                        <div class="zt_reqbar">
+                            <select class="zt_method zt-sel-method">
+                                <option value="GET">GET</option>
+                                <option value="POST">POST</option>
+                                <option value="PUT">PUT</option>
+                                <option value="PATCH">PATCH</option>
+                                <option value="DELETE">DELETE</option>
+                            </select>
+                            <input class="zt_url-input zt-in-url" type="text" spellcheck="false"
+                                   value="https://jsonplaceholder.typicode.com/posts?_limit=3">
+                            <button class="zt_btn zt-btn-send" type="button">发送请求</button>
+                        </div>
+
+                        <div class="zt_presets">
+                            <button class="zt_preset zt-preset" type="button" data-method="GET"
+                                data-url="https://jsonplaceholder.typicode.com/posts?_limit=3"
+                                data-body="">示例：GET 文章列表</button>
+                            <button class="zt_preset zt-preset" type="button" data-method="POST"
+                                data-url="https://jsonplaceholder.typicode.com/posts"
+                                data-body='{"title": "张涛的测试标题", "body": "这是 17-4 接口测试工具发送的 POST 数据", "userId": 1}'>示例：POST 新建文章</button>
+                            <button class="zt_preset zt-preset" type="button" data-method="PUT"
+                                data-url="https://jsonplaceholder.typicode.com/posts/1"
+                                data-body='{"id": 1, "title": "PUT 修改后的标题", "body": "PUT 会整体替换", "userId": 1}'>示例：PUT 整体修改</button>
+                            <button class="zt_preset zt-preset" type="button" data-method="DELETE"
+                                data-url="https://jsonplaceholder.typicode.com/posts/1"
+                                data-body="">示例：DELETE 删除</button>
+                            <button class="zt_preset zt-preset" type="button" data-method="GET"
+                                data-url="https://dummyjson.com/products?limit=3"
+                                data-body="">dummyjson 商品</button>
+                            <button class="zt_preset zt-preset" type="button" data-method="GET"
+                                data-url="https://fakestoreapi.com/products?limit=3"
+                                data-body="">fakestoreapi 商品</button>
+                            <button class="zt_preset zt-preset" type="button" data-method="GET"
+                                data-url="https://jsonplaceholder.typicode.com/posts/999999"
+                                data-body="">示例：404 错误</button>
+                        </div>
+                    </div>
+
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>1-2</span>请求体（JSON，仅 POST / PUT / PATCH 生效）</div>
+                        <div class="zt_body-wrap zt-body-wrap">
+                            <textarea class="zt_textarea zt-in-body" spellcheck="false" placeholder='{ "title": "标题", "body": "内容", "userId": 1 }'></textarea>
+                            <div class="zt_row">
+                                <button class="zt_btn zt-btn-sm zt-btn-format" type="button">格式化 JSON</button>
+                                <button class="zt_btn zt-btn-sm zt-btn-gray zt-btn-clearbody" type="button">清空请求体</button>
+                                <span class="zt_note">请求头会自动带上 <code>Content-Type: application/json</code></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= 二、响应结果 ================= -->
+            <div class="zt_module">
+                <div class="zt_module-head">二、响应结果</div>
+                <div class="zt_module-body">
+                    <div class="zt_error zt-error"></div>
+
+                    <div class="zt_statusbar">
+                        <span class="zt_badge zt-badge-state" data-base="zt-badge-state">未发送</span>
+                        <span class="zt_badge zt-badge-time" data-base="zt-badge-time">耗时 —</span>
+                        <span class="zt_badge zt-badge-size" data-base="zt-badge-size">大小 —</span>
+                        <span class="zt_badge zt-badge-type" data-base="zt-badge-type">类型 —</span>
+                    </div>
+
+                    <div class="zt_tabs">
+                        <button class="zt_tab zt-active zt-tab-body" type="button">响应数据</button>
+                        <button class="zt_tab zt-tab-head" type="button">响应头</button>
+                    </div>
+
+                    <div class="zt_panel-body">
+                        <div class="zt_jsonview zt-out-resp">点击「发送请求」查看返回的数据…</div>
+                    </div>
+                    <div class="zt_panel-head" style="display:none">
+                        <table class="zt_headers"><tbody class="zt-out-headers">
+                            <tr><td>—</td><td>暂无响应头</td></tr>
+                        </tbody></table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= 三、请求历史 ================= -->
+            <div class="zt_module">
+                <div class="zt_module-head">三、请求历史（点一条可重新填入并发送）</div>
+                <div class="zt_module-body">
+                    <ul class="zt_history zt-out-history">
+                        <li><span class="zt_hmethod">—</span><span class="zt_hurl">暂无记录</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- ================= 四、核心代码 ================= -->
+            <div class="zt_module">
+                <div class="zt_module-head">四、核心代码与错误处理说明</div>
+                <div class="zt_module-body">
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>4-1</span>不同方法的 fetch 写法</div>
+                        <div class="zt_code">// GET：直接把参数拼在地址上，不需要 body
+fetch('https://jsonplaceholder.typicode.com/posts?_limit=3')
+    .then(res => res.json()).then(data => console.log(data));
+
+// POST：method 改成 POST，用 body 带 JSON，并声明 Content-Type
+fetch('https://jsonplaceholder.typicode.com/posts', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title: '张涛的测试标题', body: '内容', userId: 1 })
+}).then(res => res.json()).then(data => console.log('新建成功，id =', data.id));
+
+// PUT / PATCH：地址要带 id；PUT 整体替换，PATCH 只改部分字段
+fetch('https://jsonplaceholder.typicode.com/posts/1', { method: 'PUT',  ... });
+fetch('https://jsonplaceholder.typicode.com/posts/1', { method: 'PATCH', ... });
+
+// DELETE：只写 method，没有 body
+fetch('https://jsonplaceholder.typicode.com/posts/1', { method: 'DELETE' });</div>
+                    </div>
+
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>4-2</span>常见错误与提示</div>
+                        <table class="zt_headers">
+                            <tbody>
+                                <tr><td>404 Not Found</td><td>地址路径写错，或这个 id 的资源不存在</td></tr>
+                                <tr><td>400 / 422</td><td>请求体格式不对，后端校验没通过</td></tr>
+                                <tr><td>401 / 403</td><td>没带 token，或没有访问权限</td></tr>
+                                <tr><td>500 / 502</td><td>服务器内部错误，不是前端的问题</td></tr>
+                                <tr><td>TypeError: Failed to fetch</td><td>域名不通、被跨域（CORS）拦截、或页面是 https 而接口是 http（混合内容被浏览器阻止）</td></tr>
+                                <tr><td>AbortError</td><td>超过 15 秒仍未响应，前端主动取消（超时）</td></tr>
+                            </tbody>
+                        </table>
+                        <div class="zt_note">
+                            注意：<b>fetch 只有在网络层失败时才走 catch</b>，404 / 500 这类 HTTP 错误码是"请求成功返回"，
+                            必须自己判断 <code>res.ok</code> 或 <code>res.status</code>，否则会把错误数据当成正常数据处理。
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="zt_footer">张涛 · 17-4 远程接口测试工具（GET / POST / PUT / PATCH / DELETE）</div>
+        </div>
+
+        <script>
+            /* ===== 元素 ===== */
+            var ztSelMethod = document.querySelector('.zt-sel-method');
+            var ztInputUrl = document.querySelector('.zt-in-url');
+            var ztInputBody = document.querySelector('.zt-in-body');
+            var ztBodyWrap = document.querySelector('.zt-body-wrap');
+            var ztOutResp = document.querySelector('.zt-out-resp');
+            var ztOutHeaders = document.querySelector('.zt-out-headers');
+            var ztBadgeState = document.querySelector('.zt-badge-state');
+            var ztBadgeTime = document.querySelector('.zt-badge-time');
+            var ztBadgeSize = document.querySelector('.zt-badge-size');
+            var ztBadgeType = document.querySelector('.zt-badge-type');
+            var ztError = document.querySelector('.zt-error');
+            var ztHistory = document.querySelector('.zt-out-history');
+            var ztBtnSend = document.querySelector('.zt-btn-send');
+
+            var zt_historyList = [];
+
+            /* ===== 工具 ===== */
+            function zt_badge(zt_el, zt_cls, zt_text) {
+                // 保留元素自身的固定类（zt-badge-state 等），只切换状态类，避免类名被覆盖丢失
+                zt_el.className = 'zt_badge ' + (zt_el.dataset.base || '') + ' ' + zt_cls;
+                zt_el.textContent = zt_text;
+            }
+
+            function zt_showError(zt_title, zt_details) {
+                var zt_li = '';
+                (zt_details || []).forEach(function (zt_d) { zt_li += '<li>' + zt_d + '</li>'; });
+                ztError.innerHTML = '<b>' + zt_title + '</b>' + (zt_li ? '<ul>' + zt_li + '</ul>' : '');
+                ztError.classList.add('zt-show');
+            }
+
+            function zt_hideError() {
+                ztError.classList.remove('zt-show');
+                ztError.innerHTML = '';
+            }
+
+            // JSON 高亮
+            function zt_highlight(zt_text) {
+                var zt_html = zt_text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                return zt_html.replace(
+                    /("(?:\\.|[^"\\])*")(\s*:)?|\b(true|false|null)\b|(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)/g,
+                    function (m, zt_str, zt_colon, zt_bool, zt_num) {
+                        if (zt_str !== undefined) {
+                            return '<span class="' + (zt_colon ? 'zt-json-key' : 'zt-json-str') + '">' + zt_str + '</span>' + (zt_colon || '');
+                        }
+                        if (zt_bool !== undefined) { return '<span class="zt-json-bool">' + zt_bool + '</span>'; }
+                        if (zt_num !== undefined) { return '<span class="zt-json-num">' + zt_num + '</span>'; }
+                        return m;
+                    });
+            }
+
+            /* ===== 方法切换：GET / DELETE 不需要请求体 ===== */
+            function zt_syncBodyState() {
+                var zt_m = ztSelMethod.value;
+                var zt_needBody = (zt_m === 'POST' || zt_m === 'PUT' || zt_m === 'PATCH');
+                ztBodyWrap.classList.toggle('zt-disabled', !zt_needBody);
+                ztSelMethod.style.borderColor = (zt_m === 'GET') ? '#27ae60' : (zt_m === 'DELETE' ? '#e74c3c' : '#f39c12');
+            }
+            ztSelMethod.addEventListener('change', zt_syncBodyState);
+
+            /* ===== 校验地址 ===== */
+            function zt_checkUrl(zt_url) {
+                if (!zt_url) {
+                    return '接口地址不能为空，请填写完整的 URL（例如 https://jsonplaceholder.typicode.com/posts）。';
+                }
+                if (!/^https?:\/\/.+/i.test(zt_url)) {
+                    return '地址格式不正确：必须以 http:// 或 https:// 开头，后面跟上域名和路径。';
+                }
+                if (location.protocol === 'https:' && /^http:\/\//i.test(zt_url)) {
+                    return '当前页面是 https，而接口地址是 http，浏览器会按「混合内容」拦截。请把接口地址改成 https:// 再试。';
+                }
+                return '';
+            }
+
+            /* ===== 发送请求（核心） ===== */
+            async function zt_send() {
+                var zt_method = ztSelMethod.value;
+                var zt_url = ztInputUrl.value.trim();
+                var zt_bodyText = ztInputBody.value.trim();
+
+                zt_hideError();
+
+                var zt_msg = zt_checkUrl(zt_url);
+                if (zt_msg) {
+                    zt_showError('请求没有发出：' + zt_msg);
+                    zt_badge(ztBadgeState, 'zt-err', '参数错误');
+                    return;
+                }
+
+                var zt_opts = { method: zt_method, headers: {} };
+
+                // 有请求体的方法才处理 body
+                if (zt_method === 'POST' || zt_method === 'PUT' || zt_method === 'PATCH') {
+                    zt_opts.headers['Content-Type'] = 'application/json';
+                    if (zt_bodyText) {
+                        try {
+                            JSON.parse(zt_bodyText);         // 先自检，格式不对就别发出去
+                        } catch (zt_e) {
+                            zt_showError('请求体不是合法的 JSON，已阻止发送：' + zt_e.message,
+                                ['检查是否用了单引号（JSON 必须双引号）', '检查末尾是否多了逗号', '可以点「格式化 JSON」自动校验']);
+                            zt_badge(ztBadgeState, 'zt-err', '请求体错误');
+                            return;
+                        }
+                        zt_opts.body = zt_bodyText;
+                    }
+                }
+
+                // 超时控制
+                var zt_ctrl = new AbortController();
+                zt_opts.signal = zt_ctrl.signal;
+                var zt_timer = setTimeout(function () { zt_ctrl.abort(); }, 15000);
+
+                ztBtnSend.disabled = true;
+                ztBadgeState.className = 'zt_badge zt-badge-state zt-warn';
+                ztBadgeState.textContent = zt_method + ' 请求中…';
+                ztOutResp.innerHTML = '请求已发出，等待响应…';
+                ztOutResp.className = 'zt_jsonview zt-out-resp';
+                var zt_start = performance.now();
+
+                console.log('【请求】' + zt_method + ' ' + zt_url, zt_opts);
+
+                try {
+                    var zt_res = await fetch(zt_url, zt_opts);      // ① 发请求
+                    var zt_ms = Math.round(performance.now() - zt_start);
+                    var zt_text = await zt_res.text();               // ② 拿原始文本（不一定是 JSON）
+                    var zt_size = zt_text.length;
+
+                    clearTimeout(zt_timer);
+
+                    // ③ 状态码
+                    var zt_cls = zt_res.ok ? 'zt-ok' : 'zt-err';
+                    zt_badge(ztBadgeState, zt_cls, zt_res.status + (zt_res.statusText ? ' ' + zt_res.statusText : ''));
+                    zt_badge(ztBadgeTime, 'zt-info', '耗时 ' + zt_ms + ' ms');
+                    zt_badge(ztBadgeSize, 'zt-info', '大小 ' + zt_size + ' 字符');
+
+                    // ④ 响应头
+                    var zt_hHtml = '';
+                    zt_res.headers.forEach(function (zt_v, zt_k) {
+                        zt_hHtml += '<tr><td>' + zt_k + '</td><td>' + zt_v + '</td></tr>';
+                    });
+                    if (!zt_hHtml) { zt_hHtml = '<tr><td>—</td><td>该响应没有可读取的响应头（跨域只暴露少量头）</td></tr>'; }
+                    ztOutHeaders.innerHTML = zt_hHtml;
+
+                    // ⑤ 响应数据：能解析成 JSON 就格式化高亮，否则显示纯文本
+                    var zt_parsed = null;
+                    try { zt_parsed = JSON.parse(zt_text); } catch (zt_e2) { zt_parsed = null; }
+
+                    if (zt_parsed !== null) {
+                        ztBadgeType.className = 'zt_badge zt-badge-type zt-info';
+                        ztBadgeType.textContent = Array.isArray(zt_parsed) ? 'JSON 数组（' + zt_parsed.length + ' 项）' : 'JSON 对象';
+                        var zt_pretty = JSON.stringify(zt_parsed, null, 2);
+                        ztOutResp.className = 'zt_jsonview zt-out-resp';
+                        ztOutResp.innerHTML = zt_highlight(zt_pretty);
+                    } else {
+                        ztBadgeType.className = 'zt_badge zt-badge-type zt-info';
+                        ztBadgeType.textContent = '文本';
+                        ztOutResp.className = 'zt_textview zt-out-resp';
+                        ztOutResp.textContent = zt_text || '（响应体为空，例如 204 No Content）';
+                    }
+
+                    // ⑥ HTTP 状态码不是 2xx，给出错误提示（fetch 不会自动进 catch）
+                    if (!zt_res.ok) {
+                        var zt_tips = [];
+                        if (zt_res.status === 404) {
+                            zt_tips = ['接口路径写错了，或者这个 id 对应的资源不存在', '试试访问列表接口（/posts）确认地址前缀是否正确'];
+                        } else if (zt_res.status === 400 || zt_res.status === 422) {
+                            zt_tips = ['请求体格式或字段不符合后端要求', '检查 Content-Type 是否为 application/json'];
+                        } else if (zt_res.status === 401 || zt_res.status === 403) {
+                            zt_tips = ['缺少身份凭证（token / cookie）', '该接口可能需要登录或密钥'];
+                        } else if (zt_res.status >= 500) {
+                            zt_tips = ['服务器内部错误，一般是后端的问题', '可以过一会儿重试，或换一个接口'];
+                        }
+                        zt_showError('请求已返回，但状态码是 ' + zt_res.status + '（' + (zt_res.statusText || '') + '），属于错误响应', zt_tips);
+                    }
+
+                    zt_pushHistory(zt_method, zt_url, zt_res.status, zt_ms);
+                    console.log('【响应】' + zt_res.status, zt_parsed !== null ? zt_parsed : zt_text);
+                } catch (zt_err) {
+                    clearTimeout(zt_timer);
+                    var zt_ms2 = Math.round(performance.now() - zt_start);
+                    zt_badge(ztBadgeState, 'zt-err', '请求失败');
+                    ztBadgeTime.className = 'zt_badge zt-badge-time zt-info';
+                    ztBadgeTime.textContent = '耗时 ' + zt_ms2 + ' ms';
+                    ztBadgeSize.className = 'zt_badge zt-badge-size';
+                    ztBadgeSize.textContent = '大小 —';
+                    ztBadgeType.className = 'zt_badge zt-badge-type';
+                    ztBadgeType.textContent = '类型 —';
+                    ztOutResp.className = 'zt_textview zt-out-resp';
+                    ztOutResp.textContent = '请求失败：' + zt_err.message;
+
+                    // 按错误类型给出不同的排查建议
+                    if (zt_err.name === 'AbortError') {
+                        zt_showError('请求超时（15 秒内没有响应）',
+                            ['接口响应太慢或当前网络不通', '可以点「发送请求」重试一次', '换一个更快的接口测试，例如 jsonplaceholder']);
+                    } else if (zt_err instanceof TypeError) {
+                        zt_showError('无法完成请求：' + zt_err.message,
+                            ['域名解析失败 / 网络不通，请检查网络和地址拼写',
+                             '被 CORS（跨域）拦截：接口没有返回 Access-Control-Allow-Origin',
+                             '页面是 https 而接口是 http，被浏览器按混合内容阻止',
+                             '接口服务端宕机或端口不通']);
+                    } else {
+                        zt_showError('请求异常：' + zt_err.message, []);
+                    }
+
+                    zt_pushHistory(zt_method, zt_url, 'error', zt_ms2);
+                    console.error('【请求失败】', zt_err);
+                } finally {
+                    ztBtnSend.disabled = false;
+                }
+            }
+
+            /* ===== 历史记录 ===== */
+            function zt_pushHistory(zt_method, zt_url, zt_code, zt_ms) {
+                zt_historyList.unshift({ method: zt_method, url: zt_url, code: zt_code, ms: zt_ms });
+                if (zt_historyList.length > 8) { zt_historyList.pop(); }
+
+                var zt_html = '';
+                zt_historyList.forEach(function (zt_h, zt_i) {
+                    var zt_ok = (zt_h.code !== 'error' && zt_h.code < 400);
+                    zt_html += '<li data-index="' + zt_i + '">'
+                        + '<span class="zt_hmethod">' + zt_h.method + '</span>'
+                        + '<span class="zt_hurl" title="' + zt_h.url + '">' + zt_h.url + '</span>'
+                        + '<span class="zt_hcode ' + (zt_ok ? 'zt-ok' : 'zt-err') + '">' + zt_h.code + '</span>'
+                        + '<span class="zt_hcode">' + zt_h.ms + ' ms</span>'
+                        + '</li>';
+                });
+                ztHistory.innerHTML = zt_html || '<li><span class="zt_hmethod">—</span><span class="zt_hurl">暂无记录</span></li>';
+            }
+
+            ztHistory.addEventListener('click', function (zt_e) {
+                var zt_li = zt_e.target.closest('li');
+                if (!zt_li || zt_li.dataset.index === undefined) { return; }
+                var zt_h = zt_historyList[zt_li.dataset.index];
+                ztSelMethod.value = zt_h.method;
+                ztInputUrl.value = zt_h.url;
+                zt_syncBodyState();
+                zt_send();
+            });
+
+            /* ===== 交互绑定 ===== */
+            ztBtnSend.addEventListener('click', zt_send);
+
+            // 回车直接发送
+            ztInputUrl.addEventListener('keydown', function (zt_e) {
+                if (zt_e.key === 'Enter') { zt_send(); }
+            });
+
+            document.querySelector('.zt-btn-format').addEventListener('click', function () {
+                var zt_t = ztInputBody.value.trim();
+                if (!zt_t) { return; }
+                try {
+                    ztInputBody.value = JSON.stringify(JSON.parse(zt_t), null, 2);
+                    zt_hideError();
+                } catch (zt_e) {
+                    zt_showError('请求体不是合法 JSON：' + zt_e.message, ['JSON 必须用双引号', '不能有末尾多余逗号', '不能写注释']);
+                }
+            });
+
+            document.querySelector('.zt-btn-clearbody').addEventListener('click', function () {
+                ztInputBody.value = '';
+            });
+
+            // 快捷示例
+            document.querySelectorAll('.zt-preset').forEach(function (zt_btn) {
+                zt_btn.addEventListener('click', function () {
+                    ztSelMethod.value = this.dataset.method;
+                    ztInputUrl.value = this.dataset.url;
+                    ztInputBody.value = this.dataset.body || '';
+                    zt_syncBodyState();
+                    zt_send();
+                });
+            });
+
+            // 响应体 / 响应头 切换
+            document.querySelector('.zt-tab-body').addEventListener('click', function () {
+                this.classList.add('zt-active');
+                document.querySelector('.zt-tab-head').classList.remove('zt-active');
+                document.querySelector('.zt_panel-body').style.display = '';
+                document.querySelector('.zt_panel-head').style.display = 'none';
+            });
+
+            document.querySelector('.zt-tab-head').addEventListener('click', function () {
+                this.classList.add('zt-active');
+                document.querySelector('.zt-tab-body').classList.remove('zt-active');
+                document.querySelector('.zt_panel-body').style.display = 'none';
+                document.querySelector('.zt_panel-head').style.display = '';
+            });
+
+            /* ===== 初始化 ===== */
+            zt_syncBodyState();
+            zt_send();      // 打开页面先自动发一次 GET，让结果区有内容
+            console.log('===== 17-4 接口测试工具已就绪 =====');
+        </script>
+    </body>
+</html>
