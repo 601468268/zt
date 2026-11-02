@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<!-- 姓名：张涛，日期：2026-11-02，功能名称：17-3 商品列表页（fetch 请求 dummyjson 接口） -->
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>17-3 商品列表 · dummyjson</title>
+        <style>
+            :root {
+                --zt-primary: #3498db;
+                --zt-primary-dark: #2c3e50;
+                --zt-bg: #f5f7fa;
+                --zt-card: #ffffff;
+                --zt-gray: #ecf0f1;
+                --zt-text: #2c3e50;
+                --zt-muted: #7f8c8d;
+                --zt-green: #27ae60;
+                --zt-red: #e74c3c;
+                --zt-orange: #f39c12;
+                --zt-border: #dfe6e9;
+            }
+
+            .zt_body {
+                font-family: "Microsoft YaHei", Arial, sans-serif;
+                background-color: var(--zt-bg);
+                color: var(--zt-text);
+                margin: 0;
+                padding: 20px;
+                line-height: 1.8;
+            }
+
+            .zt_container {
+                max-width: 1150px;
+                margin: 0 auto;
+                background-color: var(--zt-card);
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            }
+
+            .zt_title {
+                color: var(--zt-primary-dark);
+                text-align: center;
+                border-bottom: 3px solid var(--zt-primary);
+                padding-bottom: 12px;
+                margin-top: 0;
+            }
+
+            .zt_student {
+                text-align: center;
+                color: var(--zt-muted);
+                margin: 10px 0 25px;
+                font-size: 14px;
+            }
+
+            .zt_desc {
+                margin: 15px 0 25px;
+                padding: 12px 18px;
+                background-color: var(--zt-gray);
+                border-left: 5px solid var(--zt-primary);
+                border-radius: 4px;
+            }
+
+            .zt_module {
+                margin: 30px 0;
+                border: 1px solid var(--zt-border);
+                border-radius: 8px;
+                overflow: hidden;
+            }
+
+            .zt_module-head {
+                background-color: var(--zt-primary);
+                color: #fff;
+                padding: 10px 18px;
+                font-size: 18px;
+                font-weight: bold;
+            }
+
+            .zt_module-body { padding: 18px; }
+
+            .zt_card {
+                border: 1px solid var(--zt-border);
+                border-radius: 6px;
+                padding: 14px 16px;
+                margin-bottom: 16px;
+                background-color: #fcfdfe;
+            }
+
+            .zt_card-title {
+                font-weight: bold;
+                color: var(--zt-primary-dark);
+                font-size: 16px;
+                margin-bottom: 8px;
+            }
+
+            .zt_card-title span {
+                display: inline-block;
+                background-color: var(--zt-primary);
+                color: #fff;
+                border-radius: 4px;
+                padding: 0 8px;
+                margin-right: 8px;
+                font-size: 14px;
+            }
+
+            .zt_note { color: var(--zt-muted); font-size: 14px; margin: 6px 0; }
+
+            .zt_code {
+                background-color: var(--zt-primary-dark);
+                color: #ecf0f1;
+                padding: 12px 14px;
+                border-radius: 6px;
+                font-family: Consolas, "Courier New", monospace;
+                font-size: 13.5px;
+                line-height: 1.7;
+                white-space: pre-wrap;
+                word-break: break-all;
+                margin: 10px 0;
+                overflow-x: auto;
+            }
+
+            .zt_btn {
+                padding: 8px 18px;
+                background-color: var(--zt-primary);
+                color: #fff;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 15px;
+                font-family: inherit;
+            }
+
+            .zt_btn:hover { background-color: #217dbb; }
+            .zt_btn.zt-btn-green { background-color: var(--zt-green); }
+
+            /* ===== 状态栏 ===== */
+            .zt_statusbar {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 12px;
+            }
+
+            .zt_badge {
+                font-size: 13px;
+                padding: 4px 12px;
+                border-radius: 999px;
+                background-color: var(--zt-gray);
+                color: var(--zt-primary-dark);
+                font-family: Consolas, monospace;
+            }
+
+            .zt_badge.zt-ok { background: #e8f8ef; color: var(--zt-green); }
+            .zt_badge.zt-err { background: #fdecea; color: var(--zt-red); }
+            .zt_badge.zt-loading { background: #fff5e6; color: var(--zt-orange); }
+
+            .zt_url {
+                font-family: Consolas, monospace;
+                font-size: 12.5px;
+                color: var(--zt-muted);
+                word-break: break-all;
+                margin-bottom: 16px;
+            }
+
+            /* ===== 商品卡片 ===== */
+            .zt_products {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                gap: 16px;
+            }
+
+            .zt_product {
+                border: 1px solid var(--zt-border);
+                border-radius: 10px;
+                padding: 14px;
+                background: #fff;
+                cursor: pointer;
+                display: flex;
+                flex-direction: column;
+                transition: transform .18s, box-shadow .18s, border-color .18s;
+            }
+
+            .zt_product:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 10px 24px rgba(0, 0, 0, .10);
+                border-color: #b9dcf5;
+            }
+
+            .zt_thumb {
+                position: relative;
+                height: 170px;
+                border-radius: 8px;
+                background: linear-gradient(135deg, #eef4fa, #dde9f4);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                overflow: hidden;
+                margin-bottom: 12px;
+            }
+
+            .zt_thumb img {
+                position: relative;
+                z-index: 2;
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                background: #fff;
+            }
+
+            .zt_thumb img.zt-img-err { display: none; }
+
+            .zt_thumb-fallback {
+                position: absolute;
+                z-index: 1;
+                font-size: 40px;
+                font-weight: 800;
+                color: #7fa8c9;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+            }
+
+            .zt_product-name {
+                font-size: 14px;
+                font-weight: 700;
+                line-height: 1.5;
+                margin: 0 0 4px;
+                height: 42px;
+                overflow: hidden;
+                color: var(--zt-text);
+            }
+
+            .zt_product-brand {
+                font-size: 12px;
+                color: var(--zt-muted);
+                margin-bottom: 8px;
+            }
+
+            .zt_tagrow { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+
+            .zt_tag {
+                font-size: 11.5px;
+                padding: 1px 8px;
+                border-radius: 4px;
+                background: #eaf4fd;
+                color: var(--zt-primary);
+            }
+
+            .zt_tag.zt-tag-cate { background: #f3eafa; color: #8e44ad; }
+
+            .zt_product-bottom {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-top: auto;
+            }
+
+            .zt_price { color: var(--zt-orange); font-weight: 700; font-size: 17px; }
+            .zt_price-old {
+                font-size: 12px;
+                color: #bdc3c7;
+                text-decoration: line-through;
+                margin-left: 4px;
+                font-weight: 400;
+            }
+
+            .zt_rate { color: var(--zt-red); font-size: 12.5px; }
+
+            .zt_stock { font-size: 12px; color: var(--zt-muted); }
+
+            .zt_go {
+                margin-top: 10px;
+                font-size: 12.5px;
+                color: var(--zt-primary);
+                text-align: right;
+            }
+
+            .zt_empty {
+                grid-column: 1 / -1;
+                text-align: center;
+                color: var(--zt-muted);
+                font-size: 14px;
+                padding: 50px 0;
+            }
+
+            .zt_log {
+                background-color: var(--zt-primary-dark);
+                color: #ecf0f1;
+                border-radius: 6px;
+                padding: 10px 14px;
+                font-family: Consolas, monospace;
+                font-size: 12.5px;
+                line-height: 1.8;
+                max-height: 170px;
+                overflow-y: auto;
+                white-space: pre-wrap;
+            }
+
+            .zt_footer {
+                text-align: center;
+                color: var(--zt-muted);
+                font-size: 13px;
+                margin-top: 30px;
+                border-top: 1px solid var(--zt-border);
+                padding-top: 15px;
+            }
+
+            @media (max-width: 600px) {
+                .zt_container { padding: 15px; }
+                .zt_body { padding: 10px; }
+                .zt_products { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+                .zt_thumb { height: 120px; }
+            }
+        </style>
+    </head>
+    <body class="zt_body">
+        <div class="zt_container">
+            <h1 class="zt_title">商品列表（列表页）</h1>
+            <div class="zt_student">姓名：张涛　　班级：　　学号：　　日期：2026-11-02</div>
+
+            <div class="zt_desc">
+                本页是「列表与列表详情」的<b>列表页</b>：用原生 <b>fetch</b> 请求
+                <b>https://dummyjson.com/products?limit=8</b> 拿到 8 条商品数据并渲染成卡片。
+                点击任意一张卡片，会带着商品 id 跳转到详情页
+                <b>17-3.detail.html?id=xx</b>，详情页再按 id 请求单个商品。
+                提示：商品的图片托管在 <code>cdn.dummyjson.com</code>，如果你的网络访问不到该域名，
+                图片位置会显示一个字母占位块，<b>数据本身仍然正常</b>。
+            </div>
+
+            <!-- ================= 一、接口说明 ================= -->
+            <div class="zt_module">
+                <div class="zt_module-head">一、接口说明与核心代码</div>
+                <div class="zt_module-body">
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>1-1</span>两个页面对应的两个接口</div>
+                        <div class="zt_code">列表：GET  https://dummyjson.com/products?limit=8      返回 products 数组 + total / skip / limit
+详情：GET  https://dummyjson.com/products/1         按 id 返回单个商品对象</div>
+                        <div class="zt_note">
+                            商品对象主要字段：<code>id、title、description、category、price、discountPercentage、
+                            rating、stock、brand、tags、images、thumbnail</code>。
+                        </div>
+                    </div>
+
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>1-2</span>核心代码（含超时控制，接口慢时不会一直等）</div>
+                        <div class="zt_code">async function zt_getJson(zt_url) {
+    var zt_ctrl = new AbortController();
+    var zt_timer = setTimeout(function () { zt_ctrl.abort(); }, 12000);   // 12 秒超时
+    try {
+        var zt_res = await fetch(zt_url, { signal: zt_ctrl.signal });
+        if (!zt_res.ok) { throw new Error('HTTP ' + zt_res.status); }
+        return await zt_res.json();
+    } finally {
+        clearTimeout(zt_timer);
+    }
+}
+
+var zt_data = await zt_getJson('https://dummyjson.com/products?limit=8');
+zt_data.products.forEach(function (zt_p) { /* 渲染卡片 */ });
+
+// 点击卡片带上 id 跳转
+location.href = '17-3.detail.html?id=' + zt_p.id;</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= 二、列表 ================= -->
+            <div class="zt_module">
+                <div class="zt_module-head">二、实时列表（点击卡片进入详情）</div>
+                <div class="zt_module-body">
+                    <div class="zt_statusbar">
+                        <button class="zt_btn zt-btn-load" type="button">重新加载</button>
+                        <span class="zt_badge zt-badge-state">等待请求</span>
+                        <span class="zt_badge zt-badge-time">耗时 —</span>
+                        <span class="zt_badge zt-badge-count">0 条</span>
+                        <span class="zt_badge zt-badge-total">—</span>
+                    </div>
+                    <div class="zt_url zt-request-url">请求地址：—</div>
+
+                    <div class="zt_products zt-out-products">
+                        <p class="zt_empty">正在加载商品列表…</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= 三、日志 ================= -->
+            <div class="zt_module">
+                <div class="zt_module-head">三、请求日志</div>
+                <div class="zt_module-body">
+                    <div class="zt_log zt-out-log"></div>
+                </div>
+            </div>
+
+            <div class="zt_footer">张涛 · 17-3 商品列表页（dummyjson 接口 + fetch）</div>
+        </div>
+
+        <script>
+            var ZT_LIST_API = 'https://dummyjson.com/products?limit=8';
+            var ztProducts = document.querySelector('.zt-out-products');
+            var ztLog = document.querySelector('.zt-out-log');
+            var ztState = document.querySelector('.zt-badge-state');
+            var ztTime = document.querySelector('.zt-badge-time');
+            var ztCount = document.querySelector('.zt-badge-count');
+            var ztTotal = document.querySelector('.zt-badge-total');
+            var ztUrlBox = document.querySelector('.zt-request-url');
+
+            /* ===== 工具 ===== */
+            function zt_log(zt_text) {
+                ztLog.textContent += zt_text + '\n';
+                ztLog.scrollTop = ztLog.scrollHeight;
+            }
+
+            function zt_setState(zt_cls, zt_text) {
+                ztState.className = 'zt_badge zt-badge-state ' + zt_cls;
+                ztState.textContent = zt_text;
+            }
+
+            function zt_stars(zt_rate) {
+                var zt_n = Math.round(zt_rate);
+                var zt_s = '';
+                for (var i = 1; i <= 5; i++) { zt_s += (i <= zt_n ? '★' : '☆'); }
+                return zt_s;
+            }
+
+            // 带超时控制的 fetch（12 秒），避免接口卡住时页面一直转圈
+            async function zt_getJson(zt_url) {
+                var zt_ctrl = new AbortController();
+                var zt_timer = setTimeout(function () { zt_ctrl.abort(); }, 12000);
+                try {
+                    var zt_res = await fetch(zt_url, { signal: zt_ctrl.signal });
+                    if (!zt_res.ok) { throw new Error('HTTP ' + zt_res.status); }
+                    return await zt_res.json();
+                } finally {
+                    clearTimeout(zt_timer);
+                }
+            }
+
+            /* ===== 加载列表 ===== */
+            async function zt_loadList() {
+                ztUrlBox.textContent = '请求地址：' + ZT_LIST_API;
+                zt_setState('zt-loading', '加载中…');
+                ztProducts.innerHTML = '<p class="zt_empty">正在加载商品列表…</p>';
+                zt_log('[GET] ' + ZT_LIST_API);
+
+                var zt_start = performance.now();
+                try {
+                    var zt_data = await zt_getJson(ZT_LIST_API);
+                    var zt_ms = Math.round(performance.now() - zt_start);
+                    var zt_list = zt_data.products || [];
+
+                    ztTime.textContent = '耗时 ' + zt_ms + ' ms';
+                    ztTotal.textContent = '共 ' + zt_data.total + ' 条，本页 ' + zt_list.length + ' 条（skip=' + zt_data.skip + '，limit=' + zt_data.limit + '）';
+                    ztCount.textContent = zt_list.length + ' 条';
+                    zt_setState('zt-ok', '200 OK');
+                    zt_log('  ← 状态码 200，返回 ' + zt_list.length + ' 条，总数据 ' + zt_data.total + ' 条，耗时 ' + zt_ms + ' ms');
+
+                    zt_render(zt_list);
+                    console.log('【列表】接口返回：', zt_data);
+                } catch (zt_err) {
+                    var zt_ms2 = Math.round(performance.now() - zt_start);
+                    ztTime.textContent = '耗时 ' + zt_ms2 + ' ms';
+                    zt_setState('zt-err', '请求失败');
+                    ztCount.textContent = '0 条';
+                    ztTotal.textContent = '—';
+                    zt_log('  ✗ 失败：' + zt_err.message + '（若为 AbortError 说明超过 12 秒超时）');
+                    ztProducts.innerHTML = '<p class="zt_empty">加载失败：' + zt_err.message
+                        + '<br><br>该接口有时会比较慢，请点上方「重新加载」再试一次。</p>';
+                    console.error('【列表】加载失败：', zt_err);
+                }
+            }
+
+            /* ===== 渲染卡片 ===== */
+            function zt_render(zt_list) {
+                if (!zt_list.length) {
+                    ztProducts.innerHTML = '<p class="zt_empty">接口没有返回商品数据</p>';
+                    return;
+                }
+                var zt_html = '';
+                zt_list.forEach(function (zt_p) {
+                    var zt_old = (zt_p.price / (1 - zt_p.discountPercentage / 100)).toFixed(2);
+                    var zt_tags = '';
+                    (zt_p.tags || []).slice(0, 2).forEach(function (zt_t) {
+                        zt_tags += '<span class="zt_tag">' + zt_t + '</span>';
+                    });
+                    zt_tags += '<span class="zt_tag zt-tag-cate">' + zt_p.category + '</span>';
+
+                    zt_html += '<div class="zt_product" data-id="' + zt_p.id + '">'
+                        + '<div class="zt_thumb">'
+                        + '<span class="zt_thumb-fallback">' + zt_p.title.substring(0, 2) + '</span>'
+                        + '<img src="' + zt_p.thumbnail + '" alt="' + zt_p.title.replace(/"/g, '') + '" loading="lazy"'
+                        + ' onerror="this.classList.add(\'zt-img-err\')">'
+                        + '</div>'
+                        + '<p class="zt_product-name">' + zt_p.title + '</p>'
+                        + '<div class="zt_product-brand">品牌：' + (zt_p.brand || '—') + '</div>'
+                        + '<div class="zt_tagrow">' + zt_tags + '</div>'
+                        + '<div class="zt_product-bottom">'
+                        + '<span class="zt_price">$' + zt_p.price + '<span class="zt_price-old">$' + zt_old + '</span></span>'
+                        + '<span class="zt_rate">' + zt_stars(zt_p.rating) + ' ' + zt_p.rating + '</span>'
+                        + '</div>'
+                        + '<div class="zt_product-bottom"><span class="zt_stock">库存 ' + zt_p.stock + '</span>'
+                        + '<span class="zt_rate">-' + Math.round(zt_p.discountPercentage) + '%</span></div>'
+                        + '<div class="zt_go">查看详情 →</div>'
+                        + '</div>';
+                });
+                ztProducts.innerHTML = zt_html;
+            }
+
+            /* ===== 点击卡片跳转详情页，把 id 带过去 ===== */
+            ztProducts.addEventListener('click', function (zt_e) {
+                var zt_card = zt_e.target.closest('.zt_product');
+                if (!zt_card) { return; }
+                var zt_id = zt_card.dataset.id;
+                zt_log('[跳转] 17-3.detail.html?id=' + zt_id);
+                console.log('【跳转】商品 id =', zt_id);
+                location.href = '17-3.detail.html?id=' + zt_id;
+            });
+
+            document.querySelector('.zt-btn-load').addEventListener('click', zt_loadList);
+
+            /* ===== 初始化 ===== */
+            zt_loadList();
+            console.log('===== 17-3 列表页开始 =====');
+        </script>
+    </body>
+</html>
