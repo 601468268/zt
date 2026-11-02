@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<!-- 姓名：张涛，日期：2026-11-02，功能名称：17-5 JavaScript 两种定时器 setTimeout / setInterval -->
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>17-5 JavaScript 两种定时器</title>
+        <style>
+            :root {
+                --zt-primary: #3498db;
+                --zt-primary-dark: #2c3e50;
+                --zt-bg: #f5f7fa;
+                --zt-card: #ffffff;
+                --zt-gray: #ecf0f1;
+                --zt-text: #2c3e50;
+                --zt-muted: #7f8c8d;
+                --zt-green: #27ae60;
+                --zt-red: #e74c3c;
+                --zt-orange: #f39c12;
+                --zt-purple: #8e44ad;
+                --zt-border: #dfe6e9;
+            }
+
+            .zt_body {
+                font-family: "Microsoft YaHei", Arial, sans-serif;
+                background-color: var(--zt-bg);
+                color: var(--zt-text);
+                margin: 0;
+                padding: 20px;
+                line-height: 1.8;
+            }
+
+            .zt_container {
+                max-width: 1100px;
+                margin: 0 auto;
+                background-color: var(--zt-card);
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            }
+
+            .zt_title {
+                color: var(--zt-primary-dark);
+                text-align: center;
+                border-bottom: 3px solid var(--zt-primary);
+                padding-bottom: 12px;
+                margin-top: 0;
+            }
+
+            .zt_student {
+                text-align: center;
+                color: var(--zt-muted);
+                margin: 10px 0 25px;
+                font-size: 14px;
+            }
+
+            .zt_desc {
+                margin: 15px 0 25px;
+                padding: 12px 18px;
+                background-color: var(--zt-gray);
+                border-left: 5px solid var(--zt-primary);
+                border-radius: 4px;
+            }
+
+            .zt_module {
+                margin: 30px 0;
+                border: 1px solid var(--zt-border);
+                border-radius: 8px;
+                overflow: hidden;
+            }
+
+            .zt_module-head {
+                background-color: var(--zt-primary);
+                color: #fff;
+                padding: 10px 18px;
+                font-size: 18px;
+                font-weight: bold;
+            }
+
+            .zt_module-body { padding: 18px; }
+
+            .zt_card {
+                border: 1px solid var(--zt-border);
+                border-radius: 6px;
+                padding: 14px 16px;
+                margin-bottom: 16px;
+                background-color: #fcfdfe;
+            }
+
+            .zt_card-title {
+                font-weight: bold;
+                color: var(--zt-primary-dark);
+                font-size: 16px;
+                margin-bottom: 8px;
+            }
+
+            .zt_card-title span {
+                display: inline-block;
+                background-color: var(--zt-primary);
+                color: #fff;
+                border-radius: 4px;
+                padding: 0 8px;
+                margin-right: 8px;
+                font-size: 14px;
+            }
+
+            .zt_note { color: var(--zt-muted); font-size: 14px; margin: 6px 0; }
+
+            .zt_code {
+                background-color: var(--zt-primary-dark);
+                color: #ecf0f1;
+                padding: 12px 14px;
+                border-radius: 6px;
+                font-family: Consolas, "Courier New", monospace;
+                font-size: 13.5px;
+                line-height: 1.7;
+                white-space: pre-wrap;
+                word-break: break-all;
+                margin: 10px 0;
+                overflow-x: auto;
+            }
+
+            .zt_runbox {
+                background-color: #f4f9ff;
+                border: 1px dashed var(--zt-primary);
+                border-radius: 6px;
+                padding: 10px 14px;
+                font-family: Consolas, "Courier New", monospace;
+                font-size: 14px;
+                color: var(--zt-primary-dark);
+                white-space: pre-wrap;
+                word-break: break-all;
+                min-height: 44px;
+            }
+
+            .zt_runbox b { color: var(--zt-green); }
+            .zt_run-line { display: block; }
+            .zt_ok { color: var(--zt-green); font-weight: 700; }
+            .zt_warn { color: var(--zt-orange); font-weight: 700; }
+
+            .zt_form { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 10px 0; }
+
+            .zt_btn {
+                padding: 8px 18px;
+                background-color: var(--zt-primary);
+                color: #fff;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 15px;
+                font-family: inherit;
+            }
+
+            .zt_btn:hover { background-color: #217dbb; }
+            .zt_btn.zt-btn-green { background-color: var(--zt-green); }
+            .zt_btn.zt-btn-red { background-color: var(--zt-red); }
+            .zt_btn.zt-btn-gray { background-color: var(--zt-muted); }
+            .zt_btn:disabled { background-color: #bdc3c7; cursor: not-allowed; }
+
+            .zt_input {
+                width: 100px;
+                padding: 7px 10px;
+                border: 1px solid var(--zt-border);
+                border-radius: 4px;
+                font-size: 15px;
+                outline: none;
+                font-family: inherit;
+            }
+
+            .zt_input:focus { border-color: var(--zt-primary); }
+
+            .zt_table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 14px;
+                background: #fff;
+            }
+
+            .zt_table th, .zt_table td {
+                border: 1px solid var(--zt-border);
+                padding: 9px 12px;
+                text-align: left;
+            }
+
+            .zt_table th { background: #eaf4fd; color: var(--zt-primary-dark); }
+
+            /* ===== 计数器 ===== */
+            .zt_big-num {
+                font-size: 54px;
+                font-weight: 800;
+                color: var(--zt-primary);
+                font-family: Consolas, monospace;
+                line-height: 1.1;
+            }
+
+            .zt_num-row { display: flex; align-items: baseline; gap: 12px; }
+
+            /* ===== 倒计时 ===== */
+            .zt_countdown {
+                font-size: 44px;
+                font-weight: 800;
+                font-family: Consolas, monospace;
+                color: var(--zt-primary-dark);
+                letter-spacing: 2px;
+            }
+
+            .zt_countdown.zt-running { color: var(--zt-orange); }
+            .zt_countdown.zt-end { color: var(--zt-red); }
+
+            /* ===== 时钟 ===== */
+            .zt_clock {
+                font-size: 34px;
+                font-weight: 700;
+                font-family: Consolas, monospace;
+                color: var(--zt-green);
+                letter-spacing: 1px;
+            }
+
+            .zt_clock-date { font-size: 14px; color: var(--zt-muted); font-family: Consolas, monospace; }
+
+            /* ===== 进度条 ===== */
+            .zt_progress {
+                height: 18px;
+                background: var(--zt-gray);
+                border-radius: 10px;
+                overflow: hidden;
+                margin: 12px 0 6px;
+            }
+
+            .zt_bar {
+                height: 100%;
+                width: 0%;
+                background: linear-gradient(90deg, #3498db, #27ae60);
+                border-radius: 10px;
+                transition: width .1s linear;
+            }
+
+            .zt_grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+                gap: 16px;
+            }
+
+            .zt_footer {
+                text-align: center;
+                color: var(--zt-muted);
+                font-size: 13px;
+                margin-top: 30px;
+                border-top: 1px solid var(--zt-border);
+                padding-top: 15px;
+            }
+
+            @media (max-width: 600px) {
+                .zt_container { padding: 15px; }
+                .zt_body { padding: 10px; }
+                .zt_big-num { font-size: 40px; }
+                .zt_clock { font-size: 26px; }
+            }
+        </style>
+    </head>
+    <body class="zt_body">
+        <div class="zt_container">
+            <h1 class="zt_title">JavaScript 的两种定时器</h1>
+            <div class="zt_student">姓名：张涛　　班级：　　学号：　　日期：2026-11-02</div>
+
+            <div class="zt_desc">
+                JavaScript 提供两个定时器：<b>setTimeout(函数, 毫秒)</b> 只执行<b>一次</b>；
+                <b>setInterval(函数, 毫秒)</b> 每隔一段时间<b>重复执行</b>。
+                它们都返回一个数字 id，用 <b>clearTimeout(id)</b> / <b>clearInterval(id)</b> 才能取消，
+                否则会一直留在内存里执行。本页每个演示都是真实运行的，控制台（F12）有同步输出。
+            </div>
+
+            <!-- ================= 一、setTimeout ================= -->
+            <div class="zt_module">
+                <div class="zt_module-head">一、setTimeout：延时执行一次</div>
+                <div class="zt_module-body">
+                    <div class="zt_grid">
+                        <div class="zt_card">
+                            <div class="zt_card-title"><span>1-1</span>3 秒后执行一次</div>
+                            <div class="zt_code">setTimeout(function () {
+    console.log('3 秒到了，执行一次');
+}, 3000);   // 单位是毫秒：3000ms = 3 秒</div>
+                            <div class="zt_form">
+                                <button class="zt_btn zt-btn-delay" type="button">3 秒后执行</button>
+                                <span class="zt_note zt-hint-delay">等待点击…</span>
+                            </div>
+                            <div class="zt_runbox">运行结果：<div class="zt_runbox zt-out-delay"></div></div>
+                        </div>
+
+                        <div class="zt_card">
+                            <div class="zt_card-title"><span>1-2</span>clearTimeout：中途取消</div>
+                            <div class="zt_note">点击「开始」后 5 秒内再点「取消」，定时器就被清掉，回调不会执行。</div>
+                            <div class="zt_code">var zt_id = setTimeout(function () {
+    console.log('本来 5 秒后要执行');
+}, 5000);
+
+clearTimeout(zt_id);   // 取消：这个 id 对应的回调不会再执行</div>
+                            <div class="zt_form">
+                                <button class="zt_btn zt-btn-start-to" type="button">开始（5 秒后执行）</button>
+                                <button class="zt_btn zt-btn-red zt-btn-cancel-to" type="button" disabled>取消</button>
+                            </div>
+                            <div class="zt_runbox">运行结果：<div class="zt_runbox zt-out-cancel"></div></div>
+                        </div>
+                    </div>
+
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>1-3</span>延时参数可以是 0，但仍然是异步</div>
+                        <div class="zt_code">console.log('A：先执行');
+setTimeout(function () { console.log('C：最后执行'); }, 0);
+console.log('B：第二执行');
+// 输出顺序：A → B → C，因为定时器回调要等主线程的同步代码跑完</div>
+                        <div class="zt_form">
+                            <button class="zt_btn zt-btn-zero" type="button">执行这段代码</button>
+                        </div>
+                        <div class="zt_runbox">运行结果：<div class="zt_runbox zt-out-zero"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= 二、setInterval ================= -->
+            <div class="zt_module">
+                <div class="zt_module-head">二、setInterval：每隔一段时间重复执行</div>
+                <div class="zt_module-body">
+                    <div class="zt_grid">
+                        <div class="zt_card">
+                            <div class="zt_card-title"><span>2-1</span>每 1 秒计数器 +1</div>
+                            <div class="zt_code">var zt_timer = setInterval(function () {
+    zt_n++;
+    console.log('已运行 ' + zt_n + ' 秒');
+}, 1000);
+
+// 暂停 = clearInterval(zt_timer)，再次开始要重新 setInterval</div>
+                            <div class="zt_num-row">
+                                <span class="zt_big-num zt-out-count">0</span>
+                                <span class="zt_note">秒</span>
+                            </div>
+                            <div class="zt_form">
+                                <button class="zt_btn zt-btn-green zt-btn-count-start" type="button">开始 / 继续</button>
+                                <button class="zt_btn zt-btn-red zt-btn-count-stop" type="button" disabled>暂停</button>
+                                <button class="zt_btn zt-btn-gray zt-btn-count-reset" type="button">清零</button>
+                            </div>
+                            <div class="zt_runbox">运行结果：<div class="zt_runbox zt-out-countlog"></div></div>
+                        </div>
+
+                        <div class="zt_card">
+                            <div class="zt_card-title"><span>2-2</span>两者对比</div>
+                            <table class="zt_table">
+                                <thead>
+                                    <tr><th style="width:110px">对比项</th><th>setTimeout</th><th>setInterval</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>执行次数</td><td>只执行 1 次</td><td>每隔一段时间执行 1 次，无限重复</td></tr>
+                                    <tr><td>取消方法</td><td>clearTimeout(id)</td><td>clearInterval(id)</td></tr>
+                                    <tr><td>常见用途</td><td>延时提示、动画分步、防抖、模拟异步请求</td><td>时钟、倒计时、轮播图、进度条、轮询接口</td></tr>
+                                    <tr><td>注意点</td><td>回调里的代码在指定时间后进入任务队列</td><td>忘记 clear 会导致计时器越积越多</td></tr>
+                                </tbody>
+                            </table>
+                            <div class="zt_note">
+                                两个 id 都是数字（浏览器里从 1 开始递增），实际项目里习惯全局保存，组件卸载时清除。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= 三、实战 ================= -->
+            <div class="zt_module">
+                <div class="zt_module-head">三、实战：倒计时 / 时钟 / 进度条</div>
+                <div class="zt_module-body">
+                    <div class="zt_grid">
+                        <div class="zt_card">
+                            <div class="zt_card-title"><span>3-1</span>倒计时（setInterval + 格式化）</div>
+                            <div class="zt_code">var zt_left = 10;
+var zt_t = setInterval(function () {
+    zt_left--;                        // 每秒减 1
+    if (zt_left &lt;= 0) {
+        clearInterval(zt_t);          // 到 0 必须停，否则会变成负数
+    }
+}, 1000);</div>
+                            <div class="zt_countdown zt-out-countdown">00:10</div>
+                            <div class="zt_form">
+                                <input class="zt_input zt-in-countdown" type="text" value="10">
+                                <span class="zt_note">秒</span>
+                                <button class="zt_btn zt-btn-cd-start" type="button">开始倒计时</button>
+                                <button class="zt_btn zt-btn-gray zt-btn-cd-reset" type="button">重置</button>
+                            </div>
+                        </div>
+
+                        <div class="zt_card">
+                            <div class="zt_card-title"><span>3-2</span>实时时钟（每 1000ms 刷新）</div>
+                            <div class="zt_code">setInterval(function () {
+    var zt_d = new Date();
+    zt_el.textContent = zt_d.toLocaleTimeString('zh-CN', { hour12: false });
+}, 1000);</div>
+                            <div class="zt_clock zt-out-clock">--:--:--</div>
+                            <div class="zt_clock-date zt-out-clockdate">—</div>
+                            <div class="zt_form">
+                                <button class="zt_btn zt-btn-green zt-btn-clock-start" type="button">启动时钟</button>
+                                <button class="zt_btn zt-btn-red zt-btn-clock-stop" type="button" disabled>停止</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>3-3</span>进度条（到 100% 自动停止）</div>
+                        <div class="zt_code">var zt_p = 0;
+var zt_barTimer = setInterval(function () {
+    zt_p += 2;
+    zt_bar.style.width = zt_p + '%';
+    if (zt_p &gt;= 100) { clearInterval(zt_barTimer); }
+}, 100);</div>
+                        <div class="zt_progress"><div class="zt_bar zt-out-bar"></div></div>
+                        <div class="zt_form">
+                            <button class="zt_btn zt-btn-bar-start" type="button">开始加载</button>
+                            <button class="zt_btn zt-btn-gray zt-btn-bar-reset" type="button">重置</button>
+                            <span class="zt_note zt-out-bartext">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= 四、注意事项 ================= -->
+            <div class="zt_module">
+                <div class="zt_module-head">四、使用定时器要注意的三件事</div>
+                <div class="zt_module-body">
+                    <div class="zt_card">
+                        <table class="zt_table">
+                            <tbody>
+                                <tr><th style="width:180px">问题</th><td>说明</td></tr>
+                                <tr><th>时间不精确</th><td>定时器的实际间隔受主线程是否空闲影响，只能保证"至少等这么久"，不能保证"正好这么久"。</td></tr>
+                                <tr><th>一定要清除</th><td>页面跳转、组件销毁、重复点击开始按钮时，如果不 clear 就会叠出多个定时器，速度越跑越快。</td></tr>
+                                <tr><th>回调嵌套难维护</th><td>多个异步任务先后依赖时，嵌套多层 setTimeout 会形成"回调地狱"，改用 Promise / async / await 更清晰（见 17-6）。</td></tr>
+                            </tbody>
+                        </table>
+                        <div class="zt_code">// 用定时器把回调包成 Promise，就能用 await 串起来
+function zt_wait(zt_ms) {
+    return new Promise(function (resolve) {
+        setTimeout(resolve, zt_ms);
+    });
+}
+
+// 之后就可以：await zt_wait(3000);  ← 等 3 秒再执行下一步</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="zt_footer">张涛 · 17-5 JavaScript 两种定时器（setTimeout / setInterval）</div>
+        </div>
+
+        <script>
+            /* ========== 工具 ========== */
+            function zt_set(zt_cls, zt_html) {
+                var zt_node = document.querySelector('.zt_out-' + zt_cls);
+                if (zt_node) { zt_node.innerHTML = zt_html; }
+            }
+            function zt_line(zt_text) {
+                return '<span class="zt_run-line">' + zt_text + '</span>';
+            }
+            function zt_now() {
+                var zt_d = new Date();
+                return zt_d.toLocaleTimeString('zh-CN', { hour12: false });
+            }
+
+            /* ========== 1-1 setTimeout 执行一次 ========== */
+            var ztBtnDelay = document.querySelector('.zt-btn-delay');
+            var ztHintDelay = document.querySelector('.zt-hint-delay');
+
+            ztBtnDelay.addEventListener('click', function () {
+                ztBtnDelay.disabled = true;
+                ztHintDelay.textContent = '已开始，等待 3 秒…';
+                zt_set('delay', zt_line('[' + zt_now() + '] 定时器已设置，3 秒后执行…'));
+                console.log('【setTimeout】已设置 3 秒定时器');
+
+                setTimeout(function () {
+                    zt_set('delay', zt_line('[' + zt_now() + '] 3 秒到了，回调执行了一次 <b>（只会执行这一次）</b>'));
+                    ztHintDelay.textContent = '执行完毕';
+                    ztBtnDelay.disabled = false;
+                    console.log('【setTimeout】3 秒后执行了回调');
+                }, 3000);
+            });
+
+            /* ========== 1-2 clearTimeout 取消 ========== */
+            var ztBtnStartTo = document.querySelector('.zt-btn-start-to');
+            var ztBtnCancelTo = document.querySelector('.zt-btn-cancel-to');
+            var ztToId = null;
+            var ztToLeftTimer = null;
+
+            ztBtnStartTo.addEventListener('click', function () {
+                if (ztToId) { return; }
+                var zt_left = 5;
+                ztBtnStartTo.disabled = true;
+                ztBtnCancelTo.disabled = false;
+                zt_set('cancel', zt_line('[' + zt_now() + '] 已设置 5 秒定时器，id = <b>' + (ztToId = setTimeout(function () {
+                    zt_set('cancel', zt_line('[' + zt_now() + '] 5 秒到了，回调执行（这次没有被取消）'));
+                    ztBtnStartTo.disabled = false;
+                    ztBtnCancelTo.disabled = true;
+                    ztToId = null;
+                    clearInterval(ztToLeftTimer);
+                }, 5000)) + '</b>'));
+
+                // 顺带用 setInterval 显示剩余秒数（两个定时器一起用）
+                ztToLeftTimer = setInterval(function () {
+                    zt_left--;
+                    if (zt_left > 0) {
+                        zt_set('cancel', zt_line('[' + zt_now() + '] 还有 ' + zt_left + ' 秒…'));
+                    } else {
+                        clearInterval(ztToLeftTimer);
+                    }
+                }, 1000);
+
+                console.log('【clearTimeout】设置定时器，id =', ztToId);
+            });
+
+            ztBtnCancelTo.addEventListener('click', function () {
+                if (!ztToId) { return; }
+                clearTimeout(ztToId);
+                clearInterval(ztToLeftTimer);
+                zt_set('cancel', zt_line('[' + zt_now() + '] 已调用 clearTimeout(' + ztToId + ')，回调 <span class="zt_warn">不会执行</span>'));
+                console.log('【clearTimeout】已取消 id =', ztToId);
+                ztToId = null;
+                ztBtnStartTo.disabled = false;
+                ztBtnCancelTo.disabled = true;
+            });
+
+            /* ========== 1-3 延时 0 也是异步 ========== */
+            document.querySelector('.zt-btn-zero').addEventListener('click', function () {
+                var zt_seq = [];
+                zt_seq.push('A：同步代码，先执行');
+                setTimeout(function () {
+                    zt_seq.push('C：定时器回调（即使延时是 0，也要等同步代码跑完）');
+                    zt_set('zero', zt_seq.map(function (t) { return zt_line(t); }).join(''));
+                    console.log('【setTimeout 0】', zt_seq);
+                }, 0);
+                zt_seq.push('B：同步代码，第二个执行');
+                zt_set('zero', zt_line('A、B 已同步执行，等待 C…'));
+                console.log('【setTimeout 0】同步部分：', zt_seq);
+            });
+
+            /* ========== 2-1 setInterval 计数器 ========== */
+            var ztCount = 0;
+            var ztCountTimer = null;
+            var ztCountEl = document.querySelector('.zt-out-count');
+            var ztBtnCountStart = document.querySelector('.zt-btn-count-start');
+            var ztBtnCountStop = document.querySelector('.zt-btn-count-stop');
+
+            function zt_renderCount() {
+                ztCountEl.textContent = ztCount;
+            }
+
+            ztBtnCountStart.addEventListener('click', function () {
+                if (ztCountTimer) { return; }         // 防止重复点击叠出多个定时器
+                ztCountTimer = setInterval(function () {
+                    ztCount++;
+                    zt_renderCount();
+                    zt_set('countlog', zt_line('[' + zt_now() + '] 第 ' + ztCount + ' 次执行（每 1000ms 一次）'));
+                    if (ztCount % 5 === 0) { console.log('【setInterval】已运行', ztCount, '秒'); }
+                }, 1000);
+                ztBtnCountStart.disabled = true;
+                ztBtnCountStop.disabled = false;
+                zt_set('countlog', zt_line('[' + zt_now() + '] 定时器已启动，id = ' + ztCountTimer));
+                console.log('【setInterval】启动，id =', ztCountTimer);
+            });
+
+            ztBtnCountStop.addEventListener('click', function () {
+                if (!ztCountTimer) { return; }
+                clearInterval(ztCountTimer);
+                zt_set('countlog', zt_line('[' + zt_now() + '] 已 clearInterval(' + ztCountTimer + ')，停止在 ' + ztCount + ' 秒'));
+                console.log('【setInterval】停止，id =', ztCountTimer);
+                ztCountTimer = null;
+                ztBtnCountStart.disabled = false;
+                ztBtnCountStop.disabled = true;
+            });
+
+            document.querySelector('.zt-btn-count-reset').addEventListener('click', function () {
+                if (ztCountTimer) {
+                    clearInterval(ztCountTimer);
+                    ztCountTimer = null;
+                }
+                ztCount = 0;
+                zt_renderCount();
+                ztBtnCountStart.disabled = false;
+                ztBtnCountStop.disabled = true;
+                zt_set('countlog', zt_line('已清零，计数器 = 0'));
+                console.log('【setInterval】已清零');
+            });
+
+            /* ========== 3-1 倒计时 ========== */
+            var ztCdEl = document.querySelector('.zt-out-countdown');
+            var ztCdInput = document.querySelector('.zt-in-countdown');
+            var ztCdTimer = null;
+
+            function zt_fmt(zt_sec) {
+                var zt_m = Math.floor(zt_sec / 60);
+                var zt_s = zt_sec % 60;
+                return (zt_m < 10 ? '0' + zt_m : zt_m) + ':' + (zt_s < 10 ? '0' + zt_s : zt_s);
+            }
+
+            document.querySelector('.zt-btn-cd-start').addEventListener('click', function () {
+                var zt_total = parseInt(ztCdInput.value, 10);
+                if (isNaN(zt_total) || zt_total <= 0) {
+                    ztCdEl.textContent = '请输入正整数';
+                    ztCdEl.className = 'zt_countdown zt-end';
+                    return;
+                }
+                if (ztCdTimer) { clearInterval(ztCdTimer); }
+
+                var zt_left = zt_total;
+                ztCdEl.className = 'zt_countdown zt-running';
+                ztCdEl.textContent = zt_fmt(zt_left);
+                console.log('【倒计时】开始，共', zt_total, '秒');
+
+                ztCdTimer = setInterval(function () {
+                    zt_left--;
+                    ztCdEl.textContent = zt_fmt(zt_left > 0 ? zt_left : 0);
+                    if (zt_left <= 0) {
+                        clearInterval(ztCdTimer);          // 到 0 一定要停
+                        ztCdTimer = null;
+                        ztCdEl.className = 'zt_countdown zt-end';
+                        ztCdEl.textContent = '时间到！';
+                        console.log('【倒计时】结束');
+                    }
+                }, 1000);
+            });
+
+            document.querySelector('.zt-btn-cd-reset').addEventListener('click', function () {
+                if (ztCdTimer) { clearInterval(ztCdTimer); ztCdTimer = null; }
+                ztCdEl.className = 'zt_countdown';
+                ztCdEl.textContent = zt_fmt(parseInt(ztCdInput.value, 10) || 10);
+                console.log('【倒计时】已重置');
+            });
+
+            /* ========== 3-2 时钟 ========== */
+            var ztClockEl = document.querySelector('.zt-out-clock');
+            var ztDateEl = document.querySelector('.zt-out-clockdate');
+            var ztClockTimer = null;
+            var ztBtnClockStart = document.querySelector('.zt-btn-clock-start');
+            var ztBtnClockStop = document.querySelector('.zt-btn-clock-stop');
+
+            function zt_tick() {
+                var zt_d = new Date();
+                ztClockEl.textContent = zt_d.toLocaleTimeString('zh-CN', { hour12: false });
+                ztDateEl.textContent = zt_d.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' })
+                    + '　星期' + '日一二三四五六'.charAt(zt_d.getDay());
+            }
+
+            ztBtnClockStart.addEventListener('click', function () {
+                if (ztClockTimer) { return; }
+                zt_tick();
+                ztClockTimer = setInterval(zt_tick, 1000);
+                ztBtnClockStart.disabled = true;
+                ztBtnClockStop.disabled = false;
+                console.log('【时钟】启动');
+            });
+
+            ztBtnClockStop.addEventListener('click', function () {
+                if (!ztClockTimer) { return; }
+                clearInterval(ztClockTimer);
+                ztClockTimer = null;
+                ztBtnClockStart.disabled = false;
+                ztBtnClockStop.disabled = true;
+                console.log('【时钟】停止');
+            });
+
+            // 页面打开先显示一次时间（不再自动走，由按钮控制）
+            zt_tick();
+
+            /* ========== 3-3 进度条 ========== */
+            var ztBarEl = document.querySelector('.zt-out-bar');
+            var ztBarText = document.querySelector('.zt-out-bartext');
+            var ztBarTimer = null;
+
+            document.querySelector('.zt-btn-bar-start').addEventListener('click', function () {
+                if (ztBarTimer) { return; }
+                var zt_p = 0;
+                ztBarEl.style.width = '0%';
+                ztBarText.textContent = '0%';
+
+                ztBarTimer = setInterval(function () {
+                    zt_p += 2;
+                    if (zt_p > 100) { zt_p = 100; }
+                    ztBarEl.style.width = zt_p + '%';
+                    ztBarText.textContent = zt_p + '%' + (zt_p === 100 ? '　加载完成' : '　加载中…');
+                    if (zt_p >= 100) {
+                        clearInterval(ztBarTimer);        // 到 100% 停止
+                        ztBarTimer = null;
+                        console.log('【进度条】加载完成');
+                    }
+                }, 100);
+                console.log('【进度条】开始');
+            });
+
+            document.querySelector('.zt-btn-bar-reset').addEventListener('click', function () {
+                if (ztBarTimer) { clearInterval(ztBarTimer); ztBarTimer = null; }
+                ztBarEl.style.width = '0%';
+                ztBarText.textContent = '0%';
+            });
+
+            console.log('===== 17-5 两种定时器 演示页已就绪 =====');
+        </script>
+    </body>
+</html>

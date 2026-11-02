@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<!-- 姓名：张涛，日期：2026-11-02，功能名称：17-6 Promise + async/await 异步流程演示（包饺子） -->
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>17-6 Promise 与 async/await · 包饺子流程</title>
+        <style>
+            :root {
+                --zt-primary: #3498db;
+                --zt-primary-dark: #2c3e50;
+                --zt-bg: #f5f7fa;
+                --zt-card: #ffffff;
+                --zt-gray: #ecf0f1;
+                --zt-text: #2c3e50;
+                --zt-muted: #7f8c8d;
+                --zt-green: #27ae60;
+                --zt-red: #e74c3c;
+                --zt-orange: #f39c12;
+                --zt-purple: #8e44ad;
+                --zt-border: #dfe6e9;
+            }
+
+            .zt_body {
+                font-family: "Microsoft YaHei", Arial, sans-serif;
+                background-color: var(--zt-bg);
+                color: var(--zt-text);
+                margin: 0;
+                padding: 20px;
+                line-height: 1.8;
+            }
+
+            .zt_container {
+                max-width: 1150px;
+                margin: 0 auto;
+                background-color: var(--zt-card);
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            }
+
+            .zt_title {
+                color: var(--zt-primary-dark);
+                text-align: center;
+                border-bottom: 3px solid var(--zt-primary);
+                padding-bottom: 12px;
+                margin-top: 0;
+            }
+
+            .zt_student {
+                text-align: center;
+                color: var(--zt-muted);
+                margin: 10px 0 25px;
+                font-size: 14px;
+            }
+
+            .zt_desc {
+                margin: 15px 0 25px;
+                padding: 12px 18px;
+                background-color: var(--zt-gray);
+                border-left: 5px solid var(--zt-primary);
+                border-radius: 4px;
+            }
+
+            .zt_module {
+                margin: 30px 0;
+                border: 1px solid var(--zt-border);
+                border-radius: 8px;
+                overflow: hidden;
+            }
+
+            .zt_module-head {
+                background-color: var(--zt-primary);
+                color: #fff;
+                padding: 10px 18px;
+                font-size: 18px;
+                font-weight: bold;
+            }
+
+            .zt_module-body { padding: 18px; }
+
+            .zt_card {
+                border: 1px solid var(--zt-border);
+                border-radius: 6px;
+                padding: 14px 16px;
+                margin-bottom: 16px;
+                background-color: #fcfdfe;
+            }
+
+            .zt_card-title {
+                font-weight: bold;
+                color: var(--zt-primary-dark);
+                font-size: 16px;
+                margin-bottom: 8px;
+            }
+
+            .zt_card-title span {
+                display: inline-block;
+                background-color: var(--zt-primary);
+                color: #fff;
+                border-radius: 4px;
+                padding: 0 8px;
+                margin-right: 8px;
+                font-size: 14px;
+            }
+
+            .zt_note { color: var(--zt-muted); font-size: 14px; margin: 6px 0; }
+
+            .zt_code {
+                background-color: var(--zt-primary-dark);
+                color: #ecf0f1;
+                padding: 12px 14px;
+                border-radius: 6px;
+                font-family: Consolas, "Courier New", monospace;
+                font-size: 13.5px;
+                line-height: 1.75;
+                white-space: pre-wrap;
+                word-break: break-all;
+                margin: 10px 0;
+                overflow-x: auto;
+            }
+
+            .zt_code .zt-c-kw { color: #ffb86c; }
+            .zt_code .zt-c-com { color: #7f8c8d; }
+            .zt_code .zt-c-fn { color: #7fd1ff; }
+            .zt_code .zt-c-str { color: #a8e6a1; }
+
+            .zt_btn {
+                padding: 9px 20px;
+                background-color: var(--zt-primary);
+                color: #fff;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 15px;
+                font-family: inherit;
+            }
+
+            .zt_btn:hover { background-color: #217dbb; }
+            .zt_btn.zt-btn-green { background-color: var(--zt-green); }
+            .zt_btn.zt-btn-gray { background-color: var(--zt-muted); }
+            .zt_btn:disabled { background-color: #bdc3c7; cursor: not-allowed; }
+
+            .zt_form { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 10px 0; }
+
+            .zt_select {
+                padding: 8px 12px;
+                border: 1px solid var(--zt-border);
+                border-radius: 6px;
+                font-size: 14px;
+                font-family: inherit;
+                background: #fff;
+                outline: none;
+            }
+
+            .zt_check { display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--zt-muted); cursor: pointer; }
+
+            /* ===== 流程可视化 ===== */
+            .zt_flow {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+                flex-wrap: wrap;
+                padding: 24px 10px;
+                background: #fbfdff;
+                border: 1px dashed var(--zt-border);
+                border-radius: 10px;
+                margin-bottom: 16px;
+            }
+
+            .zt_node {
+                min-width: 108px;
+                padding: 14px 12px;
+                border-radius: 10px;
+                border: 2px solid var(--zt-border);
+                background: #fff;
+                text-align: center;
+                transition: all .25s;
+                position: relative;
+            }
+
+            .zt_node-no {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                background: var(--zt-gray);
+                color: var(--zt-muted);
+                font-size: 13px;
+                font-weight: 700;
+                margin-bottom: 6px;
+                transition: all .25s;
+            }
+
+            .zt_node-title { font-size: 14.5px; font-weight: 700; color: var(--zt-text); }
+            .zt_node-time { font-size: 12px; color: var(--zt-muted); font-family: Consolas, monospace; margin-top: 2px; }
+
+            /* 状态：等待 */
+            .zt_node.zt-wait { opacity: .65; }
+
+            /* 状态：进行中 */
+            .zt_node.zt-run {
+                border-color: var(--zt-orange);
+                background: #fffaf2;
+                box-shadow: 0 0 0 4px rgba(243, 156, 18, .12);
+                animation: zt-pulse 1.1s ease-in-out infinite;
+            }
+
+            .zt_node.zt-run .zt_node-no { background: var(--zt-orange); color: #fff; }
+            .zt_node.zt-run .zt_node-time { color: var(--zt-orange); }
+
+            @keyframes zt-pulse {
+                0%, 100% { box-shadow: 0 0 0 4px rgba(243, 156, 18, .12); }
+                50% { box-shadow: 0 0 0 8px rgba(243, 156, 18, .05); }
+            }
+
+            /* 状态：完成 */
+            .zt_node.zt-done {
+                border-color: var(--zt-green);
+                background: #f3fbf6;
+            }
+
+            .zt_node.zt-done .zt_node-no { background: var(--zt-green); color: #fff; }
+            .zt_node.zt-done .zt_node-time { color: var(--zt-green); }
+
+            /* 状态：失败 */
+            .zt_node.zt-fail {
+                border-color: var(--zt-red);
+                background: #fff5f5;
+            }
+
+            .zt_node.zt-fail .zt_node-no { background: var(--zt-red); color: #fff; }
+
+            /* 并行分支容器 */
+            .zt_parallel {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                padding: 10px;
+                border: 2px dashed #cfe6f8;
+                border-radius: 12px;
+                position: relative;
+            }
+
+            .zt_parallel::before {
+                content: "并行";
+                position: absolute;
+                top: -11px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #eaf4fd;
+                color: var(--zt-primary);
+                font-size: 11px;
+                padding: 0 8px;
+                border-radius: 10px;
+            }
+
+            .zt_arrow {
+                color: #b6c4d0;
+                font-size: 20px;
+                font-weight: 700;
+                line-height: 1;
+            }
+
+            /* ===== 日志 ===== */
+            .zt_log {
+                background-color: var(--zt-primary-dark);
+                color: #ecf0f1;
+                border-radius: 8px;
+                padding: 14px 16px;
+                font-family: Consolas, "Courier New", monospace;
+                font-size: 13px;
+                line-height: 1.9;
+                max-height: 320px;
+                overflow-y: auto;
+                white-space: pre-wrap;
+            }
+
+            .zt-log-time { color: #7f8c8d; }
+            .zt-log-ok { color: #2ecc71; }
+            .zt-log-run { color: #f1c40f; }
+            .zt-log-err { color: #e74c3c; }
+            .zt-log-info { color: #7fd1ff; }
+
+            /* ===== 统计 ===== */
+            .zt_stats { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
+
+            .zt_stat {
+                flex: 1;
+                min-width: 130px;
+                background: #f7fafd;
+                border: 1px solid var(--zt-border);
+                border-radius: 8px;
+                padding: 10px 14px;
+            }
+
+            .zt_stat-label { font-size: 12.5px; color: var(--zt-muted); }
+            .zt_stat-value { font-size: 20px; font-weight: 800; color: var(--zt-primary-dark); font-family: Consolas, monospace; }
+            .zt_stat-value.zt-ok { color: var(--zt-green); }
+            .zt_stat-value.zt-err { color: var(--zt-red); }
+
+            /* ===== 错误条 ===== */
+            .zt_error {
+                display: none;
+                background: #fff5f5;
+                border: 1px solid #f5b7b1;
+                border-left: 5px solid var(--zt-red);
+                border-radius: 6px;
+                padding: 12px 16px;
+                margin-bottom: 14px;
+                font-size: 14px;
+                color: #922b21;
+            }
+
+            .zt_error.zt-show { display: block; }
+            .zt_error b { color: var(--zt-red); }
+
+            .zt_table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 14px;
+                background: #fff;
+            }
+
+            .zt_table th, .zt_table td {
+                border: 1px solid var(--zt-border);
+                padding: 9px 12px;
+                text-align: left;
+            }
+
+            .zt_table th { background: #eaf4fd; color: var(--zt-primary-dark); }
+
+            .zt_footer {
+                text-align: center;
+                color: var(--zt-muted);
+                font-size: 13px;
+                margin-top: 30px;
+                border-top: 1px solid var(--zt-border);
+                padding-top: 15px;
+            }
+
+            @media (max-width: 720px) {
+                .zt_container { padding: 15px; }
+                .zt_body { padding: 10px; }
+                .zt_flow { flex-direction: column; }
+                .zt_arrow { transform: rotate(90deg); }
+            }
+        </style>
+    </head>
+    <body class="zt_body">
+        <div class="zt_container">
+            <h1 class="zt_title">Promise 与 async/await · 包饺子流程</h1>
+            <div class="zt_student">姓名：张涛　　班级：　　学号：　　日期：2026-11-02</div>
+
+            <div class="zt_desc">
+                做饭的流程本身就是"异步"的：<b>买原料 → 取原料 → 同时和面、和馅（并行）→ 两个都完成后包饺子 → 吃饺子</b>。
+                本页用 <b>setTimeout</b> 包成 <b>Promise</b> 来模拟每一步的耗时，
+                用 <b>await</b> 让有先后顺序的步骤串行执行，
+                用 <b>Promise.all</b> 让和面、和馅<b>同时进行</b>，最后用 <b>try / catch</b> 处理失败。
+                每个节点的耗时、状态和总用时都会实时显示在页面上。
+            </div>
+
+            <!-- ================= 一、运行控制 ================= -->
+            <div class="zt_module">
+                <div class="zt_module-head">一、开始包饺子</div>
+                <div class="zt_module-body">
+                    <div class="zt_form">
+                        <button class="zt_btn zt-btn-start" type="button">开始</button>
+                        <button class="zt_btn zt-btn-gray zt-btn-reset" type="button">重置</button>
+                        <span class="zt_note">演示速度：</span>
+                        <select class="zt_select zt-sel-speed">
+                            <option value="1">1×（真实时间，约 19 秒）</option>
+                            <option value="2" selected>2×（约 9.5 秒）</option>
+                            <option value="5">5×（约 4 秒）</option>
+                            <option value="10">10×（约 2 秒）</option>
+                        </select>
+                        <label class="zt_check">
+                            <input class="zt-check-fail" type="checkbox"> 模拟买原料失败（演示 reject / catch）
+                        </label>
+                    </div>
+
+                    <div class="zt_error zt-error"></div>
+
+                    <!-- 流程图 -->
+                    <div class="zt_flow">
+                        <div class="zt_node zt-wait" data-step="buy">
+                            <span class="zt_node-no">1</span>
+                            <div class="zt_node-title">买原料</div>
+                            <div class="zt_node-time">6 秒</div>
+                        </div>
+                        <span class="zt_arrow">→</span>
+
+                        <div class="zt_node zt-wait" data-step="take">
+                            <span class="zt_node-no">2</span>
+                            <div class="zt_node-title">取原料</div>
+                            <div class="zt_node-time">2 秒</div>
+                        </div>
+                        <span class="zt_arrow">→</span>
+
+                        <div class="zt_parallel">
+                            <div class="zt_node zt-wait" data-step="mian">
+                                <span class="zt_node-no">3</span>
+                                <div class="zt_node-title">和面</div>
+                                <div class="zt_node-time">4 秒</div>
+                            </div>
+                            <div class="zt_node zt-wait" data-step="xian">
+                                <span class="zt_node-no">4</span>
+                                <div class="zt_node-title">和馅</div>
+                                <div class="zt_node-time">3 秒</div>
+                            </div>
+                        </div>
+
+                        <span class="zt_arrow">→</span>
+
+                        <div class="zt_node zt-wait" data-step="wrap">
+                            <span class="zt_node-no">5</span>
+                            <div class="zt_node-title">包饺子</div>
+                            <div class="zt_node-time">5 秒</div>
+                        </div>
+                        <span class="zt_arrow">→</span>
+
+                        <div class="zt_node zt-wait" data-step="eat">
+                            <span class="zt_node-no">6</span>
+                            <div class="zt_node-title">吃饺子</div>
+                            <div class="zt_node-time">2 秒</div>
+                        </div>
+                    </div>
+
+                    <div class="zt_note">
+                        并行说明：和面（4 秒）和和馅（3 秒）同时开始，<b>两个都完成后</b>才能包饺子，
+                        所以这一段只花 4 秒而不是 7 秒。
+                    </div>
+
+                    <div class="zt_stats">
+                        <div class="zt_stat">
+                            <div class="zt_stat-label">当前状态</div>
+                            <div class="zt_stat-value zt-stat-state">未开始</div>
+                        </div>
+                        <div class="zt_stat">
+                            <div class="zt_stat-label">已用时</div>
+                            <div class="zt_stat-value zt-stat-time">0.0 s</div>
+                        </div>
+                        <div class="zt_stat">
+                            <div class="zt_stat-label">已完成步骤</div>
+                            <div class="zt_stat-value zt-stat-done">0 / 6</div>
+                        </div>
+                    </div>
+
+                    <div class="zt_card" style="margin-top:16px">
+                        <div class="zt_card-title"><span>日志</span>每一步的开始 / 完成时间</div>
+                        <div class="zt_log zt-out-log">等待开始…</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= 二、核心代码 ================= -->
+            <div class="zt_module">
+                <div class="zt_module-head">二、核心代码（Promise + async/await + Promise.all）</div>
+                <div class="zt_module-body">
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>2-1</span>把 setTimeout 包成 Promise</div>
+                        <div class="zt_code"><span class="zt-c-com">// 等待指定毫秒后 resolve，这样就能用 await 等待</span>
+<span class="zt-c-kw">function</span> <span class="zt-c-fn">zt_wait</span>(zt_ms) {
+    <span class="zt-c-kw">return new</span> Promise(<span class="zt-c-kw">function</span> (resolve) {
+        setTimeout(resolve, zt_ms);
+    });
+}</div>
+                    </div>
+
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>2-2</span>串行用 await，并行用 Promise.all</div>
+                        <div class="zt_code"><span class="zt-c-kw">async function</span> <span class="zt-c-fn">zt_makeDumplings</span>() {
+    <span class="zt-c-kw">try</span> {
+        <span class="zt-c-com">// ① 有先后顺序：一步一步 await</span>
+        <span class="zt-c-kw">await</span> zt_step(<span class="zt-c-str">'买原料'</span>, 6000);
+        <span class="zt-c-kw">await</span> zt_step(<span class="zt-c-str">'取原料'</span>, 2000);
+
+        <span class="zt-c-com">// ② 可以同时做的事：同时发起，用 Promise.all 等两个都完成</span>
+        <span class="zt-c-kw">await</span> Promise.all([
+            zt_step(<span class="zt-c-str">'和面'</span>, 4000),
+            zt_step(<span class="zt-c-str">'和馅'</span>, 3000)
+        ]);
+
+        <span class="zt-c-com">// ③ 再回到串行：包饺子 → 吃饺子</span>
+        <span class="zt-c-kw">await</span> zt_step(<span class="zt-c-str">'包饺子'</span>, 5000);
+        <span class="zt-c-kw">await</span> zt_step(<span class="zt-c-str">'吃饺子'</span>, 2000);
+
+        console.log(<span class="zt-c-str">'全部完成'</span>);
+    } <span class="zt-c-kw">catch</span> (zt_err) {
+        <span class="zt-c-com">// 任何一步 reject 都会跳到这里，后面的步骤不再执行</span>
+        console.error(<span class="zt-c-str">'失败了：'</span> + zt_err.message);
+    }
+}</div>
+                        <div class="zt_note">
+                            <b>为什么并行快？</b>串行是 4 + 3 = 7 秒，并行只要 max(4, 3) = 4 秒，因为两个任务同时在进行。
+                        </div>
+                    </div>
+
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>2-3</span>三种写法的区别</div>
+                        <table class="zt_table">
+                            <thead>
+                                <tr><th style="width:170px">写法</th><th>特点</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>回调（callback）</td><td>嵌套多了就是"回调地狱"，错误要靠每个回调自己判断</td></tr>
+                                <tr><td>Promise + then</td><td>用 .then().catch() 链式调用，比嵌套清晰，但步骤多时链很长</td></tr>
+                                <tr><td>async / await</td><td>像写同步代码一样写异步，用 try/catch 抓错误；并行用 Promise.all</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="zt_footer">张涛 · 17-6 Promise + async/await 包饺子流程演示</div>
+        </div>
+
+        <script>
+            /* ===== 元素 ===== */
+            var ztBtnStart = document.querySelector('.zt-btn-start');
+            var ztBtnReset = document.querySelector('.zt-btn-reset');
+            var ztSelSpeed = document.querySelector('.zt-sel-speed');
+            var ztCheckFail = document.querySelector('.zt-check-fail');
+            var ztLog = document.querySelector('.zt-out-log');
+            var ztError = document.querySelector('.zt-error');
+            var ztStatState = document.querySelector('.zt-stat-state');
+            var ztStatTime = document.querySelector('.zt-stat-time');
+            var ztStatDone = document.querySelector('.zt-stat-done');
+
+            var zt_running = false;
+            var zt_doneCount = 0;
+            var zt_startAt = 0;
+            var zt_tickTimer = null;
+
+            var zt_steps = ['buy', 'take', 'mian', 'xian', 'wrap', 'eat'];
+            var zt_stepNames = { buy: '买原料', take: '取原料', mian: '和面', xian: '和馅', wrap: '包饺子', eat: '吃饺子' };
+
+            /* ===== 工具 ===== */
+            function zt_speed() {
+                return parseFloat(ztSelSpeed.value) || 1;
+            }
+
+            // 核心：把 setTimeout 包成 Promise，等待 ms 毫秒后 resolve
+            function zt_wait(zt_ms) {
+                return new Promise(function (resolve) {
+                    setTimeout(resolve, zt_ms / zt_speed());
+                });
+            }
+
+            function zt_nowText() {
+                var zt_s = ((performance.now() - zt_startAt) / 1000).toFixed(1);
+                return '<span class="zt-log-time">[' + zt_s + 's]</span> ';
+            }
+
+            function zt_writeLog(zt_html) {
+                ztLog.innerHTML += '\n' + zt_nowText() + zt_html;
+                ztLog.scrollTop = ztLog.scrollHeight;
+            }
+
+            function zt_node(zt_key) {
+                return document.querySelector('.zt_node[data-step="' + zt_key + '"]');
+            }
+
+            function zt_setStep(zt_key, zt_state, zt_timeText) {
+                var zt_el = zt_node(zt_key);
+                if (!zt_el) { return; }
+                zt_el.classList.remove('zt-wait', 'zt-run', 'zt-done', 'zt-fail');
+                zt_el.classList.add('zt-' + zt_state);
+                if (zt_timeText) {
+                    zt_el.querySelector('.zt_node-time').textContent = zt_timeText;
+                }
+            }
+
+            function zt_setState(zt_text, zt_cls) {
+                ztStatState.textContent = zt_text;
+                ztStatState.className = 'zt_stat-value zt-stat-state' + (zt_cls ? ' ' + zt_cls : '');
+            }
+
+            function zt_showError(zt_text) {
+                ztError.innerHTML = '<b>流程中断：</b>' + zt_text;
+                ztError.classList.add('zt-show');
+            }
+
+            function zt_hideError() {
+                ztError.classList.remove('zt-show');
+                ztError.innerHTML = '';
+            }
+
+            /* ===== 单步执行：返回 Promise，内部用 setTimeout 模拟耗时 ===== */
+            function zt_step(zt_key, zt_ms) {
+                var zt_name = zt_stepNames[zt_key];
+                return new Promise(function (resolve, reject) {
+                    var zt_t0 = performance.now();
+                    zt_setStep(zt_key, 'run', '进行中…');
+                    zt_writeLog('<span class="zt-log-run">▶ ' + zt_name + ' 开始（预计 ' + (zt_ms / 1000) + ' 秒）</span>');
+                    console.log('【开始】' + zt_name);
+
+                    setTimeout(function () {
+                        // 模拟失败：买原料时菜市场关门
+                        if (zt_key === 'buy' && ztCheckFail.checked) {
+                            zt_setStep(zt_key, 'fail', '失败');
+                            zt_writeLog('<span class="zt-log-err">✕ ' + zt_name + ' 失败：菜市场关门了，没买到原料</span>');
+                            reject(new Error('买原料失败：菜市场关门了'));
+                            return;
+                        }
+                        var zt_cost = ((performance.now() - zt_t0) / 1000).toFixed(1);
+                        zt_setStep(zt_key, 'done', zt_cost + ' s');
+                        zt_doneCount++;
+                        ztStatDone.textContent = zt_doneCount + ' / 6';
+                        zt_writeLog('<span class="zt-log-ok">✔ ' + zt_name + ' 完成</span>');
+                        console.log('【完成】' + zt_name);
+                        resolve(zt_name);
+                    }, zt_ms / zt_speed());
+                });
+            }
+
+            /* ===== 主流程：async / await ===== */
+            async function zt_makeDumplings() {
+                zt_running = true;
+                zt_doneCount = 0;
+                zt_startAt = performance.now();
+                ztBtnStart.disabled = true;
+                ztCheckFail.disabled = true;
+                ztSelSpeed.disabled = true;
+                ztLog.innerHTML = '<span class="zt-log-info">════ 开始包饺子（速度 ' + zt_speed() + '×）════</span>';
+                zt_hideError();
+                ztStatDone.textContent = '0 / 6';
+                zt_setState('进行中', '');
+
+                // 计时器：每 100ms 刷新一次"已用时"
+                zt_tickTimer = setInterval(function () {
+                    ztStatTime.textContent = ((performance.now() - zt_startAt) / 1000).toFixed(1) + ' s';
+                }, 100);
+
+                try {
+                    // ① 串行：买原料 → 取原料
+                    await zt_step('buy', 6000);
+                    await zt_step('take', 2000);
+
+                    // ② 并行：和面、和馅同时开始，等两个都完成
+                    zt_writeLog('<span class="zt-log-info">⇉ 和面、和馅 同时开始（Promise.all 并行，等待两者都完成）</span>');
+                    await Promise.all([
+                        zt_step('mian', 4000),
+                        zt_step('xian', 3000)
+                    ]);
+                    zt_writeLog('<span class="zt-log-info">✓ 面和馅都准备好了，可以包饺子了</span>');
+
+                    // ③ 串行：包饺子 → 吃饺子
+                    await zt_step('wrap', 5000);
+                    await zt_step('eat', 2000);
+
+                    var zt_total = ((performance.now() - zt_startAt) / 1000).toFixed(1);
+                    zt_writeLog('<span class="zt-log-ok">★ 全部完成，总用时 ' + zt_total + ' 秒（串行需要 '
+                        + ((6 + 2 + 4 + 3 + 5 + 2) / zt_speed()).toFixed(1) + ' 秒）</span>');
+                    zt_setState('已完成', 'zt-ok');
+                    console.log('【全部完成】总用时', zt_total, '秒');
+                } catch (zt_err) {
+                    // 任何一步 reject 都会跳到这里，后面的步骤不再执行
+                    var zt_total2 = ((performance.now() - zt_startAt) / 1000).toFixed(1);
+                    zt_writeLog('<span class="zt-log-err">■ 流程在 ' + zt_total2 + ' 秒时中断，后续步骤不再执行</span>');
+                    zt_showError(zt_err.message + '（这就是 Promise reject + try/catch 的效果，买原料失败后不会再和面、包饺子）');
+                    zt_setState('已失败', 'zt-err');
+                    console.error('【流程失败】', zt_err);
+                } finally {
+                    clearInterval(zt_tickTimer);
+                    ztStatTime.textContent = ((performance.now() - zt_startAt) / 1000).toFixed(1) + ' s';
+                    zt_running = false;
+                    ztBtnStart.disabled = false;
+                    ztCheckFail.disabled = false;
+                    ztSelSpeed.disabled = false;
+                }
+            }
+
+            /* ===== 重置 ===== */
+            function zt_reset() {
+                clearInterval(zt_tickTimer);
+                zt_running = false;
+                zt_doneCount = 0;
+                zt_steps.forEach(function (zt_k) {
+                    zt_setStep(zt_k, 'wait', ({ buy: '6 秒', take: '2 秒', mian: '4 秒', xian: '3 秒', wrap: '5 秒', eat: '2 秒' })[zt_k]);
+                });
+                ztLog.innerHTML = '等待开始…';
+                zt_hideError();
+                zt_setState('未开始', '');
+                ztStatTime.textContent = '0.0 s';
+                ztStatDone.textContent = '0 / 6';
+                ztBtnStart.disabled = false;
+                ztCheckFail.disabled = false;
+                ztSelSpeed.disabled = false;
+                console.log('【重置】流程已重置');
+            }
+
+            /* ===== 绑定 ===== */
+            ztBtnStart.addEventListener('click', function () {
+                if (zt_running) { return; }
+                zt_makeDumplings();
+            });
+            ztBtnReset.addEventListener('click', zt_reset);
+
+            /* ===== 支持 URL 参数，方便演示与截图：?auto=1&speed=10&fail=1 ===== */
+            var zt_q = new URLSearchParams(location.search);
+            if (zt_q.get('speed')) {
+                ztSelSpeed.value = zt_q.get('speed');
+            }
+            if (zt_q.get('fail') === '1') {
+                ztCheckFail.checked = true;
+            }
+            if (zt_q.get('auto') === '1') {
+                setTimeout(zt_makeDumplings, 300);
+            }
+
+            console.log('===== 17-6 包饺子流程演示页已就绪 =====');
+        </script>
+    </body>
+</html>
