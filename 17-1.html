@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<!-- 姓名：张涛，日期：2026-11-02，功能名称：17-1 JSON 数据格式展示与解析 -->
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>17-1 JSON 数据格式</title>
+        <style>
+            :root {
+                --zt-primary: #3498db;
+                --zt-primary-dark: #2c3e50;
+                --zt-bg: #f5f7fa;
+                --zt-card: #ffffff;
+                --zt-gray: #ecf0f1;
+                --zt-text: #2c3e50;
+                --zt-muted: #7f8c8d;
+                --zt-green: #27ae60;
+                --zt-red: #e74c3c;
+                --zt-orange: #f39c12;
+                --zt-purple: #8e44ad;
+                --zt-border: #dfe6e9;
+            }
+
+            .zt_body {
+                font-family: "Microsoft YaHei", Arial, sans-serif;
+                background-color: var(--zt-bg);
+                color: var(--zt-text);
+                margin: 0;
+                padding: 20px;
+                line-height: 1.8;
+            }
+
+            .zt_container {
+                max-width: 1100px;
+                margin: 0 auto;
+                background-color: var(--zt-card);
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            }
+
+            .zt_title {
+                color: var(--zt-primary-dark);
+                text-align: center;
+                border-bottom: 3px solid var(--zt-primary);
+                padding-bottom: 12px;
+                margin-top: 0;
+            }
+
+            .zt_student {
+                text-align: center;
+                color: var(--zt-muted);
+                margin: 10px 0 25px;
+                font-size: 14px;
+            }
+
+            .zt_desc {
+                margin: 15px 0 25px;
+                padding: 12px 18px;
+                background-color: var(--zt-gray);
+                border-left: 5px solid var(--zt-primary);
+                border-radius: 4px;
+            }
+
+            .zt_module {
+                margin: 30px 0;
+                border: 1px solid var(--zt-border);
+                border-radius: 8px;
+                overflow: hidden;
+            }
+
+            .zt_module-head {
+                background-color: var(--zt-primary);
+                color: #fff;
+                padding: 10px 18px;
+                font-size: 18px;
+                font-weight: bold;
+            }
+
+            .zt_module-body { padding: 18px; }
+
+            .zt_card {
+                border: 1px solid var(--zt-border);
+                border-radius: 6px;
+                padding: 14px 16px;
+                margin-bottom: 16px;
+                background-color: #fcfdfe;
+            }
+
+            .zt_card-title {
+                font-weight: bold;
+                color: var(--zt-primary-dark);
+                font-size: 16px;
+                margin-bottom: 8px;
+            }
+
+            .zt_card-title span {
+                display: inline-block;
+                background-color: var(--zt-primary);
+                color: #fff;
+                border-radius: 4px;
+                padding: 0 8px;
+                margin-right: 8px;
+                font-size: 14px;
+            }
+
+            .zt_note { color: var(--zt-muted); font-size: 14px; margin: 6px 0; }
+
+            .zt_code {
+                background-color: var(--zt-primary-dark);
+                color: #ecf0f1;
+                padding: 12px 14px;
+                border-radius: 6px;
+                font-family: Consolas, "Courier New", monospace;
+                font-size: 14px;
+                line-height: 1.7;
+                white-space: pre-wrap;
+                word-break: break-all;
+                margin: 10px 0;
+                overflow-x: auto;
+            }
+
+            /* JSON 语法高亮 */
+            .zt_json {
+                background-color: #1e2a36;
+                color: #ecf0f1;
+                padding: 16px 18px;
+                border-radius: 6px;
+                font-family: Consolas, "Courier New", monospace;
+                font-size: 13.5px;
+                line-height: 1.75;
+                white-space: pre;
+                overflow-x: auto;
+                margin: 10px 0;
+            }
+
+            .zt-json-key { color: #7fd1ff; }
+            .zt-json-str { color: #a8e6a1; }
+            .zt-json-num { color: #ffb86c; }
+            .zt-json-bool { color: #ff7f9f; }
+
+            .zt_runbox {
+                background-color: #f4f9ff;
+                border: 1px dashed var(--zt-primary);
+                border-radius: 6px;
+                padding: 10px 14px;
+                font-family: Consolas, "Courier New", monospace;
+                font-size: 14px;
+                color: var(--zt-primary-dark);
+                white-space: pre-wrap;
+                word-break: break-all;
+            }
+
+            .zt_runbox b { color: var(--zt-green); }
+            .zt_run-line { display: block; }
+
+            .zt_table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 10px 0;
+                font-size: 14px;
+                background-color: #fff;
+            }
+
+            .zt_table th,
+            .zt_table td {
+                border: 1px solid var(--zt-border);
+                padding: 8px 12px;
+                text-align: left;
+            }
+
+            .zt_table th {
+                background-color: #eaf4fd;
+                color: var(--zt-primary-dark);
+                font-weight: bold;
+            }
+
+            .zt_table tr:hover td { background-color: #f7fbff; }
+
+            .zt_tag {
+                display: inline-block;
+                padding: 1px 10px;
+                border-radius: 20px;
+                font-size: 13px;
+                background-color: #eaf4fd;
+                color: var(--zt-primary-dark);
+                border: 1px solid var(--zt-primary);
+                margin: 2px 4px 2px 0;
+            }
+
+            .zt_grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 16px;
+            }
+
+            .zt_btn {
+                padding: 8px 18px;
+                background-color: var(--zt-primary);
+                color: #fff;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 15px;
+                font-family: inherit;
+            }
+
+            .zt_btn:hover { background-color: #217dbb; }
+            .zt_btn.zt-btn-green { background-color: var(--zt-green); }
+            .zt_btn.zt-btn-gray { background-color: var(--zt-muted); }
+
+            .zt_textarea {
+                width: 100%;
+                min-height: 130px;
+                padding: 10px 12px;
+                border: 1px solid var(--zt-border);
+                border-radius: 6px;
+                font-family: Consolas, "Courier New", monospace;
+                font-size: 13.5px;
+                line-height: 1.7;
+                resize: vertical;
+                box-sizing: border-box;
+                outline: none;
+            }
+
+            .zt_textarea:focus { border-color: var(--zt-primary); }
+
+            .zt_form { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 10px 0; }
+
+            .zt_ok { color: var(--zt-green); font-weight: bold; }
+            .zt_err { color: var(--zt-red); font-weight: bold; }
+
+            .zt_footer {
+                text-align: center;
+                color: var(--zt-muted);
+                font-size: 13px;
+                margin-top: 30px;
+                border-top: 1px solid var(--zt-border);
+                padding-top: 15px;
+            }
+
+            @media (max-width: 600px) {
+                .zt_container { padding: 15px; }
+                .zt_body { padding: 10px; }
+            }
+        </style>
+    </head>
+    <body class="zt_body">
+        <div class="zt_container">
+            <h1 class="zt_title">JSON 数据格式</h1>
+            <div class="zt_student">姓名：张涛　　班级：　　学号：　　日期：2026-11-02</div>
+
+            <div class="zt_desc">
+                JSON（JavaScript Object Notation）是一种<b>轻量级的文本数据交换格式</b>，
+                用键值对描述数据，语法是 JavaScript 对象字面量的子集，但与语言无关，几乎所有后端语言都能生成和解析。
+                前端通过 <b>JSON.parse()</b> 把 JSON 字符串变成 JS 对象来用，通过 <b>JSON.stringify()</b> 把对象变回 JSON 字符串发送给后端。
+                本页所有示例都由 JavaScript 现场解析、生成并渲染，控制台（F12）可查看输出。
+            </div>
+
+            <!-- ================= 一、语法规则 ================= -->
+            <div class="zt_module">
+                <div class="zt_module-head">一、JSON 的语法规则</div>
+                <div class="zt_module-body">
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>1</span>六种合法的值类型</div>
+                        <table class="zt_table">
+                            <thead>
+                                <tr><th style="width:130px">类型</th><th style="width:220px">示例</th><th>说明</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>字符串 string</td><td><code>"张涛"</code></td><td>必须用<b>双引号</b>，不能用单引号</td></tr>
+                                <tr><td>数字 number</td><td><code>20</code> <code>3.14</code> <code>-5</code></td><td>整数、小数、负数，不能有 NaN / Infinity</td></tr>
+                                <tr><td>布尔 boolean</td><td><code>true</code> <code>false</code></td><td>只有小写两种</td></tr>
+                                <tr><td>空值 null</td><td><code>null</code></td><td>表示空，JSON 里没有 undefined</td></tr>
+                                <tr><td>对象 object</td><td><code>{"name":"张涛"}</code></td><td>键必须是双引号字符串，值可以是任意合法类型</td></tr>
+                                <tr><td>数组 array</td><td><code>["HTML","CSS"]</code></td><td>用中括号，元素类型可以不同</td></tr>
+                            </tbody>
+                        </table>
+                        <div class="zt_note">
+                            注意：JSON <b>不允许</b> 注释（<code>//</code>、<code>/* */</code>）、<b>不允许</b> 末尾多余的逗号、
+                            <b>不允许</b> 单引号、<b>不允许</b> undefined 和函数。
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= 二、一个完整的 JSON ================= -->
+            <div class="zt_module">
+                <div class="zt_module-head">二、一个完整的 JSON 示例（带语法高亮）</div>
+                <div class="zt_module-body">
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>2</span>嵌套对象 + 数组 + 各种值类型</div>
+                        <div class="zt_json zt-out-json-demo"></div>
+                        <div class="zt_note">键值用冒号分隔、同级用逗号分隔、最外层用大括号包住整个对象。</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= 三、parse / stringify ================= -->
+            <div class="zt_module">
+                <div class="zt_module-head">三、JSON 字符串 ⇄ JS 对象</div>
+                <div class="zt_module-body">
+                    <div class="zt_grid">
+                        <div class="zt_card">
+                            <div class="zt_card-title"><span>3-1</span>JSON.parse()：字符串 → 对象</div>
+                            <div class="zt_note">解析后就能用 <code>对象.属性</code>、<code>数组[下标]</code> 正常访问，也可以遍历。</div>
+                            <div class="zt_code">var zt_obj = JSON.parse(zt_jsonText);
+console.log(zt_obj.student.name);   // 张涛
+console.log(zt_obj.student.skills);  // ["HTML","CSS","JavaScript"]</div>
+                            <div class="zt_runbox">运行结果：<div class="zt_runbox zt_out-parse"></div></div>
+                        </div>
+
+                        <div class="zt_card">
+                            <div class="zt_card-title"><span>3-2</span>JSON.stringify()：对象 → 字符串</div>
+                            <div class="zt_note">
+                                第二个参数是缩进（数字表示空格数），传 2 就是格式化输出；不传则是一整行紧凑字符串。
+                            </div>
+                            <div class="zt_code">JSON.stringify(zt_obj);        // 一整行
+JSON.stringify(zt_obj, null, 2); // 缩进 2 空格
+JSON.stringify(zt_obj, ['name','no']); // 只保留指定键</div>
+                            <div class="zt_runbox">运行结果：<div class="zt_runbox zt_out-stringify"></div></div>
+                        </div>
+                    </div>
+
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>3-3</span>replacer 过滤字段（只上传需要的字段）</div>
+                        <div class="zt_code">var zt_simple = JSON.stringify(zt_obj.student, ['name', 'no', 'skills']);
+console.log(zt_simple);
+// {"name":"张涛","no":"24001010104","skills":["HTML","CSS","JavaScript"]}</div>
+                        <div class="zt_runbox">运行结果：<div class="zt_runbox zt_out-replacer"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= 四、常见坑 ================= -->
+            <div class="zt_module">
+                <div class="zt_module-head">四、最容易踩的坑</div>
+                <div class="zt_module-body">
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>4</span>字符串化时被"丢掉"的值 / 解析时直接报错</div>
+                        <table class="zt_table">
+                            <thead>
+                                <tr><th style="width:230px">情况</th><th style="width:260px">写法</th><th>结果</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>值是 undefined</td><td><code>{"a": undefined}</code></td><td>该键被自动删除</td></tr>
+                                <tr><td>值是函数</td><td><code>{"fn": function(){}}</code></td><td>该键被自动删除</td></tr>
+                                <tr><td>键用单引号</td><td><code>{'a': 1}</code></td><td>parse 报错：Unexpected token</td></tr>
+                                <tr><td>末尾多逗号</td><td><code>{"a":1,}</code></td><td>parse 报错</td></tr>
+                                <tr><td>写了注释</td><td><code>{"a":1} // 注释</code></td><td>parse 报错</td></tr>
+                                <tr><td>循环引用</td><td><code>a.self = a</code></td><td>stringify 报错：Converting circular structure</td></tr>
+                            </tbody>
+                        </table>
+                        <div class="zt_runbox">下面用真实代码试一遍：<div class="zt_runbox zt_out-trap"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= 五、把 JSON 渲染成页面 ================= -->
+            <div class="zt_module">
+                <div class="zt_module-head">五、实际用法：把 JSON 数据渲染成表格和标签</div>
+                <div class="zt_module-body">
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>5</span>解析 → 遍历 → 拼 HTML → 插入页面</div>
+                        <div class="zt_note">这就是前后端分离项目里最常用的套路：后端返回 JSON，前端解析后用循环渲染列表。</div>
+                        <div class="zt_code">var zt_list = JSON.parse(zt_jsonText).courses;   // 取出数组
+zt_list.forEach(function (zt_item) {
+    zt_html += '&lt;tr&gt;&lt;td&gt;' + zt_item.name + '&lt;/td&gt;…&lt;/tr&gt;';
+});
+document.querySelector('.zt-out-courses').innerHTML = zt_html;</div>
+                        <table class="zt_table">
+                            <thead>
+                                <tr><th style="width:80px">编号</th><th>课程</th><th style="width:100px">学分</th><th style="width:140px">任课教师</th><th style="width:120px">成绩</th></tr>
+                            </thead>
+                            <tbody class="zt-out-courses"></tbody>
+                        </table>
+                        <div class="zt_note">学生技能（数组转标签）：</div>
+                        <div class="zt-out-skills"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= 六、在线体验 ================= -->
+            <div class="zt_module">
+                <div class="zt_module-head">六、动手试：粘贴一段 JSON，自动校验并格式化</div>
+                <div class="zt_module-body">
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>6</span>先用 try / catch 包住 JSON.parse，再打印结果</div>
+                        <textarea class="zt_textarea zt-in-json" spellcheck="false">{
+  "name": "张涛",
+  "age": 20,
+  "skills": ["HTML", "CSS", "JavaScript"],
+  "isStudent": true
+}</textarea>
+                        <div class="zt_form">
+                            <button class="zt_btn zt-btn-check" type="button">校验并格式化</button>
+                            <button class="zt_btn zt-btn-green zt-btn-sample" type="button">填入正确示例</button>
+                            <button class="zt_btn zt-btn-gray zt-btn-bad" type="button">填入错误示例</button>
+                        </div>
+                        <div class="zt_runbox">校验结果：<div class="zt_runbox zt_out-validate"></div></div>
+                        <div class="zt_json zt-out-pretty"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="zt_footer">张涛 · JSON 数据格式演示（语法 / 解析 / 生成 / 渲染）</div>
+        </div>
+
+        <script>
+            /* ========== 工具：JSON 语法高亮 ========== */
+            function zt_highlightJson(zt_text) {
+                var zt_html = zt_text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                // 依次匹配：字符串(可选冒号) → 布尔/null → 数字
+                return zt_html.replace(
+                    /("(?:\\.|[^"\\])*")(\s*:)?|\b(true|false|null)\b|(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)/g,
+                    function (m, zt_str, zt_colon, zt_bool, zt_num) {
+                        if (zt_str !== undefined) {
+                            var zt_cls = zt_colon ? 'zt-json-key' : 'zt-json-str';
+                            return '<span class="' + zt_cls + '">' + zt_str + '</span>' + (zt_colon || '');
+                        }
+                        if (zt_bool !== undefined) { return '<span class="zt-json-bool">' + zt_bool + '</span>'; }
+                        if (zt_num !== undefined) { return '<span class="zt-json-num">' + zt_num + '</span>'; }
+                        return m;
+                    }
+                );
+            }
+
+            function zt_set(zt_cls, zt_html) {
+                var zt_node = document.querySelector('.zt_out-' + zt_cls);
+                if (zt_node) { zt_node.innerHTML = zt_html; }
+            }
+
+            function zt_line(zt_text) {
+                return '<span class="zt-run-line">' + zt_text + '</span>';
+            }
+
+            /* ========== 二、示例 JSON（真实字符串，供后面解析） ========== */
+            var zt_jsonText = [
+                '{',
+                '  "school": "大连东软信息学院",',
+                '  "student": {',
+                '    "name": "张涛",',
+                '    "no": "24001010104",',
+                '    "age": 20,',
+                '    "isMember": true,',
+                '    "photo": null,',
+                '    "skills": ["HTML", "CSS", "JavaScript"]',
+                '  },',
+                '  "courses": [',
+                '    { "id": 1, "name": "网页元素设计", "credit": 3, "teacher": "王老师", "score": 92 },',
+                '    { "id": 2, "name": "JavaScript 程序设计", "credit": 4, "teacher": "李老师", "score": 95 },',
+                '    { "id": 3, "name": "数据结构", "credit": 4, "teacher": "赵老师", "score": 88 }',
+                '  ],',
+                '  "total": 275',
+                '}'
+            ].join('\n');
+
+            // 渲染高亮的 JSON
+            document.querySelector('.zt-out-json-demo').innerHTML = zt_highlightJson(zt_jsonText);
+            console.log('【JSON 字符串】长度：', zt_jsonText.length);
+
+            /* ========== 三、parse / stringify ========== */
+            var zt_obj = JSON.parse(zt_jsonText);
+            console.log('【JSON.parse】得到对象：', zt_obj);
+
+            zt_set('parse', zt_line('zt_obj.student.name → <b>' + zt_obj.student.name + '</b>')
+                + zt_line('zt_obj.student.age → <b>' + zt_obj.student.age + '</b>（类型：' + typeof zt_obj.student.age + '）')
+                + zt_line('zt_obj.student.isMember → <b>' + zt_obj.student.isMember + '</b>（类型：' + typeof zt_obj.student.isMember + '）')
+                + zt_line('zt_obj.student.skills[1] → <b>' + zt_obj.student.skills[1] + '</b>（数组长度：' + zt_obj.student.skills.length + '）')
+                + zt_line('zt_obj.courses.length → <b>' + zt_obj.courses.length + '</b> 门课程'));
+
+            var zt_compact = JSON.stringify(zt_obj.student);
+            var zt_pretty = JSON.stringify(zt_obj.student, null, 2);
+            console.log('【JSON.stringify】紧凑：', zt_compact);
+            zt_set('stringify',
+                zt_line('紧凑（无缩进，共 <b>' + zt_compact.length + '</b> 个字符）：')
+                + zt_line('<span style="color:#e74c3c">' + zt_compact.replace(/</g, '&lt;') + '</span>')
+                + zt_line('缩进 2 空格（共 <b>' + zt_pretty.length + '</b> 个字符，多了换行和空格）：')
+                + zt_line('<span style="color:#27ae60">' + zt_pretty.replace(/</g, '&lt;').replace(/\n/g, '<br>') + '</span>'));
+
+            var zt_simple = JSON.stringify(zt_obj.student, ['name', 'no', 'skills']);
+            console.log('【replacer】只保留部分字段：', zt_simple);
+            zt_set('replacer', zt_line(zt_simple.replace(/</g, '&lt;'))
+                + zt_line('→ 相比原始的 ' + zt_compact.length + ' 个字符，精简到 <b>' + zt_simple.length + '</b> 个字符'));
+
+            /* ========== 四、常见坑（真实跑一遍） ========== */
+            var zt_trap = '';
+            // 1. undefined 和函数会被丢掉
+            var zt_t1 = JSON.stringify({ a: 1, b: undefined, c: function () { } });
+            zt_trap += zt_line('JSON.stringify({a:1, b:undefined, c:function(){}}) → <b>' + zt_t1 + '</b>（b、c 被忽略）');
+            // 2. 单引号 parse 报错
+            try {
+                JSON.parse("{'a': 1}");
+                zt_trap += zt_line('单引号解析：竟然成功了？');
+            } catch (e) {
+                zt_trap += zt_line('JSON.parse("{\'a\': 1}") → <span class="zt_err">报错：' + e.message + '</span>');
+            }
+            // 3. 末尾多逗号报错
+            try {
+                JSON.parse('{"a": 1,}');
+                zt_trap += zt_line('末尾逗号：竟然成功了？');
+            } catch (e) {
+                zt_trap += zt_line('JSON.parse(\'{"a": 1,}\') → <span class="zt_err">报错：' + e.message + '</span>');
+            }
+            // 4. 循环引用
+            var zt_circle = { name: '张涛' };
+            zt_circle.self = zt_circle;
+            try {
+                JSON.stringify(zt_circle);
+                zt_trap += zt_line('循环引用：竟然成功了？');
+            } catch (e) {
+                zt_trap += zt_line('stringify 循环引用 → <span class="zt_err">报错：' + e.message + '</span>');
+            }
+            zt_set('trap', zt_trap);
+            console.log('【常见坑】演示完成');
+
+            /* ========== 五、渲染成表格 / 标签 ========== */
+            var zt_courseHtml = '';
+            zt_obj.courses.forEach(function (zt_c) {
+                zt_courseHtml += '<tr>'
+                    + '<td>' + zt_c.id + '</td>'
+                    + '<td>' + zt_c.name + '</td>'
+                    + '<td>' + zt_c.credit + '</td>'
+                    + '<td>' + zt_c.teacher + '</td>'
+                    + '<td>' + zt_c.score + '</td>'
+                    + '</tr>';
+            });
+            document.querySelector('.zt-out-courses').innerHTML = zt_courseHtml;
+
+            var zt_skillHtml = '';
+            zt_obj.student.skills.forEach(function (zt_s) {
+                zt_skillHtml += '<span class="zt_tag">' + zt_s + '</span>';
+            });
+            document.querySelector('.zt-out-skills').innerHTML = zt_skillHtml;
+            console.log('【渲染】课程表与技能标签已生成');
+
+            /* ========== 六、在线校验 ========== */
+            function zt_validate() {
+                var zt_text = document.querySelector('.zt-in-json').value;
+                var zt_prettyBox = document.querySelector('.zt-out-pretty');
+                if (zt_text.trim() === '') {
+                    zt_set('validate', '<span class="zt_err">内容为空，请输入 JSON</span>');
+                    zt_prettyBox.innerHTML = '';
+                    return;
+                }
+                try {
+                    var zt_data = JSON.parse(zt_text);
+                    var zt_formatted = JSON.stringify(zt_data, null, 2);
+                    var zt_type = Array.isArray(zt_data) ? '数组' : typeof zt_data;
+                    var zt_keys = (zt_type === 'object' && zt_data) ? Object.keys(zt_data).length : 0;
+                    console.log('【校验通过】解析结果：', zt_data);
+                    zt_set('validate',
+                        '<span class="zt_ok">✓ 合法 JSON</span>　顶层类型：<b>' + zt_type + '</b>'
+                        + '　顶层键数量：<b>' + zt_keys + '</b>　格式化后长度：<b>' + zt_formatted.length + '</b>');
+                    zt_prettyBox.innerHTML = zt_highlightJson(zt_formatted);
+                } catch (zt_e) {
+                    console.log('【校验失败】', zt_e.message);
+                    zt_set('validate', '<span class="zt_err">✗ 不是合法的 JSON：' + zt_e.message + '</span>');
+                    zt_prettyBox.innerHTML = '';
+                }
+            }
+
+            document.querySelector('.zt-btn-check').addEventListener('click', zt_validate);
+
+            document.querySelector('.zt-btn-sample').addEventListener('click', function () {
+                document.querySelector('.zt-in-json').value = JSON.stringify({
+                    name: '张涛',
+                    no: '24001010104',
+                    skills: ['HTML', 'CSS', 'JavaScript'],
+                    courses: [{ name: '网页元素设计', score: 92 }, { name: 'JavaScript 程序设计', score: 95 }]
+                }, null, 2);
+                zt_validate();
+            });
+
+            document.querySelector('.zt-btn-bad').addEventListener('click', function () {
+                // 故意写错：单引号 + 末尾逗号
+                document.querySelector('.zt-in-json').value = "{'name': '张涛', 'age': 20,}";
+                zt_validate();
+            });
+
+            // 页面加载后先校验一次默认内容
+            zt_validate();
+
+            console.log('===== 17-1 JSON 数据格式 演示完毕 =====');
+        </script>
+    </body>
+</html>

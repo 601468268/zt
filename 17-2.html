@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<!-- 姓名：张涛，日期：2026-11-02，功能名称：17-2 使用 fetch 获取接口数据并展示 -->
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>17-2 fetch 获取接口数据</title>
+        <style>
+            :root {
+                --zt-primary: #3498db;
+                --zt-primary-dark: #2c3e50;
+                --zt-bg: #f5f7fa;
+                --zt-card: #ffffff;
+                --zt-gray: #ecf0f1;
+                --zt-text: #2c3e50;
+                --zt-muted: #7f8c8d;
+                --zt-green: #27ae60;
+                --zt-red: #e74c3c;
+                --zt-orange: #f39c12;
+                --zt-border: #dfe6e9;
+            }
+
+            .zt_body {
+                font-family: "Microsoft YaHei", Arial, sans-serif;
+                background-color: var(--zt-bg);
+                color: var(--zt-text);
+                margin: 0;
+                padding: 20px;
+                line-height: 1.8;
+            }
+
+            .zt_container {
+                max-width: 1150px;
+                margin: 0 auto;
+                background-color: var(--zt-card);
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            }
+
+            .zt_title {
+                color: var(--zt-primary-dark);
+                text-align: center;
+                border-bottom: 3px solid var(--zt-primary);
+                padding-bottom: 12px;
+                margin-top: 0;
+            }
+
+            .zt_student {
+                text-align: center;
+                color: var(--zt-muted);
+                margin: 10px 0 25px;
+                font-size: 14px;
+            }
+
+            .zt_desc {
+                margin: 15px 0 25px;
+                padding: 12px 18px;
+                background-color: var(--zt-gray);
+                border-left: 5px solid var(--zt-primary);
+                border-radius: 4px;
+            }
+
+            .zt_module {
+                margin: 30px 0;
+                border: 1px solid var(--zt-border);
+                border-radius: 8px;
+                overflow: hidden;
+            }
+
+            .zt_module-head {
+                background-color: var(--zt-primary);
+                color: #fff;
+                padding: 10px 18px;
+                font-size: 18px;
+                font-weight: bold;
+            }
+
+            .zt_module-body { padding: 18px; }
+
+            .zt_card {
+                border: 1px solid var(--zt-border);
+                border-radius: 6px;
+                padding: 14px 16px;
+                margin-bottom: 16px;
+                background-color: #fcfdfe;
+            }
+
+            .zt_card-title {
+                font-weight: bold;
+                color: var(--zt-primary-dark);
+                font-size: 16px;
+                margin-bottom: 8px;
+            }
+
+            .zt_card-title span {
+                display: inline-block;
+                background-color: var(--zt-primary);
+                color: #fff;
+                border-radius: 4px;
+                padding: 0 8px;
+                margin-right: 8px;
+                font-size: 14px;
+            }
+
+            .zt_note { color: var(--zt-muted); font-size: 14px; margin: 6px 0; }
+
+            .zt_code {
+                background-color: var(--zt-primary-dark);
+                color: #ecf0f1;
+                padding: 12px 14px;
+                border-radius: 6px;
+                font-family: Consolas, "Courier New", monospace;
+                font-size: 13.5px;
+                line-height: 1.7;
+                white-space: pre-wrap;
+                word-break: break-all;
+                margin: 10px 0;
+                overflow-x: auto;
+            }
+
+            .zt_runbox {
+                background-color: #f4f9ff;
+                border: 1px dashed var(--zt-primary);
+                border-radius: 6px;
+                padding: 10px 14px;
+                font-family: Consolas, "Courier New", monospace;
+                font-size: 14px;
+                color: var(--zt-primary-dark);
+                white-space: pre-wrap;
+                word-break: break-all;
+            }
+
+            .zt_runbox b { color: var(--zt-green); }
+            .zt_run-line { display: block; }
+
+            /* ===== 状态徽章 ===== */
+            .zt_statusbar {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 16px;
+            }
+
+            .zt_badge {
+                font-size: 13px;
+                padding: 4px 12px;
+                border-radius: 999px;
+                background-color: var(--zt-gray);
+                color: var(--zt-primary-dark);
+                font-family: Consolas, monospace;
+            }
+
+            .zt_badge.zt-ok { background: #e8f8ef; color: var(--zt-green); }
+            .zt_badge.zt-err { background: #fdecea; color: var(--zt-red); }
+            .zt_badge.zt-loading { background: #fff5e6; color: var(--zt-orange); }
+
+            .zt_url {
+                font-family: Consolas, monospace;
+                font-size: 12.5px;
+                color: var(--zt-muted);
+                word-break: break-all;
+                flex: 1;
+                min-width: 220px;
+            }
+
+            .zt_btn {
+                padding: 8px 18px;
+                background-color: var(--zt-primary);
+                color: #fff;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 15px;
+                font-family: inherit;
+            }
+
+            .zt_btn:hover { background-color: #217dbb; }
+            .zt_btn.zt-btn-green { background-color: var(--zt-green); }
+            .zt_btn.zt-btn-gray { background-color: var(--zt-muted); }
+            .zt_btn:disabled { background-color: #bdc3c7; cursor: not-allowed; }
+
+            .zt_select {
+                padding: 8px 12px;
+                border: 1px solid var(--zt-border);
+                border-radius: 4px;
+                font-size: 14px;
+                font-family: inherit;
+                background: #fff;
+                outline: none;
+            }
+
+            .zt_form { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 10px 0; }
+
+            /* ===== 商品布局 ===== */
+            .zt_layout {
+                display: grid;
+                grid-template-columns: 1fr 340px;
+                gap: 18px;
+                align-items: start;
+            }
+
+            .zt_products {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 14px;
+            }
+
+            .zt_product {
+                border: 1px solid var(--zt-border);
+                border-radius: 8px;
+                padding: 12px;
+                background: #fff;
+                cursor: pointer;
+                transition: box-shadow .18s, transform .18s, border-color .18s;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .zt_product:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 20px rgba(0, 0, 0, .09);
+            }
+
+            .zt_product.zt-active {
+                border-color: var(--zt-primary);
+                box-shadow: 0 0 0 2px rgba(52, 152, 219, .2);
+            }
+
+            .zt_product-img {
+                width: 100%;
+                height: 140px;
+                object-fit: contain;
+                background: #fff;
+                display: block;
+                margin-bottom: 10px;
+            }
+
+            .zt_product-name {
+                font-size: 13.5px;
+                font-weight: 600;
+                line-height: 1.5;
+                color: var(--zt-text);
+                height: 42px;
+                overflow: hidden;
+                margin: 0 0 6px;
+            }
+
+            .zt_product-cate {
+                font-size: 11.5px;
+                color: var(--zt-primary);
+                background: #eaf4fd;
+                border-radius: 4px;
+                padding: 1px 8px;
+                align-self: flex-start;
+                margin-bottom: 8px;
+            }
+
+            .zt_product-bottom {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-top: auto;
+            }
+
+            .zt_price { color: var(--zt-orange); font-weight: 700; font-size: 16px; }
+            .zt_rate { color: var(--zt-red); font-size: 12.5px; }
+
+            /* ===== 详情面板 ===== */
+            .zt_detail {
+                position: sticky;
+                top: 20px;
+                border: 1px solid var(--zt-border);
+                border-radius: 8px;
+                padding: 16px;
+                background: #fcfdfe;
+                min-height: 260px;
+            }
+
+            .zt_detail-img {
+                width: 100%;
+                height: 190px;
+                object-fit: contain;
+                background: #fff;
+                border-radius: 6px;
+                margin-bottom: 12px;
+            }
+
+            .zt_detail h3 {
+                font-size: 15px;
+                line-height: 1.6;
+                margin: 0 0 8px;
+            }
+
+            .zt_detail-row {
+                display: flex;
+                justify-content: space-between;
+                font-size: 13.5px;
+                padding: 5px 0;
+                border-bottom: 1px dashed var(--zt-border);
+            }
+
+            .zt_detail-desc {
+                font-size: 13px;
+                color: var(--zt-muted);
+                line-height: 1.8;
+                margin-top: 10px;
+            }
+
+            .zt_empty {
+                color: var(--zt-muted);
+                font-size: 13.5px;
+                text-align: center;
+                padding: 60px 0;
+            }
+
+            /* ===== 日志 ===== */
+            .zt_log {
+                background-color: var(--zt-primary-dark);
+                color: #ecf0f1;
+                border-radius: 6px;
+                padding: 10px 14px;
+                font-family: Consolas, monospace;
+                font-size: 12.5px;
+                line-height: 1.8;
+                max-height: 170px;
+                overflow-y: auto;
+                white-space: pre-wrap;
+            }
+
+            .zt_jsonview {
+                background-color: #1e2a36;
+                color: #a8e6a1;
+                border-radius: 6px;
+                padding: 12px 14px;
+                font-family: Consolas, monospace;
+                font-size: 12.5px;
+                line-height: 1.7;
+                max-height: 260px;
+                overflow: auto;
+                white-space: pre;
+            }
+
+            .zt_footer {
+                text-align: center;
+                color: var(--zt-muted);
+                font-size: 13px;
+                margin-top: 30px;
+                border-top: 1px solid var(--zt-border);
+                padding-top: 15px;
+            }
+
+            @media (max-width: 860px) {
+                .zt_layout { grid-template-columns: 1fr; }
+                .zt_detail { position: static; }
+            }
+
+            @media (max-width: 600px) {
+                .zt_container { padding: 15px; }
+                .zt_body { padding: 10px; }
+            }
+        </style>
+    </head>
+    <body class="zt_body">
+        <div class="zt_container">
+            <h1 class="zt_title">用 fetch 获取接口数据并展示</h1>
+            <div class="zt_student">姓名：张涛　　班级：　　学号：　　日期：2026-11-02</div>
+
+            <div class="zt_desc">
+                本页使用原生 <b>fetch</b>（不依赖任何库）请求开放接口
+                <b>https://fakestoreapi.com</b>：先请求商品列表并渲染成卡片，
+                点击某张卡片时再按商品 ID 请求详情接口，展示单条数据。
+                接口已开启跨域（<code>Access-Control-Allow-Origin: *</code>），可直接在浏览器端访问。
+                打开控制台（F12）可以看到每一次请求的状态码、耗时和返回数据。
+            </div>
+
+            <!-- ================= 一、接口说明 ================= -->
+            <div class="zt_module">
+                <div class="zt_module-head">一、接口说明与核心代码</div>
+                <div class="zt_module-body">
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>1-1</span>本页使用的两个接口</div>
+                        <div class="zt_code">GET  https://fakestoreapi.com/products                    商品列表（数组）
+GET  https://fakestoreapi.com/products/1                   单个商品详情（对象）
+GET  https://fakestoreapi.com/products/category/jewelery   按分类筛选
+GET  https://fakestoreapi.com/products/categories          全部分类名</div>
+                        <div class="zt_note">
+                            返回数据里每条商品包含：<code>id、title、price、description、category、image、rating{rate, count}</code>。
+                        </div>
+                    </div>
+
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>1-2</span>核心代码：async / await + fetch + res.json()</div>
+                        <div class="zt_code">// 请求列表：await 等待响应，res.ok 判断是否成功，res.json() 把响应体转成对象
+async function zt_loadProducts() {
+    var zt_res = await fetch('https://fakestoreapi.com/products');
+    if (!zt_res.ok) { throw new Error('HTTP ' + zt_res.status); }  // 404/500 等
+    var zt_list = await zt_res.json();      // JSON 字符串 → JS 数组
+    console.log(zt_list.length);            // 20 条
+}
+
+// 请求详情：接口路径里带上 id
+async function zt_loadDetail(zt_id) {
+    var zt_res = await fetch('https://fakestoreapi.com/products/' + zt_id);
+    var zt_item = await zt_res.json();
+}
+
+// 一定要用 try / catch 包住，网络错误、接口报错都在这里处理
+try { await zt_loadProducts(); } catch (zt_e) { console.error(zt_e.message); }</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= 二、商品列表 + 详情 ================= -->
+            <div class="zt_module">
+                <div class="zt_module-head">二、实时请求演示（点击卡片查看详情）</div>
+                <div class="zt_module-body">
+                    <div class="zt_statusbar">
+                        <button class="zt_btn zt-btn-load" type="button">重新加载列表</button>
+                        <select class="zt_select zt-sel-category">
+                            <option value="">全部分类</option>
+                        </select>
+                        <span class="zt_badge zt-badge-state">等待请求</span>
+                        <span class="zt_badge zt-badge-time">耗时 —</span>
+                        <span class="zt_badge zt-badge-count">0 条</span>
+                    </div>
+                    <div class="zt_url zt-request-url">请求地址：—</div>
+
+                    <div class="zt_layout">
+                        <div class="zt_products zt-out-products">
+                            <p class="zt_empty">正在加载商品列表…</p>
+                        </div>
+
+                        <aside class="zt_detail zt-out-detail">
+                            <p class="zt_empty">点击左侧任意商品<br>将按 ID 请求详情接口</p>
+                        </aside>
+                    </div>
+
+                    <div class="zt_form">
+                        <button class="zt_btn zt-btn-green zt-btn-retry" type="button">重试上一次请求</button>
+                        <span class="zt_note">网络异常时接口会报错，错误信息会显示在下面的日志里。</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= 三、请求日志与原始 JSON ================= -->
+            <div class="zt_module">
+                <div class="zt_module-head">三、请求日志与原始 JSON 数据</div>
+                <div class="zt_module-body">
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>3-1</span>请求日志（每次请求一条）</div>
+                        <div class="zt_log zt-out-log"></div>
+                    </div>
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>3-2</span>接口返回的原始 JSON（前 2 条，JSON.stringify 格式化）</div>
+                        <div class="zt_jsonview zt-out-rawjson"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="zt_footer">张涛 · fetch 获取接口数据演示（列表 + 详情 + 错误处理）</div>
+        </div>
+
+        <script>
+            /* ========== 接口与状态 ========== */
+            var ZT_API = 'https://fakestoreapi.com';
+            var zt_lastUrl = '';
+            var zt_selectedId = null;
+
+            var ztProducts = document.querySelector('.zt-out-products');
+            var ztDetail = document.querySelector('.zt-out-detail');
+            var ztLog = document.querySelector('.zt-out-log');
+            var ztRaw = document.querySelector('.zt-out-rawjson');
+            var ztState = document.querySelector('.zt-badge-state');
+            var ztTime = document.querySelector('.zt-badge-time');
+            var ztCount = document.querySelector('.zt-badge-count');
+            var ztUrlBox = document.querySelector('.zt-request-url');
+            var ztCatSel = document.querySelector('.zt-sel-category');
+
+            /* ========== 工具 ========== */
+            function zt_log(zt_text) {
+                ztLog.textContent += zt_text + '\n';
+                ztLog.scrollTop = ztLog.scrollHeight;
+            }
+
+            function zt_setState(zt_type, zt_text) {
+                ztState.className = 'zt_badge zt-badge-state ' + zt_type;
+                ztState.textContent = zt_text;
+            }
+
+            function zt_stars(zt_rate) {
+                var zt_full = Math.round(zt_rate);
+                var zt_s = '';
+                for (var i = 1; i <= 5; i++) { zt_s += (i <= zt_full ? '★' : '☆'); }
+                return zt_s;
+            }
+
+            /* ========== 一、加载商品列表 ========== */
+            async function zt_loadProducts(zt_category) {
+                var zt_url = zt_category
+                    ? ZT_API + '/products/category/' + encodeURIComponent(zt_category)
+                    : ZT_API + '/products';
+
+                zt_lastUrl = zt_url;
+                ztUrlBox.textContent = '请求地址：' + zt_url;
+                zt_setState('zt-loading', '加载中…');
+                ztProducts.innerHTML = '<p class="zt_empty">正在加载商品列表…</p>';
+                zt_log('[GET] ' + zt_url);
+
+                var zt_start = performance.now();
+                try {
+                    var zt_res = await fetch(zt_url);          // ① 发请求
+                    var zt_ms = Math.round(performance.now() - zt_start);
+                    ztTime.textContent = '耗时 ' + zt_ms + ' ms';
+                    zt_log('  ← 状态码 ' + zt_res.status + ' ' + zt_res.statusText + '，耗时 ' + zt_ms + ' ms');
+
+                    if (!zt_res.ok) {                          // ② 判断是否成功
+                        throw new Error('HTTP ' + zt_res.status);
+                    }
+
+                    var zt_data = await zt_res.json();         // ③ 响应体转 JSON
+                    zt_log('  ← 返回 ' + zt_data.length + ' 条数据，首条标题：' + (zt_data[0] ? zt_data[0].title : '—'));
+
+                    zt_renderProducts(zt_data);
+                    zt_renderRaw(zt_data);
+                    zt_setState('zt-ok', '200 OK');
+                    ztCount.textContent = zt_data.length + ' 条';
+                    console.log('【列表】获取成功：', zt_data);
+                } catch (zt_err) {
+                    var zt_ms2 = Math.round(performance.now() - zt_start);
+                    ztTime.textContent = '耗时 ' + zt_ms2 + ' ms';
+                    zt_log('  ✗ 请求失败：' + zt_err.message);
+                    zt_setState('zt-err', '请求失败');
+                    ztCount.textContent = '0 条';
+                    ztProducts.innerHTML = '<p class="zt_empty">加载失败：' + zt_err.message
+                        + '<br><br>可能是网络问题或被浏览器拦截，请点下方「重试」。<br>'
+                        + '也可以把本页放到 http 环境下打开（如 GitHub Pages）。</p>';
+                    ztRaw.textContent = '（无数据）';
+                    console.error('【列表】请求失败：', zt_err);
+                }
+            }
+
+            /* ========== 渲染商品卡片 ========== */
+            function zt_renderProducts(zt_list) {
+                if (!zt_list || zt_list.length === 0) {
+                    ztProducts.innerHTML = '<p class="zt_empty">该分类下没有商品</p>';
+                    return;
+                }
+                var zt_html = '';
+                zt_list.forEach(function (zt_p) {
+                    zt_html += '<div class="zt_product" data-id="' + zt_p.id + '">'
+                        + '<img class="zt_product-img" src="' + zt_p.image + '" alt="' + zt_p.title.replace(/"/g, '') + '" loading="lazy">'
+                        + '<p class="zt_product-name">' + zt_p.title + '</p>'
+                        + '<span class="zt_product-cate">' + zt_p.category + '</span>'
+                        + '<div class="zt_product-bottom">'
+                        + '<span class="zt_price">$' + zt_p.price + '</span>'
+                        + '<span class="zt_rate">' + zt_stars(zt_p.rating.rate) + ' ' + zt_p.rating.rate + '</span>'
+                        + '</div></div>';
+                });
+                ztProducts.innerHTML = zt_html;
+            }
+
+            /* ========== 渲染原始 JSON ========== */
+            function zt_renderRaw(zt_data) {
+                var zt_show = Array.isArray(zt_data) ? zt_data.slice(0, 2) : zt_data;
+                var zt_text = JSON.stringify(zt_show, null, 2);
+                ztRaw.textContent = zt_text.length > 4000 ? zt_text.slice(0, 4000) + '\n…（已截断）' : zt_text;
+            }
+
+            /* ========== 二、按 ID 加载详情 ========== */
+            async function zt_loadDetail(zt_id) {
+                var zt_url = ZT_API + '/products/' + zt_id;
+                zt_lastUrl = zt_url;
+                ztUrlBox.textContent = '请求地址：' + zt_url;
+                ztDetail.innerHTML = '<p class="zt_empty">正在加载 id=' + zt_id + ' 的详情…</p>';
+                zt_log('[GET] ' + zt_url);
+
+                var zt_start = performance.now();
+                try {
+                    var zt_res = await fetch(zt_url);
+                    var zt_ms = Math.round(performance.now() - zt_start);
+                    zt_log('  ← 状态码 ' + zt_res.status + '，耗时 ' + zt_ms + ' ms');
+                    if (!zt_res.ok) { throw new Error('HTTP ' + zt_res.status); }
+                    var zt_item = await zt_res.json();
+                    zt_log('  ← 详情：' + zt_item.title + '（$' + zt_item.price + '）');
+                    ztTime.textContent = '耗时 ' + zt_ms + ' ms';
+                    zt_setState('zt-ok', '200 OK');
+                    zt_renderDetail(zt_item);
+                    ztRaw.textContent = JSON.stringify(zt_item, null, 2);
+                    console.log('【详情】id=' + zt_id, zt_item);
+                } catch (zt_err) {
+                    zt_log('  ✗ 详情请求失败：' + zt_err.message);
+                    zt_setState('zt-err', '请求失败');
+                    ztDetail.innerHTML = '<p class="zt_empty">详情加载失败：' + zt_err.message + '</p>';
+                }
+            }
+
+            /* ========== 渲染详情面板 ========== */
+            function zt_renderDetail(zt_item) {
+                ztDetail.innerHTML =
+                    '<img class="zt_detail-img" src="' + zt_item.image + '" alt="商品图">'
+                    + '<h3>' + zt_item.title + '</h3>'
+                    + '<div class="zt_detail-row"><span>商品ID</span><b>' + zt_item.id + '</b></div>'
+                    + '<div class="zt_detail-row"><span>分类</span><b>' + zt_item.category + '</b></div>'
+                    + '<div class="zt_detail-row"><span>价格</span><b style="color:#f39c12">$' + zt_item.price + '</b></div>'
+                    + '<div class="zt_detail-row"><span>评分</span><b style="color:#e74c3c">'
+                    + zt_stars(zt_item.rating.rate) + ' ' + zt_item.rating.rate + '（' + zt_item.rating.count + ' 人）</b></div>'
+                    + '<p class="zt_detail-desc">' + zt_item.description + '</p>';
+            }
+
+            /* ========== 三、加载分类下拉 ========== */
+            async function zt_loadCategories() {
+                try {
+                    var zt_res = await fetch(ZT_API + '/products/categories');
+                    var zt_cats = await zt_res.json();
+                    zt_log('[GET] ' + ZT_API + '/products/categories → ' + zt_cats.length + ' 个分类');
+                    var zt_html = '<option value="">全部分类</option>';
+                    zt_cats.forEach(function (zt_c) {
+                        zt_html += '<option value="' + zt_c + '">' + zt_c + '</option>';
+                    });
+                    ztCatSel.innerHTML = zt_html;
+                } catch (zt_e) {
+                    zt_log('  ✗ 分类接口失败：' + zt_e.message);
+                }
+            }
+
+            /* ========== 交互绑定 ========== */
+            document.querySelector('.zt-btn-load').addEventListener('click', function () {
+                zt_loadProducts(ztCatSel.value);
+            });
+
+            document.querySelector('.zt-btn-retry').addEventListener('click', function () {
+                if (zt_lastUrl) {
+                    zt_log('[重试] ' + zt_lastUrl);
+                    if (/\/products\/\d+$/.test(zt_lastUrl)) {
+                        zt_loadDetail(zt_lastUrl.split('/').pop());
+                    } else {
+                        zt_loadProducts(ztCatSel.value);
+                    }
+                } else {
+                    zt_loadProducts('');
+                }
+            });
+
+            ztCatSel.addEventListener('change', function () {
+                zt_loadProducts(ztCatSel.value);
+            });
+
+            // 事件委托：点卡片取 data-id 请求详情
+            ztProducts.addEventListener('click', function (zt_e) {
+                var zt_card = zt_e.target.closest('.zt_product');
+                if (!zt_card) { return; }
+                var zt_id = zt_card.dataset.id;
+                zt_selectedId = zt_id;
+                document.querySelectorAll('.zt_product').forEach(function (el) {
+                    el.classList.toggle('zt-active', el === zt_card);
+                });
+                zt_loadDetail(zt_id);
+            });
+
+            /* ========== 初始化 ========== */
+            zt_loadCategories();
+            zt_loadProducts('');
+
+            console.log('===== 17-2 fetch 获取接口数据 演示开始 =====');
+        </script>
+    </body>
+</html>
