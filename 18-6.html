@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<!-- 姓名：张涛，日期：2026-11-05，功能名称：18-6 Mermaid 智能客服系统流程图与 ER 图 -->
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>18-6 Mermaid 图表 · 智能客服系统流程图与 ER 图</title>
+        <style>
+            :root {
+                --zt-primary: #3498db;
+                --zt-primary-dark: #2c3e50;
+                --zt-bg: #f5f7fa;
+                --zt-card: #ffffff;
+                --zt-gray: #ecf0f1;
+                --zt-text: #2c3e50;
+                --zt-muted: #7f8c8d;
+                --zt-green: #27ae60;
+                --zt-orange: #f39c12;
+                --zt-purple: #8e44ad;
+                --zt-border: #dfe6e9;
+            }
+
+            .zt_body {
+                font-family: "Microsoft YaHei", Arial, sans-serif;
+                background-color: var(--zt-bg);
+                color: var(--zt-text);
+                margin: 0;
+                padding: 20px;
+                line-height: 1.8;
+            }
+
+            .zt_container {
+                max-width: 1150px;
+                margin: 0 auto;
+                background-color: var(--zt-card);
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            }
+
+            .zt_title {
+                color: var(--zt-primary-dark);
+                text-align: center;
+                border-bottom: 3px solid var(--zt-primary);
+                padding-bottom: 12px;
+                margin-top: 0;
+            }
+
+            .zt_student {
+                text-align: center;
+                color: var(--zt-muted);
+                margin: 10px 0 25px;
+                font-size: 14px;
+            }
+
+            .zt_desc {
+                margin: 15px 0 25px;
+                padding: 12px 18px;
+                background-color: var(--zt-gray);
+                border-left: 5px solid var(--zt-primary);
+                border-radius: 4px;
+            }
+
+            .zt_module {
+                margin: 30px 0;
+                border: 1px solid var(--zt-border);
+                border-radius: 8px;
+                overflow: hidden;
+            }
+
+            .zt_module-head {
+                background-color: var(--zt-primary);
+                color: #fff;
+                padding: 10px 18px;
+                font-size: 18px;
+                font-weight: bold;
+            }
+
+            .zt_module-body { padding: 18px; }
+
+            .zt_card {
+                border: 1px solid var(--zt-border);
+                border-radius: 6px;
+                padding: 14px 16px;
+                margin-bottom: 16px;
+                background-color: #fcfdfe;
+            }
+
+            .zt_card-title {
+                font-weight: bold;
+                color: var(--zt-primary-dark);
+                font-size: 16px;
+                margin-bottom: 8px;
+            }
+
+            .zt_card-title span {
+                display: inline-block;
+                background-color: var(--zt-primary);
+                color: #fff;
+                border-radius: 4px;
+                padding: 0 8px;
+                margin-right: 8px;
+                font-size: 14px;
+            }
+
+            .zt_note { color: var(--zt-muted); font-size: 14px; margin: 6px 0; }
+
+            .zt_code {
+                background-color: var(--zt-primary-dark);
+                color: #ecf0f1;
+                padding: 12px 14px;
+                border-radius: 6px;
+                font-family: Consolas, "Courier New", monospace;
+                font-size: 13.5px;
+                line-height: 1.75;
+                white-space: pre-wrap;
+                word-break: break-all;
+                margin: 10px 0;
+                overflow-x: auto;
+            }
+
+            .zt_code .zt-c-kw { color: #ffb86c; }
+            .zt_code .zt-c-com { color: #7f8c8d; }
+            .zt_code .zt-c-fn { color: #7fd1ff; }
+            .zt_code .zt-c-str { color: #a8e6a1; }
+
+            /* ===== 图表容器 ===== */
+            .zt_diagram {
+                border: 1px solid var(--zt-border);
+                border-radius: 10px;
+                background: #fff;
+                padding: 16px;
+                overflow-x: auto;
+                text-align: center;
+                margin-bottom: 16px;
+            }
+
+            .zt_diagram svg { max-width: 100%; height: auto; }
+
+            .zt_diagram-title {
+                font-size: 15px;
+                font-weight: bold;
+                color: var(--zt-primary-dark);
+                padding-bottom: 10px;
+                margin-bottom: 12px;
+                border-bottom: 1px dashed var(--zt-border);
+                text-align: left;
+            }
+
+            .zt_toolbar {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 12px;
+                margin: 12px 0;
+            }
+
+            .zt_btn {
+                padding: 9px 20px;
+                background-color: var(--zt-primary);
+                color: #fff;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 15px;
+                font-family: inherit;
+            }
+
+            .zt_btn:hover { background-color: #217dbb; }
+            .zt_btn.zt-btn-gray { background-color: var(--zt-muted); }
+
+            .zt_grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 12px;
+            }
+
+            .zt_grid .zt_card { margin-bottom: 0; border-top: 4px solid var(--zt-border); }
+
+            .zt_back {
+                display: inline-block;
+                margin-top: 18px;
+                color: var(--zt-primary);
+                text-decoration: none;
+                font-size: 14px;
+            }
+
+            .zt_back:hover { text-decoration: underline; }
+        </style>
+    </head>
+    <body class="zt_body">
+        <div class="zt_container">
+            <h1 class="zt_title">18-6 Mermaid 图表 · 智能客服系统流程图与 ER 图</h1>
+            <p class="zt_student">姓名：张涛 &nbsp;|&nbsp; 学号：24001010104 &nbsp;|&nbsp; 《高级网页设计I》</p>
+
+            <p class="zt_desc">
+                使用 <b>Mermaid 10.9.1</b> 用纯文本语法绘制智能客服系统的两张图：
+                ① <b>业务流程图（flowchart）</b>——从用户提问到意图识别、知识检索、RAG 生成、转人工与知识迭代的完整闭环；
+                ② <b>实体关系图（erDiagram）</b>——用户、会话、消息、知识条目、工单、坐席六张数据表的字段与关系。
+                Mermaid 库已下载到本地 <b>cdn/mermaid.min.js</b>，无需联网即可渲染。
+            </p>
+
+            <!-- ==================== 一、流程图 ==================== -->
+            <div class="zt_module">
+                <div class="zt_module-head">一、智能客服业务流程图（flowchart）</div>
+                <div class="zt_module-body">
+                    <div class="zt_diagram">
+                        <div class="zt_diagram-title">用户提问 → 意图识别 → 知识检索 → RAG 回答 / 转人工 → 评估迭代</div>
+                        <pre class="zt-mermaid">
+flowchart TD
+    A([用户提问]) --> B[接入网关&lt;br/&gt;会话创建 · 鉴权]
+    B --> C{NLU 意图识别}
+    C -->|闲聊 / 打招呼| D[闲聊应答模板]
+    C -->|业务咨询| E[对话管理 DM&lt;br/&gt;上下文与槽位填充]
+    E --> F[知识检索&lt;br/&gt;向量召回 + 关键词召回]
+    F --> G{召回结果&lt;br/&gt;是否足够}
+    G -->|足够| H[LLM 生成回答&lt;br/&gt;RAG · 附带知识来源]
+    G -->|不足| I[兜底转人工坐席]
+    D --> J[返回用户]
+    H --> J
+    I --> J
+    J --> K[满意度评价&lt;br/&gt;解决率 · 转人工率]
+    K --> L[(日志与评估数据)]
+    L --> M[知识库更新&lt;br/&gt;坏例挖掘 · 文档补充]
+    M --> F
+                        </pre>
+                    </div>
+                    <p class="zt_note">
+                        流程说明：意图识别把问题分流到闲聊或业务咨询；业务咨询走“检索 + 生成”的 RAG 路线，
+                        召回不足时兜底转人工；会话结束后的评价数据沉淀为日志，用于知识库迭代，形成闭环。
+                    </p>
+                </div>
+            </div>
+
+            <!-- ==================== 二、ER 图 ==================== -->
+            <div class="zt_module">
+                <div class="zt_module-head">二、数据库实体关系图（erDiagram）</div>
+                <div class="zt_module-body">
+                    <div class="zt_diagram">
+                        <div class="zt_diagram-title">智能客服系统核心数据表及其关系（1 : N）</div>
+                        <pre class="zt-mermaid">
+erDiagram
+    USER ||--o{ SESSION : "发起会话"
+    SESSION ||--o{ MESSAGE : "包含消息"
+    MESSAGE }o--o| KNOWLEDGE : "引用知识"
+    USER ||--o{ TICKET : "提交工单"
+    AGENT ||--o{ TICKET : "处理工单"
+    TICKET ||--o| SESSION : "来源于会话"
+
+    USER {
+        string user_id PK "用户编号"
+        string nickname "昵称"
+        string phone "手机号"
+        string channel "来源渠道"
+        datetime created_at "注册时间"
+    }
+    SESSION {
+        string session_id PK "会话编号"
+        string user_id FK "所属用户"
+        string status "状态：进行中/结束"
+        datetime start_time "开始时间"
+        int round_count "对话轮次"
+    }
+    MESSAGE {
+        string msg_id PK "消息编号"
+        string session_id FK "所属会话"
+        string role "角色：用户/机器人/坐席"
+        text content "消息内容"
+        datetime send_time "发送时间"
+    }
+    KNOWLEDGE {
+        string kb_id PK "知识编号"
+        string question "标准问题"
+        text answer "标准答案"
+        string category "分类：物流/售后/产品"
+        vector embedding "向量表示"
+        int hit_count "命中次数"
+    }
+    TICKET {
+        string ticket_id PK "工单编号"
+        string user_id FK "提交用户"
+        string agent_id FK "处理坐席"
+        string session_id FK "关联会话"
+        string priority "优先级"
+        string status "状态：待处理/处理中/已完成"
+    }
+    AGENT {
+        string agent_id PK "坐席编号"
+        string name "姓名"
+        string team "所属班组"
+        int workload "当前接待量"
+    }
+                        </pre>
+                    </div>
+                    <p class="zt_note">
+                        关系说明：一个用户可发起多次会话（1:N），一次会话包含多条消息（1:N），
+                        一条消息可引用一条知识（N:1）；用户提交工单、坐席处理工单，工单可回溯来源会话。
+                        知识条目中的 embedding 字段存放向量，用于语义召回。
+                    </p>
+                </div>
+            </div>
+
+            <!-- ==================== 三、核心代码 ==================== -->
+            <div class="zt_module">
+                <div class="zt_module-head">三、核心代码</div>
+                <div class="zt_module-body">
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>1</span>引入本地 Mermaid 并初始化</div>
+                        <div class="zt_code">&lt;script src=<span class="zt-c-str">"cdn/mermaid.min.js"</span>&gt;&lt;/script&gt;
+
+mermaid.<span class="zt-c-fn">initialize</span>({
+    startOnLoad: <span class="zt-c-kw">false</span>,        <span class="zt-c-com">// 手动控制渲染时机</span>
+    theme: <span class="zt-c-str">'base'</span>,
+    themeVariables: { primaryColor: <span class="zt-c-str">'#eaf4fd'</span>, primaryBorderColor: <span class="zt-c-str">'#3498db'</span> },
+    flowchart: { curve: <span class="zt-c-str">'basis'</span>, htmlLabels: <span class="zt-c-kw">true</span> }
+});
+mermaid.<span class="zt-c-fn">run</span>({ nodes: document.<span class="zt-c-fn">querySelectorAll</span>(<span class="zt-c-str">'.zt-mermaid'</span>) });</div>
+                    </div>
+
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>2</span>流程图语法要点</div>
+                        <div class="zt_code">flowchart TD                 <span class="zt-c-com">// TD = 从上到下（LR 为从左到右）</span>
+    A([用户提问]) --&gt; B[处理节点]
+    B --&gt; C{判断节点}          <span class="zt-c-com">// 花括号 = 菱形判断框</span>
+    C --&gt;|是| D[分支一]        <span class="zt-c-com">// |文字| = 连线标签</span>
+    C --&gt;|否| E[(数据库)]      <span class="zt-c-com">// 双方括号 = 数据存储</span></div>
+                    </div>
+
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>3</span>ER 图语法要点</div>
+                        <div class="zt_code">erDiagram
+    USER ||--o{ SESSION : <span class="zt-c-str">"发起会话"</span>     <span class="zt-c-com">// || 一端，o{ 多端</span>
+
+    USER {                                    <span class="zt-c-com">// 实体字段表</span>
+        string user_id PK <span class="zt-c-str">"用户编号"</span>       <span class="zt-c-com">// PK 主键 / FK 外键</span>
+        string nickname <span class="zt-c-str">"昵称"</span>            <span class="zt-c-com">// 引号内为注释</span>
+    }</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== 四、知识点 ==================== -->
+            <div class="zt_module">
+                <div class="zt_module-head">四、知识点小结</div>
+                <div class="zt_module-body">
+                    <div class="zt_grid">
+                        <div class="zt_card" style="border-top-color:#3498db;">
+                            <div class="zt_card-title">文本即图表</div>
+                            <p class="zt_note">Mermaid 把结构化文本编译成 SVG，图与代码同一份文件，便于版本管理和文档同步更新。</p>
+                        </div>
+                        <div class="zt_card" style="border-top-color:#27ae60;">
+                            <div class="zt_card-title">节点形状</div>
+                            <p class="zt_note">[] 矩形、() 圆角、([]) 胶囊、{} 菱形判断、[()] 数据库，形状本身即语义。</p>
+                        </div>
+                        <div class="zt_card" style="border-top-color:#f39c12;">
+                            <div class="zt_card-title">关系基数</div>
+                            <p class="zt_note">ER 图中 || 表示“恰好一个”，o{ 表示“零到多个”，组合即可表达 1:1、1:N、N:M。</p>
+                        </div>
+                        <div class="zt_card" style="border-top-color:#8e44ad;">
+                            <div class="zt_card-title">本地化部署</div>
+                            <p class="zt_note">把 mermaid.min.js 下载到 cdn 目录，用相对路径引入，离线也能渲染，避免依赖外网 CDN。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <a class="zt_back" href="index.html">← 返回作品集首页</a>
+        </div>
+
+        <script src="cdn/mermaid.min.js"></script>
+        <script>
+            // ===== 张涛：Mermaid 两张图渲染 =====
+            mermaid.initialize({
+                startOnLoad: false,
+                theme: 'base',
+                securityLevel: 'loose',
+                themeVariables: {
+                    fontFamily: '"Microsoft YaHei", Arial, sans-serif',
+                    fontSize: '14px',
+                    primaryColor: '#eaf4fd',
+                    primaryTextColor: '#2c3e50',
+                    primaryBorderColor: '#3498db',
+                    lineColor: '#7f8c8d',
+                    secondaryColor: '#eafaf1',
+                    tertiaryColor: '#fdf3e3'
+                },
+                flowchart: {
+                    curve: 'basis',
+                    htmlLabels: true,
+                    padding: 12,
+                    nodeSpacing: 42,
+                    rankSpacing: 46
+                },
+                er: {
+                    diagramPadding: 16,
+                    entityPadding: 12,
+                    useMaxWidth: true
+                }
+            });
+
+            mermaid.run({
+                nodes: document.querySelectorAll('.zt-mermaid')
+            }).catch(function (err) {
+                console.error('Mermaid 渲染失败：', err);
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<!-- 姓名：张涛，日期：2026-11-05，功能名称：18-4 ECharts 数据可视化（折线图 + 饼图） -->
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>18-4 ECharts 图表 · 客服会话趋势与问题类型分布</title>
+        <style>
+            :root {
+                --zt-primary: #3498db;
+                --zt-primary-dark: #2c3e50;
+                --zt-bg: #f5f7fa;
+                --zt-card: #ffffff;
+                --zt-gray: #ecf0f1;
+                --zt-text: #2c3e50;
+                --zt-muted: #7f8c8d;
+                --zt-green: #27ae60;
+                --zt-orange: #f39c12;
+                --zt-purple: #8e44ad;
+                --zt-border: #dfe6e9;
+            }
+
+            .zt_body {
+                font-family: "Microsoft YaHei", Arial, sans-serif;
+                background-color: var(--zt-bg);
+                color: var(--zt-text);
+                margin: 0;
+                padding: 20px;
+                line-height: 1.8;
+            }
+
+            .zt_container {
+                max-width: 1150px;
+                margin: 0 auto;
+                background-color: var(--zt-card);
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            }
+
+            .zt_title {
+                color: var(--zt-primary-dark);
+                text-align: center;
+                border-bottom: 3px solid var(--zt-primary);
+                padding-bottom: 12px;
+                margin-top: 0;
+            }
+
+            .zt_student {
+                text-align: center;
+                color: var(--zt-muted);
+                margin: 10px 0 25px;
+                font-size: 14px;
+            }
+
+            .zt_desc {
+                margin: 15px 0 25px;
+                padding: 12px 18px;
+                background-color: var(--zt-gray);
+                border-left: 5px solid var(--zt-primary);
+                border-radius: 4px;
+            }
+
+            .zt_module {
+                margin: 30px 0;
+                border: 1px solid var(--zt-border);
+                border-radius: 8px;
+                overflow: hidden;
+            }
+
+            .zt_module-head {
+                background-color: var(--zt-primary);
+                color: #fff;
+                padding: 10px 18px;
+                font-size: 18px;
+                font-weight: bold;
+            }
+
+            .zt_module-body { padding: 18px; }
+
+            .zt_card {
+                border: 1px solid var(--zt-border);
+                border-radius: 6px;
+                padding: 14px 16px;
+                margin-bottom: 16px;
+                background-color: #fcfdfe;
+            }
+
+            .zt_card-title {
+                font-weight: bold;
+                color: var(--zt-primary-dark);
+                font-size: 16px;
+                margin-bottom: 8px;
+            }
+
+            .zt_card-title span {
+                display: inline-block;
+                background-color: var(--zt-primary);
+                color: #fff;
+                border-radius: 4px;
+                padding: 0 8px;
+                margin-right: 8px;
+                font-size: 14px;
+            }
+
+            .zt_note { color: var(--zt-muted); font-size: 14px; margin: 6px 0; }
+
+            .zt_code {
+                background-color: var(--zt-primary-dark);
+                color: #ecf0f1;
+                padding: 12px 14px;
+                border-radius: 6px;
+                font-family: Consolas, "Courier New", monospace;
+                font-size: 13.5px;
+                line-height: 1.75;
+                white-space: pre-wrap;
+                word-break: break-all;
+                margin: 10px 0;
+                overflow-x: auto;
+            }
+
+            .zt_code .zt-c-kw { color: #ffb86c; }
+            .zt_code .zt-c-com { color: #7f8c8d; }
+            .zt_code .zt-c-fn { color: #7fd1ff; }
+            .zt_code .zt-c-str { color: #a8e6a1; }
+
+            /* ===== 图表格 ===== */
+            .zt_charts {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+                gap: 16px;
+            }
+
+            .zt_chart-box {
+                border: 1px solid var(--zt-border);
+                border-radius: 10px;
+                background: #fff;
+                padding: 10px;
+            }
+
+            .zt_chart-head {
+                font-size: 15px;
+                font-weight: bold;
+                color: var(--zt-primary-dark);
+                padding: 4px 8px 8px;
+                border-bottom: 1px dashed var(--zt-border);
+                margin-bottom: 6px;
+            }
+
+            .zt_chart {
+                width: 100%;
+                height: 380px;
+            }
+
+            .zt_toolbar {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 12px;
+                margin: 12px 0;
+            }
+
+            .zt_btn {
+                padding: 9px 20px;
+                background-color: var(--zt-primary);
+                color: #fff;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 15px;
+                font-family: inherit;
+            }
+
+            .zt_btn:hover { background-color: #217dbb; }
+            .zt_btn.zt-btn-gray { background-color: var(--zt-muted); }
+
+            .zt_grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 12px;
+            }
+
+            .zt_grid .zt_card { margin-bottom: 0; border-top: 4px solid var(--zt-border); }
+
+            .zt_back {
+                display: inline-block;
+                margin-top: 18px;
+                color: var(--zt-primary);
+                text-decoration: none;
+                font-size: 14px;
+            }
+
+            .zt_back:hover { text-decoration: underline; }
+        </style>
+    </head>
+    <body class="zt_body">
+        <div class="zt_container">
+            <h1 class="zt_title">18-4 ECharts 数据可视化 · 客服会话趋势与问题类型分布</h1>
+            <p class="zt_student">姓名：张涛 &nbsp;|&nbsp; 学号：24001010104 &nbsp;|&nbsp; 《高级网页设计I》</p>
+
+            <p class="zt_desc">
+                使用 <b>ECharts 5.5.1</b> 绘制两个交互式图表：
+                ① <b>折线图</b>——近一周智能客服与人工坐席的会话量趋势（平滑曲线 + 渐变面积）；
+                ② <b>饼图（环形）</b>——用户咨询问题类型占比。
+                两个图表均支持<b>鼠标悬停查看数值</b>、点击图例显示 / 隐藏系列，窗口变化时自动重绘。
+                ECharts 库文件已下载到本地 <b>cdn/echarts.min.js</b>，无需联网即可运行。
+            </p>
+
+            <!-- ==================== 一、图表展示 ==================== -->
+            <div class="zt_module">
+                <div class="zt_module-head">一、图表展示（ECharts）</div>
+                <div class="zt_module-body">
+                    <div class="zt_charts">
+                        <div class="zt_chart-box">
+                            <div class="zt_chart-head">图 1　近一周客服会话量趋势（折线图）</div>
+                            <div class="zt_chart zt-chart-line"></div>
+                        </div>
+                        <div class="zt_chart-box">
+                            <div class="zt_chart-head">图 2　用户咨询问题类型分布（环形饼图）</div>
+                            <div class="zt_chart zt-chart-pie"></div>
+                        </div>
+                    </div>
+
+                    <div class="zt_toolbar">
+                        <button class="zt_btn zt-btn-gray zt-random" type="button">随机刷新数据</button>
+                        <span class="zt_note">提示：点击图例可显示 / 隐藏对应系列，图表会自动适配容器宽度。</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== 二、核心代码 ==================== -->
+            <div class="zt_module">
+                <div class="zt_module-head">二、核心代码</div>
+                <div class="zt_module-body">
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>1</span>引入本地 ECharts 并初始化</div>
+                        <div class="zt_code">&lt;script src=<span class="zt-c-str">"cdn/echarts.min.js"</span>&gt;&lt;/script&gt;
+
+<span class="zt-c-com">// 每个图表：先取容器，再 init，最后 setOption</span>
+<span class="zt-c-kw">var</span> chart = echarts.<span class="zt-c-fn">init</span>(document.<span class="zt-c-fn">querySelector</span>(<span class="zt-c-str">'.zt-chart-line'</span>));
+chart.<span class="zt-c-fn">setOption</span>(option);
+window.<span class="zt-c-fn">addEventListener</span>(<span class="zt-c-str">'resize'</span>, <span class="zt-c-kw">function</span> () { chart.<span class="zt-c-fn">resize</span>(); });</div>
+                    </div>
+
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>2</span>折线图：双系列 + 渐变面积</div>
+                        <div class="zt_code">option = {
+    tooltip: { trigger: <span class="zt-c-str">'axis'</span> },
+    legend: { data: [<span class="zt-c-str">'智能客服'</span>, <span class="zt-c-str">'人工坐席'</span>] },
+    xAxis: { type: <span class="zt-c-str">'category'</span>, boundaryGap: <span class="zt-c-kw">false</span>, data: days },
+    yAxis: { type: <span class="zt-c-str">'value'</span> },
+    series: [{
+        name: <span class="zt-c-str">'智能客服'</span>, type: <span class="zt-c-str">'line'</span>, smooth: <span class="zt-c-kw">true</span>, data: aiData,
+        areaStyle: {                                   <span class="zt-c-com">// 渐变面积填充</span>
+            color: <span class="zt-c-kw">new</span> echarts.graphic.<span class="zt-c-fn">LinearGradient</span>(0, 0, 0, 1, [
+                { offset: 0, color: <span class="zt-c-str">'rgba(52,152,219,.45)'</span> },
+                { offset: 1, color: <span class="zt-c-str">'rgba(52,152,219,.02)'</span> }
+            ])
+        }
+    }]
+};</div>
+                    </div>
+
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>3</span>环形饼图：半径与标签</div>
+                        <div class="zt_code">series: [{
+    name: <span class="zt-c-str">'问题类型'</span>,
+    type: <span class="zt-c-str">'pie'</span>,
+    radius: [<span class="zt-c-str">'42%'</span>, <span class="zt-c-str">'68%'</span>],        <span class="zt-c-com">// 内外半径不同 → 环形</span>
+    itemStyle: { borderRadius: 6, borderColor: <span class="zt-c-str">'#fff'</span>, borderWidth: 2 },
+    label: { formatter: <span class="zt-c-str">'{b}\n{d}%'</span> },
+    data: [
+        { value: 32, name: <span class="zt-c-str">'订单物流'</span> },
+        { value: 24, name: <span class="zt-c-str">'售后退换'</span> }
+    ]
+}]</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== 三、知识点 ==================== -->
+            <div class="zt_module">
+                <div class="zt_module-head">三、知识点小结</div>
+                <div class="zt_module-body">
+                    <div class="zt_grid">
+                        <div class="zt_card" style="border-top-color:#3498db;">
+                            <div class="zt_card-title">init 与 setOption</div>
+                            <p class="zt_note">echarts.init 把容器变成画布，setOption 传入配置对象；更新数据只需再次 setOption，ECharts 会自动做差量动画。</p>
+                        </div>
+                        <div class="zt_card" style="border-top-color:#27ae60;">
+                            <div class="zt_card-title">series.type</div>
+                            <p class="zt_note">同一个配置里 series 可以是数组，放多个系列即可实现多线对比；type 决定图表类型（line / pie / bar …）。</p>
+                        </div>
+                        <div class="zt_card" style="border-top-color:#f39c12;">
+                            <div class="zt_card-title">tooltip 与 legend</div>
+                            <p class="zt_note">trigger:'axis' 让提示框按整列显示；legend 自动生成可点击的系列开关。</p>
+                        </div>
+                        <div class="zt_card" style="border-top-color:#8e44ad;">
+                            <div class="zt_card-title">响应式 resize</div>
+                            <p class="zt_note">ECharts 画布不会自动跟随容器，需要监听 window 的 resize 事件手动调用 chart.resize()。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <a class="zt_back" href="index.html">← 返回作品集首页</a>
+        </div>
+
+        <script src="cdn/echarts.min.js"></script>
+        <script>
+            // ===== 张涛：ECharts 两个图表 =====
+            var ztDays = ['11-01', '11-02', '11-03', '11-04', '11-05', '11-06', '11-07'];
+            var ztAiData = [820, 932, 901, 1134, 1290, 1330, 1420];
+            var ztHumanData = [220, 232, 201, 254, 290, 310, 330];
+
+            var ztPieData = [
+                { value: 32, name: '订单物流' },
+                { value: 24, name: '售后退换' },
+                { value: 18, name: '产品咨询' },
+                { value: 14, name: '账户会员' },
+                { value: 12, name: '其他问题' }
+            ];
+
+            var ztLine = echarts.init(document.querySelector('.zt-chart-line'));
+            var ztPie = echarts.init(document.querySelector('.zt-chart-pie'));
+
+            // ---------- 图 1：折线图 ----------
+            function zt_lineOption(ai, human) {
+                return {
+                    color: ['#3498db', '#e67e22'],
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: { type: 'cross', label: { backgroundColor: '#2c3e50' } }
+                    },
+                    legend: { data: ['智能客服', '人工坐席'], top: 6 },
+                    grid: { left: 54, right: 24, top: 56, bottom: 40 },
+                    xAxis: {
+                        type: 'category',
+                        boundaryGap: false,
+                        data: ztDays,
+                        axisLine: { lineStyle: { color: '#bdc3c7' } },
+                        axisLabel: { color: '#7f8c8d' }
+                    },
+                    yAxis: {
+                        type: 'value',
+                        name: '会话量（次）',
+                        nameTextStyle: { color: '#7f8c8d' },
+                        splitLine: { lineStyle: { color: '#eef2f5' } },
+                        axisLabel: { color: '#7f8c8d' }
+                    },
+                    series: [
+                        {
+                            name: '智能客服',
+                            type: 'line',
+                            smooth: true,
+                            symbol: 'circle',
+                            symbolSize: 8,
+                            data: ai,
+                            lineStyle: { width: 3 },
+                            areaStyle: {
+                                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                    { offset: 0, color: 'rgba(52,152,219,.45)' },
+                                    { offset: 1, color: 'rgba(52,152,219,.02)' }
+                                ])
+                            }
+                        },
+                        {
+                            name: '人工坐席',
+                            type: 'line',
+                            smooth: true,
+                            symbol: 'circle',
+                            symbolSize: 8,
+                            data: human,
+                            lineStyle: { width: 3 },
+                            areaStyle: {
+                                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                    { offset: 0, color: 'rgba(230,126,34,.35)' },
+                                    { offset: 1, color: 'rgba(230,126,34,.02)' }
+                                ])
+                            }
+                        }
+                    ]
+                };
+            }
+
+            // ---------- 图 2：环形饼图 ----------
+            function zt_pieOption(data) {
+                return {
+                    color: ['#3498db', '#e67e22', '#27ae60', '#8e44ad', '#95a5a6'],
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: '{a} <br/>{b}：{c}% （{d}%）'
+                    },
+                    legend: {
+                        orient: 'vertical',
+                        left: 8,
+                        top: 'middle',
+                        itemWidth: 12,
+                        itemHeight: 12,
+                        textStyle: { color: '#5d6d7e', fontSize: 13 }
+                    },
+                    series: [
+                        {
+                            name: '问题类型',
+                            type: 'pie',
+                            radius: ['42%', '68%'],
+                            center: ['58%', '52%'],
+                            avoidLabelOverlap: true,
+                            itemStyle: { borderRadius: 6, borderColor: '#fff', borderWidth: 2 },
+                            label: { formatter: '{b}\n{d}%', color: '#5d6d7e', fontSize: 12 },
+                            labelLine: { length: 10, length2: 8 },
+                            emphasis: {
+                                scale: true,
+                                scaleSize: 8,
+                                label: { fontSize: 14, fontWeight: 'bold' }
+                            },
+                            data: data
+                        }
+                    ]
+                };
+            }
+
+            ztLine.setOption(zt_lineOption(ztAiData, ztHumanData));
+            ztPie.setOption(zt_pieOption(ztPieData));
+
+            // 随机刷新：演示 setOption 的数据更新与过渡动画
+            document.querySelector('.zt-random').addEventListener('click', function () {
+                var ai = ztAiData.map(function (v) { return Math.round(v * (0.85 + Math.random() * 0.3)); });
+                var human = ztHumanData.map(function (v) { return Math.round(v * (0.85 + Math.random() * 0.3)); });
+                ztLine.setOption(zt_lineOption(ai, human));
+
+                var raw = ztPieData.map(function (d) { return d.value * (0.8 + Math.random() * 0.4); });
+                var sum = raw.reduce(function (a, b) { return a + b; }, 0);
+                var pie = ztPieData.map(function (d, i) {
+                    return { name: d.name, value: Math.round(raw[i] / sum * 100) };
+                });
+                ztPie.setOption(zt_pieOption(pie));
+            });
+
+            // 窗口尺寸变化 → 重绘
+            window.addEventListener('resize', function () {
+                ztLine.resize();
+                ztPie.resize();
+            });
+        </script>
+    </body>
+</html>

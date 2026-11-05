@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<!-- 姓名：张涛，日期：2026-11-05，功能名称：18-1 Canvas 动画（姓名文字动画 + 粒子特效） -->
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>18-1 Canvas 动画 · 姓名文字动画与粒子特效</title>
+        <style>
+            :root {
+                --zt-primary: #3498db;
+                --zt-primary-dark: #2c3e50;
+                --zt-bg: #f5f7fa;
+                --zt-card: #ffffff;
+                --zt-gray: #ecf0f1;
+                --zt-text: #2c3e50;
+                --zt-muted: #7f8c8d;
+                --zt-green: #27ae60;
+                --zt-red: #e74c3c;
+                --zt-orange: #f39c12;
+                --zt-purple: #8e44ad;
+                --zt-border: #dfe6e9;
+            }
+
+            .zt_body {
+                font-family: "Microsoft YaHei", Arial, sans-serif;
+                background-color: var(--zt-bg);
+                color: var(--zt-text);
+                margin: 0;
+                padding: 20px;
+                line-height: 1.8;
+            }
+
+            .zt_container {
+                max-width: 1150px;
+                margin: 0 auto;
+                background-color: var(--zt-card);
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            }
+
+            .zt_title {
+                color: var(--zt-primary-dark);
+                text-align: center;
+                border-bottom: 3px solid var(--zt-primary);
+                padding-bottom: 12px;
+                margin-top: 0;
+            }
+
+            .zt_student {
+                text-align: center;
+                color: var(--zt-muted);
+                margin: 10px 0 25px;
+                font-size: 14px;
+            }
+
+            .zt_desc {
+                margin: 15px 0 25px;
+                padding: 12px 18px;
+                background-color: var(--zt-gray);
+                border-left: 5px solid var(--zt-primary);
+                border-radius: 4px;
+            }
+
+            .zt_module {
+                margin: 30px 0;
+                border: 1px solid var(--zt-border);
+                border-radius: 8px;
+                overflow: hidden;
+            }
+
+            .zt_module-head {
+                background-color: var(--zt-primary);
+                color: #fff;
+                padding: 10px 18px;
+                font-size: 18px;
+                font-weight: bold;
+            }
+
+            .zt_module-body { padding: 18px; }
+
+            .zt_card {
+                border: 1px solid var(--zt-border);
+                border-radius: 6px;
+                padding: 14px 16px;
+                margin-bottom: 16px;
+                background-color: #fcfdfe;
+            }
+
+            .zt_card-title {
+                font-weight: bold;
+                color: var(--zt-primary-dark);
+                font-size: 16px;
+                margin-bottom: 8px;
+            }
+
+            .zt_card-title span {
+                display: inline-block;
+                background-color: var(--zt-primary);
+                color: #fff;
+                border-radius: 4px;
+                padding: 0 8px;
+                margin-right: 8px;
+                font-size: 14px;
+            }
+
+            .zt_note { color: var(--zt-muted); font-size: 14px; margin: 6px 0; }
+
+            .zt_code {
+                background-color: var(--zt-primary-dark);
+                color: #ecf0f1;
+                padding: 12px 14px;
+                border-radius: 6px;
+                font-family: Consolas, "Courier New", monospace;
+                font-size: 13.5px;
+                line-height: 1.75;
+                white-space: pre-wrap;
+                word-break: break-all;
+                margin: 10px 0;
+                overflow-x: auto;
+            }
+
+            .zt_code .zt-c-kw { color: #ffb86c; }
+            .zt_code .zt-c-com { color: #7f8c8d; }
+            .zt_code .zt-c-fn { color: #7fd1ff; }
+            .zt_code .zt-c-str { color: #a8e6a1; }
+
+            .zt_btn {
+                padding: 9px 20px;
+                background-color: var(--zt-primary);
+                color: #fff;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 15px;
+                font-family: inherit;
+            }
+
+            .zt_btn:hover { background-color: #217dbb; }
+            .zt_btn.zt-btn-green { background-color: var(--zt-green); }
+            .zt_btn.zt-btn-gray { background-color: var(--zt-muted); }
+
+            .zt_toolbar {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 12px;
+                margin: 12px 0;
+            }
+
+            .zt_range {
+                width: 180px;
+                accent-color: var(--zt-primary);
+                cursor: pointer;
+            }
+
+            .zt_label { font-size: 14px; color: var(--zt-muted); }
+
+            .zt_stat {
+                font-size: 14px;
+                font-family: Consolas, monospace;
+                background: var(--zt-gray);
+                border-radius: 6px;
+                padding: 4px 12px;
+                color: var(--zt-primary-dark);
+            }
+
+            /* ===== 画布 ===== */
+            .zt_canvas-box {
+                border: 1px solid var(--zt-border);
+                border-radius: 10px;
+                overflow: hidden;
+                background: #0b1020;
+                margin-bottom: 16px;
+            }
+
+            .zt_canvas {
+                display: block;
+                width: 100%;
+                height: auto;
+            }
+
+            .zt_knowledge {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+                gap: 12px;
+            }
+
+            .zt_knowledge .zt_card { margin-bottom: 0; }
+
+            .zt_back {
+                display: inline-block;
+                margin-top: 18px;
+                color: var(--zt-primary);
+                text-decoration: none;
+                font-size: 14px;
+            }
+
+            .zt_back:hover { text-decoration: underline; }
+        </style>
+    </head>
+    <body class="zt_body">
+        <div class="zt_container">
+            <h1 class="zt_title">18-1 Canvas 动画 · 姓名文字动画与粒子特效</h1>
+            <p class="zt_student">姓名：张涛 &nbsp;|&nbsp; 学号：24001010104 &nbsp;|&nbsp; 《高级网页设计I》</p>
+
+            <p class="zt_desc">
+                使用 <b>Canvas 2D</b> 绘制姓名“<b>张涛</b>”的文字动画：渐变色文字 + 缩放呼吸效果，
+                配合上浮粒子与星光背景，全部由 <b>requestAnimationFrame</b> 逐帧驱动。
+                可通过下方按钮控制动画的开始 / 暂停 / 重置与速度。
+            </p>
+
+            <!-- ==================== 一、动画演示 ==================== -->
+            <div class="zt_module">
+                <div class="zt_module-head">一、动画演示（Canvas）</div>
+                <div class="zt_module-body">
+                    <div class="zt_canvas-box">
+                        <canvas class="zt_canvas" width="1080" height="460"></canvas>
+                    </div>
+
+                    <div class="zt_toolbar">
+                        <button class="zt_btn zt-btn-green zt-toggle" type="button">暂停</button>
+                        <button class="zt_btn zt-btn-gray zt-reset" type="button">重置粒子</button>
+                        <label class="zt_label">速度 <input class="zt_range" type="range" min="0.2" max="3" step="0.1" value="1"></label>
+                        <span class="zt_stat">FPS：<b class="zt-fps">--</b></span>
+                        <span class="zt_stat">粒子数：<b class="zt-count">0</b></span>
+                    </div>
+
+                    <p class="zt_note">
+                        动画原理：每一帧先用半透明矩形“盖住”上一帧画面形成拖尾，
+                        再重新绘制星光背景、上浮粒子和渐变文字。
+                        文字颜色由 HSL 色相值随时间递增实现彩虹循环。
+                    </p>
+                </div>
+            </div>
+
+            <!-- ==================== 二、核心代码 ==================== -->
+            <div class="zt_module">
+                <div class="zt_module-head">二、核心代码</div>
+                <div class="zt_module-body">
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>1</span>逐帧动画循环：requestAnimationFrame</div>
+                        <div class="zt_code"><span class="zt-c-com">// 每秒约 60 次回调，比 setInterval 更省电、更流畅</span>
+<span class="zt-c-kw">function</span> <span class="zt-c-fn">loop</span>(timestamp) {
+    <span class="zt-c-kw">var</span> dt = timestamp - lastTime;   <span class="zt-c-com">// 两帧间隔，用于计算速度</span>
+    lastTime = timestamp;
+    <span class="zt-c-fn">update</span>(dt * speed);             <span class="zt-c-com">// 更新粒子位置、色相、缩放</span>
+    <span class="zt-c-fn">draw</span>();                         <span class="zt-c-com">// 重绘一帧</span>
+    requestAnimationFrame(loop);    <span class="zt-c-com">// 请求下一帧</span>
+}</div>
+                    </div>
+
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>2</span>渐变文字“张涛”</div>
+                        <div class="zt_code"><span class="zt-c-com">// 创建线性渐变，色相随时间旋转，实现彩虹流光效果</span>
+<span class="zt-c-kw">var</span> grad = ctx.<span class="zt-c-fn">createLinearGradient</span>(cx - 180, cy - 60, cx + 180, cy + 60);
+grad.addColorStop(0,   <span class="zt-c-str">'hsl(' + hue + ',90%,62%)'</span>);
+grad.addColorStop(0.5, <span class="zt-c-str">'hsl(' + (hue + 80) + ',90%,60%)'</span>);
+grad.addColorStop(1,   <span class="zt-c-str">'hsl(' + (hue + 160) + ',90%,58%)'</span>);
+
+ctx.font = <span class="zt-c-str">'bold 150px "Microsoft YaHei", sans-serif'</span>;
+ctx.textAlign = <span class="zt-c-str">'center'</span>;
+ctx.textBaseline = <span class="zt-c-str">'middle'</span>;
+ctx.fillStyle = grad;
+ctx.<span class="zt-c-fn">fillText</span>(<span class="zt-c-str">'张涛'</span>, cx, cy);   <span class="zt-c-com">// 呼吸缩放通过 ctx.scale 实现</span></div>
+                    </div>
+
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>3</span>上浮粒子与拖尾</div>
+                        <div class="zt_code"><span class="zt-c-com">// 半透明背景矩形代替 clearRect，产生拖尾残影</span>
+ctx.fillStyle = <span class="zt-c-str">'rgba(11, 16, 32, 0.28)'</span>;
+ctx.<span class="zt-c-fn">fillRect</span>(0, 0, w, h);
+
+<span class="zt-c-com">// 粒子：随机位置向上漂浮，超出顶部后从底部重生</span>
+p.y -= p.vy * step;
+ctx.globalAlpha = p.alpha;
+ctx.<span class="zt-c-fn">arc</span>(p.x, p.y, p.r, 0, Math.PI * 2);</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== 三、知识点 ==================== -->
+            <div class="zt_module">
+                <div class="zt_module-head">三、知识点小结</div>
+                <div class="zt_module-body">
+                    <div class="zt_knowledge">
+                        <div class="zt_card">
+                            <div class="zt_card-title">getContext('2d')</div>
+                            <p class="zt_note">获取绘图上下文，之后所有绘制都通过它完成：fillRect、fillText、arc 等。</p>
+                        </div>
+                        <div class="zt_card">
+                            <div class="zt_card-title">requestAnimationFrame</div>
+                            <p class="zt_note">浏览器专门的动画 API，页面切到后台会自动暂停，比 setInterval 定时器更适合逐帧动画。</p>
+                        </div>
+                        <div class="zt_card">
+                            <div class="zt_card-title">createLinearGradient</div>
+                            <p class="zt_note">创建线性渐变填充色，配合 HSL 色相旋转可做出流光渐变文字。</p>
+                        </div>
+                        <div class="zt_card">
+                            <div class="zt_card-title">globalAlpha / save / restore</div>
+                            <p class="zt_note">控制透明度与状态栈：save 保存当前状态，restore 恢复，避免样式互相污染。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <a class="zt_back" href="index.html">← 返回作品集首页</a>
+        </div>
+
+        <script>
+            // ===== 张涛：Canvas 姓名文字动画 =====
+            var ztCanvas = document.querySelector('.zt_canvas');
+            var ctx = ztCanvas.getContext('2d');
+            var W = ztCanvas.width, H = ztCanvas.height;
+
+            var ztBtnToggle = document.querySelector('.zt-toggle');
+            var ztBtnReset = document.querySelector('.zt-reset');
+            var ztRange = document.querySelector('.zt_range');
+            var ztFps = document.querySelector('.zt-fps');
+            var ztCount = document.querySelector('.zt-count');
+
+            var ztParticles = [];
+            var ztStars = [];
+            var ztHue = 0;
+            var ztSpeed = 1;
+            var ztRunning = true;
+            var ztLast = 0;
+            var ztFpsTime = 0, ztFpsFrames = 0;
+
+            // 生成粒子（气泡）与星光
+            function zt_makeParticles(n) {
+                ztParticles = [];
+                for (var i = 0; i < n; i++) {
+                    ztParticles.push({
+                        x: Math.random() * W,
+                        y: Math.random() * H,
+                        r: 1.5 + Math.random() * 4.5,
+                        vy: 0.4 + Math.random() * 1.4,
+                        vx: (Math.random() - 0.5) * 0.6,
+                        alpha: 0.15 + Math.random() * 0.5,
+                        hue: Math.random() * 360
+                    });
+                }
+                ztCount.textContent = n;
+            }
+
+            function zt_makeStars(n) {
+                ztStars = [];
+                for (var i = 0; i < n; i++) {
+                    ztStars.push({
+                        x: Math.random() * W,
+                        y: Math.random() * H,
+                        r: 0.6 + Math.random() * 1.4,
+                        phase: Math.random() * Math.PI * 2
+                    });
+                }
+            }
+
+            // 每帧更新状态
+            function zt_update(step) {
+                ztHue = (ztHue + 0.35 * step) % 360;
+                for (var i = 0; i < ztParticles.length; i++) {
+                    var p = ztParticles[i];
+                    p.y -= p.vy * step;
+                    p.x += p.vx * step;
+                    if (p.y < -10) { p.y = H + 10; p.x = Math.random() * W; }
+                }
+            }
+
+            // 每帧重绘
+            function zt_draw(time) {
+                // 拖尾：半透明矩形盖住上一帧
+                ctx.fillStyle = 'rgba(11, 16, 32, 0.28)';
+                ctx.fillRect(0, 0, W, H);
+
+                // 星光闪烁
+                for (var i = 0; i < ztStars.length; i++) {
+                    var s = ztStars[i];
+                    var tw = 0.35 + 0.65 * Math.abs(Math.sin(time / 900 + s.phase));
+                    ctx.globalAlpha = tw;
+                    ctx.fillStyle = '#dfeaff';
+                    ctx.beginPath();
+                    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                // 上浮粒子
+                for (var j = 0; j < ztParticles.length; j++) {
+                    var p = ztParticles[j];
+                    ctx.globalAlpha = p.alpha;
+                    ctx.fillStyle = 'hsl(' + ((p.hue + ztHue) % 360) + ',85%,65%)';
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                // 文字呼吸缩放
+                var breath = 1 + 0.05 * Math.sin(time / 700);
+                var cx = W / 2, cy = H / 2;
+                ctx.save();
+                ctx.translate(cx, cy);
+                ctx.scale(breath, breath);
+                ctx.globalAlpha = 1;
+
+                // 彩虹渐变文字“张涛”
+                var grad = ctx.createLinearGradient(-180, -70, 180, 70);
+                grad.addColorStop(0, 'hsl(' + ztHue + ',90%,62%)');
+                grad.addColorStop(0.5, 'hsl(' + ((ztHue + 80) % 360) + ',90%,60%)');
+                grad.addColorStop(1, 'hsl(' + ((ztHue + 160) % 360) + ',90%,58%)');
+
+                ctx.font = 'bold 150px "Microsoft YaHei", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.shadowColor = 'hsla(' + ztHue + ',90%,60%,0.8)';
+                ctx.shadowBlur = 26;
+                ctx.fillStyle = grad;
+                ctx.fillText('张涛', 0, 0);
+                ctx.restore();
+
+                // 副标题
+                ctx.globalAlpha = 0.85;
+                ctx.font = '20px "Microsoft YaHei", sans-serif';
+                ctx.fillStyle = '#9fb4dd';
+                ctx.textAlign = 'center';
+                ctx.fillText('Canvas 2D 动画 · 张涛 24001010104', cx, cy + 120);
+                ctx.globalAlpha = 1;
+            }
+
+            // 动画主循环
+            function zt_loop(time) {
+                var dt = Math.min(time - ztLast, 50);
+                ztLast = time;
+                if (ztRunning) {
+                    zt_update(dt / 16.7);
+                    zt_draw(time);
+
+                    // FPS 统计（每 500ms 刷新一次显示）
+                    ztFpsFrames++;
+                    if (time - ztFpsTime > 500) {
+                        ztFps.textContent = Math.round(ztFpsFrames * 1000 / (time - ztFpsTime));
+                        ztFpsTime = time;
+                        ztFpsFrames = 0;
+                    }
+                }
+                requestAnimationFrame(zt_loop);
+            }
+
+            // 控制按钮
+            ztBtnToggle.addEventListener('click', function () {
+                ztRunning = !ztRunning;
+                ztBtnToggle.textContent = ztRunning ? '暂停' : '继续';
+                ztBtnToggle.classList.toggle('zt-btn-green', ztRunning);
+            });
+
+            ztBtnReset.addEventListener('click', function () {
+                zt_makeParticles(60);
+                zt_makeStars(90);
+                ctx.fillStyle = '#0b1020';
+                ctx.fillRect(0, 0, W, H);
+            });
+
+            ztRange.addEventListener('input', function () {
+                ztSpeed = parseFloat(ztRange.value);
+            });
+
+            // 初始化
+            zt_makeParticles(60);
+            zt_makeStars(90);
+            ctx.fillStyle = '#0b1020';
+            ctx.fillRect(0, 0, W, H);
+            requestAnimationFrame(zt_loop);
+        </script>
+    </body>
+</html>

@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<!-- 姓名：张涛，日期：2026-11-05，功能名称：18-2 基于 Canvas 的全站系统架构图 -->
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>18-2 Canvas 架构图 · 全站系统架构</title>
+        <style>
+            :root {
+                --zt-primary: #3498db;
+                --zt-primary-dark: #2c3e50;
+                --zt-bg: #f5f7fa;
+                --zt-card: #ffffff;
+                --zt-gray: #ecf0f1;
+                --zt-text: #2c3e50;
+                --zt-muted: #7f8c8d;
+                --zt-green: #27ae60;
+                --zt-orange: #f39c12;
+                --zt-purple: #8e44ad;
+                --zt-border: #dfe6e9;
+            }
+
+            .zt_body {
+                font-family: "Microsoft YaHei", Arial, sans-serif;
+                background-color: var(--zt-bg);
+                color: var(--zt-text);
+                margin: 0;
+                padding: 20px;
+                line-height: 1.8;
+            }
+
+            .zt_container {
+                max-width: 1150px;
+                margin: 0 auto;
+                background-color: var(--zt-card);
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            }
+
+            .zt_title {
+                color: var(--zt-primary-dark);
+                text-align: center;
+                border-bottom: 3px solid var(--zt-primary);
+                padding-bottom: 12px;
+                margin-top: 0;
+            }
+
+            .zt_student {
+                text-align: center;
+                color: var(--zt-muted);
+                margin: 10px 0 25px;
+                font-size: 14px;
+            }
+
+            .zt_desc {
+                margin: 15px 0 25px;
+                padding: 12px 18px;
+                background-color: var(--zt-gray);
+                border-left: 5px solid var(--zt-primary);
+                border-radius: 4px;
+            }
+
+            .zt_module {
+                margin: 30px 0;
+                border: 1px solid var(--zt-border);
+                border-radius: 8px;
+                overflow: hidden;
+            }
+
+            .zt_module-head {
+                background-color: var(--zt-primary);
+                color: #fff;
+                padding: 10px 18px;
+                font-size: 18px;
+                font-weight: bold;
+            }
+
+            .zt_module-body { padding: 18px; }
+
+            .zt_card {
+                border: 1px solid var(--zt-border);
+                border-radius: 6px;
+                padding: 14px 16px;
+                margin-bottom: 16px;
+                background-color: #fcfdfe;
+            }
+
+            .zt_card-title {
+                font-weight: bold;
+                color: var(--zt-primary-dark);
+                font-size: 16px;
+                margin-bottom: 8px;
+            }
+
+            .zt_card-title span {
+                display: inline-block;
+                background-color: var(--zt-primary);
+                color: #fff;
+                border-radius: 4px;
+                padding: 0 8px;
+                margin-right: 8px;
+                font-size: 14px;
+            }
+
+            .zt_note { color: var(--zt-muted); font-size: 14px; margin: 6px 0; }
+
+            .zt_code {
+                background-color: var(--zt-primary-dark);
+                color: #ecf0f1;
+                padding: 12px 14px;
+                border-radius: 6px;
+                font-family: Consolas, "Courier New", monospace;
+                font-size: 13.5px;
+                line-height: 1.75;
+                white-space: pre-wrap;
+                word-break: break-all;
+                margin: 10px 0;
+                overflow-x: auto;
+            }
+
+            .zt_code .zt-c-kw { color: #ffb86c; }
+            .zt_code .zt-c-com { color: #7f8c8d; }
+            .zt_code .zt-c-fn { color: #7fd1ff; }
+            .zt_code .zt-c-str { color: #a8e6a1; }
+
+            .zt_btn {
+                padding: 9px 20px;
+                background-color: var(--zt-primary);
+                color: #fff;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 15px;
+                font-family: inherit;
+            }
+
+            .zt_btn:hover { background-color: #217dbb; }
+            .zt_btn.zt-btn-gray { background-color: var(--zt-muted); }
+
+            .zt_toolbar {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 12px;
+                margin: 12px 0;
+            }
+
+            .zt_stat {
+                font-size: 14px;
+                font-family: Consolas, monospace;
+                background: var(--zt-gray);
+                border-radius: 6px;
+                padding: 4px 12px;
+                color: var(--zt-primary-dark);
+            }
+
+            .zt_canvas-box {
+                border: 1px solid var(--zt-border);
+                border-radius: 10px;
+                overflow: hidden;
+                background: #fbfdff;
+                margin-bottom: 16px;
+            }
+
+            .zt_canvas {
+                display: block;
+                width: 100%;
+                height: auto;
+            }
+
+            /* 图层说明 */
+            .zt_layers {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+                gap: 12px;
+            }
+
+            .zt_layers .zt_card { margin-bottom: 0; border-top: 4px solid var(--zt-border); }
+
+            .zt_layers .zt_card.zt-l1 { border-top-color: #3498db; }
+            .zt_layers .zt_card.zt-l2 { border-top-color: #27ae60; }
+            .zt_layers .zt_card.zt-l3 { border-top-color: #f39c12; }
+            .zt_layers .zt_card.zt-l4 { border-top-color: #8e44ad; }
+
+            .zt_back {
+                display: inline-block;
+                margin-top: 18px;
+                color: var(--zt-primary);
+                text-decoration: none;
+                font-size: 14px;
+            }
+
+            .zt_back:hover { text-decoration: underline; }
+        </style>
+    </head>
+    <body class="zt_body">
+        <div class="zt_container">
+            <h1 class="zt_title">18-2 基于 Canvas 的全站系统架构图</h1>
+            <p class="zt_student">姓名：张涛 &nbsp;|&nbsp; 学号：24001010104 &nbsp;|&nbsp; 《高级网页设计I》</p>
+
+            <p class="zt_desc">
+                整个作业站点的前后端结构全部用 <b>Canvas 2D</b> 绘制：自上而下分为
+                <b>用户层 → 展示层 → 数据/接口层 → 部署层</b> 四个层次，
+                节点之间用<b>流动虚线箭头</b>表示数据走向。
+                <b>鼠标悬停</b>到任意节点可高亮该节点并显示说明文字。
+            </p>
+
+            <!-- ==================== 一、架构图（Canvas 绘制） ==================== -->
+            <div class="zt_module">
+                <div class="zt_module-head">一、全站系统架构图（Canvas 绘制）</div>
+                <div class="zt_module-body">
+                    <div class="zt_canvas-box">
+                        <canvas class="zt_canvas" width="1080" height="640"></canvas>
+                    </div>
+
+                    <div class="zt_toolbar">
+                        <button class="zt_btn zt-btn-gray zt-toggle" type="button">暂停流动动画</button>
+                        <span class="zt_stat">提示：把鼠标移到节点上看效果</span>
+                    </div>
+
+                    <p class="zt_note">
+                        绘制思路：把每个层次当作一个矩形节点（roundRect 圆角矩形 + 渐变填充），
+                        层与层之间用带箭头的虚线连接，lineDashOffset 随时间递减即可产生“数据流动”效果；
+                        鼠标事件配合坐标判断实现节点高亮。
+                    </p>
+                </div>
+            </div>
+
+            <!-- ==================== 二、核心代码 ==================== -->
+            <div class="zt_module">
+                <div class="zt_module-head">二、核心代码</div>
+                <div class="zt_module-body">
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>1</span>节点数据与布局</div>
+                        <div class="zt_code"><span class="zt-c-com">// 每层是一个节点：x / y / w / h 决定位置大小，color 决定配色</span>
+<span class="zt-c-kw">var</span> nodes = [
+    { title: <span class="zt-c-str">'用户层'</span>,   items: [<span class="zt-c-str">'PC 浏览器'</span>, <span class="zt-c-str">'手机浏览器'</span>] },
+    { title: <span class="zt-c-str">'展示层'</span>,   items: [<span class="zt-c-str">'index.html 作品集'</span>, <span class="zt-c-str">'13~17 章作业页面'</span>] },
+    { title: <span class="zt-c-str">'数据/接口层'</span>, items: [<span class="zt-c-str">'GitHub Contents API'</span>, <span class="zt-c-str">'fakestoreapi / dummyjson'</span>] },
+    { title: <span class="zt-c-str">'部署层'</span>,   items: [<span class="zt-c-str">'GitHub 仓库 main'</span>, <span class="zt-c-str">'Actions 构建'</span>, <span class="zt-c-str">'Pages CDN'</span>] }
+];</div>
+                    </div>
+
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>2</span>流动虚线箭头（lineDashOffset）</div>
+                        <div class="zt_code"><span class="zt-c-com">// 虚线 + 偏移量动画：offset 每帧递减，虚线就“流动”起来</span>
+ctx.setLineDash([8, 6]);
+ctx.lineDashOffset = -offset;            <span class="zt-c-com">// 随时间递减</span>
+ctx.beginPath();
+ctx.moveTo(x1, y1);
+ctx.lineTo(x2, y2);
+ctx.stroke();
+<span class="zt-c-fn">drawArrowHead</span>(x2, y2);                  <span class="zt-c-com">// 三角形箭头</span></div>
+                    </div>
+
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>3</span>鼠标悬停高亮</div>
+                        <div class="zt_code">canvas.<span class="zt-c-fn">addEventListener</span>(<span class="zt-c-str">'mousemove'</span>, <span class="zt-c-kw">function</span> (e) {
+    <span class="zt-c-com">// 把鼠标坐标换算到画布坐标系（画布被 CSS 缩放过）</span>
+    <span class="zt-c-kw">var</span> rect = canvas.getBoundingClientRect();
+    <span class="zt-c-kw">var</span> mx = (e.clientX - rect.left) * canvas.width / rect.width;
+    <span class="zt-c-kw">var</span> my = (e.clientY - rect.top) * canvas.height / rect.height;
+    hoverNode = <span class="zt-c-fn">hitTest</span>(mx, my);       <span class="zt-c-com">// 命中哪个节点就高亮哪个</span>
+});</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== 三、层次说明 ==================== -->
+            <div class="zt_module">
+                <div class="zt_module-head">三、层次说明</div>
+                <div class="zt_module-body">
+                    <div class="zt_layers">
+                        <div class="zt_card zt-l1">
+                            <div class="zt_card-title">① 用户层</div>
+                            <p class="zt_note">访问者通过 PC / 手机浏览器打开 GitHub Pages 上的站点地址，是整个系统的入口。</p>
+                        </div>
+                        <div class="zt_card zt-l2">
+                            <div class="zt_card-title">② 展示层</div>
+                            <p class="zt_note">index.html 作品集首页自动列出各章作业页面（13-3 图标导航、16-4 频道页、17-x 接口演示等），由 HTML / CSS / JavaScript 完成。</p>
+                        </div>
+                        <div class="zt_card zt-l3">
+                            <div class="zt_card-title">③ 数据 / 接口层</div>
+                            <p class="zt_note">作品集首页通过 GitHub Contents API 读取仓库文件列表；17-2 / 17-3 / 17-4 通过 fetch 调用 fakestoreapi、dummyjson 等远程 JSON 接口。</p>
+                        </div>
+                        <div class="zt_card zt-l4">
+                            <div class="zt_card-title">④ 部署层</div>
+                            <p class="zt_note">代码推送到 GitHub 仓库 main 分支后，Actions 自动构建并通过 GitHub Pages CDN 发布，实现“推送即上线”。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <a class="zt_back" href="index.html">← 返回作品集首页</a>
+        </div>
+
+        <script>
+            // ===== 张涛：Canvas 全站系统架构图 =====
+            var ztCanvas = document.querySelector('.zt_canvas');
+            var ctx = ztCanvas.getContext('2d');
+            var W = ztCanvas.width, H = ztCanvas.height;
+            var ZT_NAME = '张涛';
+
+            var ztBtnToggle = document.querySelector('.zt-toggle');
+
+            // ---------- 节点数据 ----------
+            // 层次节点：从上到下 4 层
+            var ztLayers = [
+                { color: '#3498db', colorDark: '#2c81ba', title: '① 用户层', desc: '访问者：PC 浏览器 / 手机浏览器' },
+                { color: '#27ae60', colorDark: '#1f9450', title: '② 展示层', desc: 'index.html 作品集首页 + 13~17 章作业页面' },
+                { color: '#f39c12', colorDark: '#d68910', title: '③ 数据 / 接口层', desc: 'GitHub Contents API · fakestoreapi · dummyjson' },
+                { color: '#8e44ad', colorDark: '#71368a', title: '④ 部署层', desc: 'GitHub 仓库(main) → Actions 构建 → Pages CDN' }
+            ];
+
+            // 展示层里的页面小节点
+            var ztPages = ['首页 index.html', '13-3/13-4 图标导航', '16-4 图书频道', '17-1~17-6 接口/异步'];
+            // 数据/接口层里的服务节点
+            var ztApis = ['GitHub Contents API', 'fakestoreapi', 'dummyjson'];
+
+            // 布局计算
+            var ztBoxW = W - 160;               // 大层宽度
+            var ztBoxX = 80;
+            var ztLayerH = 110, ztGap = 42;
+            var ztTop = 56;
+            ztLayers.forEach(function (ly, i) {
+                ly.x = ztBoxX;
+                ly.y = ztTop + i * (ztLayerH + ztGap);
+                ly.w = ztBoxW;
+                ly.h = ztLayerH;
+            });
+
+            var ztOffset = 0;                   // 虚线偏移（动画用）
+            var ztAnimate = true;
+            var ztHover = -1;                   // 鼠标悬停的层序号
+            var ztHoverItem = null;             // 悬停的小节点 {text,x,y,w,h}
+
+            // ---------- 工具函数 ----------
+            function zt_roundRect(x, y, w, h, r) {
+                ctx.beginPath();
+                ctx.moveTo(x + r, y);
+                ctx.arcTo(x + w, y, x + w, y + h, r);
+                ctx.arcTo(x + w, y + h, x, y + h, r);
+                ctx.arcTo(x, y + h, x, y, r);
+                ctx.arcTo(x, y, x + w, y, r);
+                ctx.closePath();
+            }
+
+            function zt_arrowHead(x, y, color, dir) {
+                ctx.save();
+                ctx.setLineDash([]);
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                if (dir === 'up') {
+                    // 向上的箭头：尖朝上
+                    ctx.moveTo(x - 7, y + 9);
+                    ctx.lineTo(x + 7, y + 9);
+                    ctx.lineTo(x, y - 1);
+                } else {
+                    // 向下的箭头：尖朝下
+                    ctx.moveTo(x - 7, y - 9);
+                    ctx.lineTo(x + 7, y - 9);
+                    ctx.lineTo(x, y + 1);
+                }
+                ctx.closePath();
+                ctx.fill();
+                ctx.restore();
+            }
+
+            // 层与层之间的流动虚线，dir 为箭头方向
+            function zt_drawFlow(x1, y1, x2, y2, color, dir) {
+                ctx.save();
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 2.4;
+                ctx.setLineDash([9, 7]);
+                ctx.lineDashOffset = -ztOffset;
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+                ctx.restore();
+                zt_arrowHead(x2, y2, color, dir || 'down');
+            }
+
+            // 小节点（胶囊形），返回 hit 区域供鼠标判断
+            function zt_drawChip(text, x, y, color, hovered) {
+                ctx.font = '14px "Microsoft YaHei", sans-serif';
+                var tw = ctx.measureText(text).width;
+                var w = tw + 26, h = 30;
+                ctx.save();
+                zt_roundRect(x, y, w, h, 15);
+                ctx.fillStyle = hovered ? color : '#ffffff';
+                ctx.fill();
+                ctx.strokeStyle = color;
+                ctx.lineWidth = hovered ? 2.5 : 1.5;
+                ctx.setLineDash([]);
+                ctx.stroke();
+                ctx.fillStyle = hovered ? '#ffffff' : color;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(text, x + w / 2, y + h / 2 + 1);
+                ctx.restore();
+                return { text: text, x: x, y: y, w: w, h: h };
+            }
+
+            // ---------- 绘制 ----------
+            function zt_draw() {
+                ctx.clearRect(0, 0, W, H);
+                // 背景
+                ctx.fillStyle = '#fbfdff';
+                ctx.fillRect(0, 0, W, H);
+                // 标题
+                ctx.fillStyle = '#2c3e50';
+                ctx.font = 'bold 22px "Microsoft YaHei", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('全站系统架构图（Canvas 绘制） · 张涛 24001010104', W / 2, 34);
+
+                ztHoverItem = null;
+
+                // 逐层绘制
+                ztLayers.forEach(function (ly, i) {
+                    var hovered = (ztHover === i);
+                    var gx = 0, gy = 0;
+
+                    if (hovered) { gx = -2; gy = -2; }
+
+                    // 层底板
+                    ctx.save();
+                    var grad = ctx.createLinearGradient(ly.x + gx, ly.y + gy, ly.x + gx, ly.y + gy + ly.h);
+                    grad.addColorStop(0, hovered ? ly.color : '#ffffff');
+                    grad.addColorStop(1, hovered ? ly.colorDark : '#f6f9fc');
+                    zt_roundRect(ly.x + gx, ly.y + gy, ly.w, ly.h, 12);
+                    ctx.fillStyle = grad;
+                    ctx.fill();
+                    ctx.strokeStyle = ly.color;
+                    ctx.lineWidth = hovered ? 3 : 2;
+                    ctx.setLineDash([]);
+                    ctx.stroke();
+                    ctx.restore();
+
+                    // 层标题（左侧竖排色块）
+                    ctx.save();
+                    zt_roundRect(ly.x + gx + 14, ly.y + gy + 18, 108, ly.h - 36, 8);
+                    ctx.fillStyle = hovered ? 'rgba(255,255,255,.25)' : ly.color;
+                    ctx.fill();
+                    ctx.fillStyle = hovered ? '#fff' : '#fff';
+                    ctx.font = 'bold 16px "Microsoft YaHei", sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(ly.title.replace(/^[①②③④] /, ''), ly.x + gx + 68, ly.y + gy + ly.h / 2);
+                    ctx.font = '20px "Microsoft YaHei", sans-serif';
+                    ctx.fillText(['①', '②', '③', '④'][i], ly.x + gx + 68, ly.y + gy + 28);
+                    ctx.restore();
+
+                    // 层内小节点
+                    var chipY = ly.y + ly.h / 2 - 16;
+                    var chipX = ly.x + 140;
+                    if (i === 1) {
+                        ztPages.forEach(function (p) {
+                            var hit = zt_drawChip(p, chipX, chipY, ly.color, hovered);
+                            if (hovered) { ztHoverItem = hit; }
+                            chipX += hit.w + 14;
+                        });
+                    } else if (i === 2) {
+                        ztApis.forEach(function (a) {
+                            var hit = zt_drawChip(a, chipX, chipY, ly.color, hovered);
+                            if (hovered) { ztHoverItem = hit; }
+                            chipX += hit.w + 14;
+                        });
+                    } else if (i === 0) {
+                        ['PC 浏览器', '手机浏览器'].forEach(function (d) {
+                            var hit = zt_drawChip(d, chipX, chipY, ly.color, hovered);
+                            if (hovered) { ztHoverItem = hit; }
+                            chipX += hit.w + 14;
+                        });
+                    } else {
+                        ['GitHub 仓库 main', 'Actions 构建', 'Pages CDN'].forEach(function (d) {
+                            var hit = zt_drawChip(d, chipX, chipY, ly.color, hovered);
+                            if (hovered) { ztHoverItem = hit; }
+                            chipX += hit.w + 14;
+                        });
+                    }
+
+                    // 层与层之间的流动箭头：左侧向下（页面请求），右侧向上（发布上线）
+                    if (i < ztLayers.length - 1) {
+                        var next = ztLayers[i + 1];
+                        zt_drawFlow(W / 2 - 120, ly.y + ly.h + 4, W / 2 - 120, next.y - 6, ly.color, 'down');
+                        zt_drawFlow(W / 2 + 120, next.y - 6, W / 2 + 120, ly.y + ly.h + 4, '#95a5a6', 'up');
+                    }
+                });
+
+                // 箭头标注（放在第一层与第二层之间的空隙里）
+                ctx.fillStyle = '#95a5a6';
+                ctx.font = '12px "Microsoft YaHei", sans-serif';
+                ctx.textBaseline = 'alphabetic';
+                ctx.textAlign = 'right';
+                ctx.fillText('页面请求 ↓', W / 2 - 132, ztLayers[1].y - 16);
+                ctx.textAlign = 'left';
+                ctx.fillText('发布上线 ↑', W / 2 + 132, ztLayers[1].y - 16);
+
+                // 悬停说明气泡
+                if (ztHoverItem) {
+                    var tip = ztLayers[ztHover].desc;
+                    ctx.font = '13px "Microsoft YaHei", sans-serif';
+                    var tw = ctx.measureText(tip).width;
+                    var tx = Math.max(20, ztHoverItem.x + ztHoverItem.w / 2 - tw / 2 - 12);
+                    var ty = ztHoverItem.y + ztHoverItem.h + 10;
+                    zt_roundRect(tx, ty, tw + 24, 30, 8);
+                    ctx.fillStyle = 'rgba(44, 62, 80, .92)';
+                    ctx.fill();
+                    ctx.fillStyle = '#fff';
+                    ctx.textAlign = 'left';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(tip, tx + 12, ty + 16);
+                }
+            }
+
+            // ---------- 交互与动画 ----------
+            function zt_loop() {
+                if (ztAnimate) {
+                    ztOffset = (ztOffset + 0.6) % 1000;
+                    zt_draw();
+                }
+                requestAnimationFrame(zt_loop);
+            }
+
+            // 鼠标坐标换算到画布坐标系（画布被 CSS 等比缩放过）
+            ztCanvas.addEventListener('mousemove', function (e) {
+                var rect = ztCanvas.getBoundingClientRect();
+                var mx = (e.clientX - rect.left) * W / rect.width;
+                var my = (e.clientY - rect.top) * H / rect.height;
+                var found = -1;
+                ztLayers.forEach(function (ly, i) {
+                    if (mx >= ly.x && mx <= ly.x + ly.w && my >= ly.y && my <= ly.y + ly.h) {
+                        found = i;
+                    }
+                });
+                if (found !== ztHover) {
+                    ztHover = found;
+                    zt_draw();
+                } else if (found > -1) {
+                    zt_draw(); // 气泡跟随小节点位置
+                }
+            });
+
+            ztCanvas.addEventListener('mouseleave', function () {
+                ztHover = -1;
+                zt_draw();
+            });
+
+            ztBtnToggle.addEventListener('click', function () {
+                ztAnimate = !ztAnimate;
+                ztBtnToggle.textContent = ztAnimate ? '暂停流动动画' : '继续流动动画';
+            });
+
+            // 首次绘制并启动循环
+            zt_draw();
+            requestAnimationFrame(zt_loop);
+        </script>
+    </body>
+</html>

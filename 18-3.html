@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<!-- 姓名：张涛，日期：2026-11-05，功能名称：18-3 基于知识库的智能客服系统架构图（SVG 绘制 · 科研方向） -->
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>18-3 SVG 架构图 · 基于知识库的智能客服系统</title>
+        <style>
+            :root {
+                --zt-primary: #3498db;
+                --zt-primary-dark: #2c3e50;
+                --zt-bg: #f5f7fa;
+                --zt-card: #ffffff;
+                --zt-gray: #ecf0f1;
+                --zt-text: #2c3e50;
+                --zt-muted: #7f8c8d;
+                --zt-green: #27ae60;
+                --zt-orange: #f39c12;
+                --zt-purple: #8e44ad;
+                --zt-teal: #16a085;
+                --zt-border: #dfe6e9;
+            }
+
+            .zt_body {
+                font-family: "Microsoft YaHei", Arial, sans-serif;
+                background-color: var(--zt-bg);
+                color: var(--zt-text);
+                margin: 0;
+                padding: 20px;
+                line-height: 1.8;
+            }
+
+            .zt_container {
+                max-width: 1150px;
+                margin: 0 auto;
+                background-color: var(--zt-card);
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            }
+
+            .zt_title {
+                color: var(--zt-primary-dark);
+                text-align: center;
+                border-bottom: 3px solid var(--zt-primary);
+                padding-bottom: 12px;
+                margin-top: 0;
+            }
+
+            .zt_student {
+                text-align: center;
+                color: var(--zt-muted);
+                margin: 10px 0 25px;
+                font-size: 14px;
+            }
+
+            .zt_desc {
+                margin: 15px 0 25px;
+                padding: 12px 18px;
+                background-color: var(--zt-gray);
+                border-left: 5px solid var(--zt-primary);
+                border-radius: 4px;
+            }
+
+            .zt_module {
+                margin: 30px 0;
+                border: 1px solid var(--zt-border);
+                border-radius: 8px;
+                overflow: hidden;
+            }
+
+            .zt_module-head {
+                background-color: var(--zt-primary);
+                color: #fff;
+                padding: 10px 18px;
+                font-size: 18px;
+                font-weight: bold;
+            }
+
+            .zt_module-body { padding: 18px; }
+
+            .zt_card {
+                border: 1px solid var(--zt-border);
+                border-radius: 6px;
+                padding: 14px 16px;
+                margin-bottom: 16px;
+                background-color: #fcfdfe;
+            }
+
+            .zt_card-title {
+                font-weight: bold;
+                color: var(--zt-primary-dark);
+                font-size: 16px;
+                margin-bottom: 8px;
+            }
+
+            .zt_card-title span {
+                display: inline-block;
+                background-color: var(--zt-primary);
+                color: #fff;
+                border-radius: 4px;
+                padding: 0 8px;
+                margin-right: 8px;
+                font-size: 14px;
+            }
+
+            .zt_note { color: var(--zt-muted); font-size: 14px; margin: 6px 0; }
+
+            .zt_code {
+                background-color: var(--zt-primary-dark);
+                color: #ecf0f1;
+                padding: 12px 14px;
+                border-radius: 6px;
+                font-family: Consolas, "Courier New", monospace;
+                font-size: 13.5px;
+                line-height: 1.75;
+                white-space: pre-wrap;
+                word-break: break-all;
+                margin: 10px 0;
+                overflow-x: auto;
+            }
+
+            .zt_code .zt-c-kw { color: #ffb86c; }
+            .zt_code .zt-c-com { color: #7f8c8d; }
+            .zt_code .zt-c-fn { color: #7fd1ff; }
+            .zt_code .zt-c-str { color: #a8e6a1; }
+
+            .zt_toolbar {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 12px;
+                margin: 12px 0;
+            }
+
+            .zt_btn {
+                padding: 9px 20px;
+                background-color: var(--zt-primary);
+                color: #fff;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 15px;
+                font-family: inherit;
+            }
+
+            .zt_btn:hover { background-color: #217dbb; }
+            .zt_btn.zt-btn-gray { background-color: var(--zt-muted); }
+
+            .zt_canvas-box {
+                border: 1px solid var(--zt-border);
+                border-radius: 10px;
+                overflow: hidden;
+                background: #fbfdff;
+                margin-bottom: 16px;
+            }
+
+            .zt_svg {
+                display: block;
+                width: 100%;
+                height: auto;
+            }
+
+            /* ===== SVG 图内元素样式 ===== */
+            .zt-layer { cursor: pointer; transition: opacity .2s; }
+            .zt-layer.zt-dim { opacity: .45; }
+
+            .zt-layer-box {
+                fill: #ffffff;
+                stroke-width: 2;
+                transition: stroke-width .2s;
+            }
+
+            .zt-layer.zt-hover .zt-layer-box { stroke-width: 3.5; }
+
+            .zt-layer-title {
+                font-size: 17px;
+                font-weight: bold;
+                fill: #ffffff;
+                text-anchor: middle;
+                dominant-baseline: central;
+                font-family: "Microsoft YaHei", sans-serif;
+            }
+
+            .zt-layer-no {
+                font-size: 20px;
+                font-weight: bold;
+                fill: #ffffff;
+                text-anchor: middle;
+                dominant-baseline: central;
+                font-family: "Microsoft YaHei", sans-serif;
+            }
+
+            .zt-chip-box { fill: #ffffff; stroke-width: 1.5; }
+            .zt-chip-text {
+                font-size: 13.5px;
+                text-anchor: middle;
+                dominant-baseline: central;
+                font-family: "Microsoft YaHei", sans-serif;
+            }
+
+            .zt-flow {
+                fill: none;
+                stroke-width: 2.4;
+                stroke-dasharray: 9 7;
+                animation: zt-dash 1.2s linear infinite;
+            }
+
+            @keyframes zt-dash {
+                to { stroke-dashoffset: -32; }
+            }
+
+            .zt-flow-slow { animation-duration: 2s; }
+
+            .zt-svg-title {
+                font-size: 21px;
+                font-weight: bold;
+                fill: #2c3e50;
+                text-anchor: middle;
+                font-family: "Microsoft YaHei", sans-serif;
+            }
+
+            .zt-svg-label {
+                font-size: 12px;
+                fill: #95a5a6;
+                font-family: "Microsoft YaHei", sans-serif;
+            }
+
+            .zt-svg-badge {
+                font-size: 12px;
+                font-weight: bold;
+                text-anchor: middle;
+                dominant-baseline: central;
+                font-family: Consolas, "Microsoft YaHei", sans-serif;
+            }
+
+            /* 暂停动画 */
+            .zt-svg-paused .zt-flow { animation-play-state: paused; }
+
+            /* ===== 说明面板与知识卡片 ===== */
+            .zt_tip {
+                min-height: 52px;
+                padding: 12px 18px;
+                background: #eef6fd;
+                border: 1px dashed var(--zt-primary);
+                border-radius: 8px;
+                font-size: 14.5px;
+                color: var(--zt-primary-dark);
+            }
+
+            .zt_tip b { color: var(--zt-primary); }
+
+            .zt_grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 12px;
+            }
+
+            .zt_grid .zt_card { margin-bottom: 0; border-top: 4px solid var(--zt-border); }
+
+            .zt_back {
+                display: inline-block;
+                margin-top: 18px;
+                color: var(--zt-primary);
+                text-decoration: none;
+                font-size: 14px;
+            }
+
+            .zt_back:hover { text-decoration: underline; }
+        </style>
+    </head>
+    <body class="zt_body">
+        <div class="zt_container">
+            <h1 class="zt_title">18-3 基于知识库的智能客服系统架构图（SVG）</h1>
+            <p class="zt_student">姓名：张涛 &nbsp;|&nbsp; 学号：24001010104 &nbsp;|&nbsp; 科研方向：知识库驱动的智能问答与检索增强生成（RAG）</p>
+
+            <p class="zt_desc">
+                使用 <b>SVG 矢量图</b>绘制“基于知识库的智能客服系统”整体架构：
+                用户请求经过<b>接入层</b>进入<b>智能客服引擎</b>，引擎对问题做
+                <b>意图识别 → 对话管理 → 知识检索 → 大模型生成（RAG）</b>，
+                全程依赖<b>知识库层</b>提供 FAQ、向量库、知识图谱等知识来源，
+                <b>支撑层</b>负责日志、评估与知识运营。图中虚线箭头流动表示数据走向，
+                <b>鼠标悬停</b>任意层可查看该层的科研要点。
+            </p>
+
+            <!-- ==================== 一、系统架构图（SVG） ==================== -->
+            <div class="zt_module">
+                <div class="zt_module-head">一、系统架构图（SVG 矢量绘制）</div>
+                <div class="zt_module-body">
+                    <div class="zt_canvas-box">
+                        <svg class="zt_svg zt-svg" viewBox="0 0 1080 700" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="基于知识库的智能客服系统架构图">
+                            <defs>
+                                <marker id="zt-mk-blue" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+                                    <path d="M0,0 L9,4 L0,8 Z" fill="#3498db"></path>
+                                </marker>
+                                <marker id="zt-mk-gray" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+                                    <path d="M0,0 L9,4 L0,8 Z" fill="#95a5a6"></path>
+                                </marker>
+                                <marker id="zt-mk-teal" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+                                    <path d="M0,0 L9,4 L0,8 Z" fill="#16a085"></path>
+                                </marker>
+                                <marker id="zt-mk-green" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+                                    <path d="M0,0 L9,4 L0,8 Z" fill="#27ae60"></path>
+                                </marker>
+                                <marker id="zt-mk-orange" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+                                    <path d="M0,0 L9,4 L0,8 Z" fill="#f39c12"></path>
+                                </marker>
+                                <marker id="zt-mk-purple" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+                                    <path d="M0,0 L9,4 L0,8 Z" fill="#8e44ad"></path>
+                                </marker>
+                            </defs>
+
+                            <text class="zt-svg-title" x="540" y="32">基于知识库的智能客服系统架构图（科研方向：RAG 智能问答）</text>
+                            <text class="zt-svg-label" x="540" y="56">绘图：张涛 24001010104 · SVG 矢量格式</text>
+
+                            <!-- ================= ① 用户层 ================= -->
+                            <g class="zt-layer" data-desc="① 用户层：问答入口。科研关注点：多渠道会话一致性、用户真实意图采集与多轮上下文建模。">
+                                <rect class="zt-layer-box" x="80" y="76" width="920" height="96" rx="12" stroke="#3498db"></rect>
+                                <rect x="96" y="92" width="112" height="64" rx="8" fill="#3498db"></rect>
+                                <text class="zt-layer-no" x="152" y="114">①</text>
+                                <text class="zt-layer-title" x="152" y="140">用户层</text>
+                                <g>
+                                    <rect class="zt-chip-box" x="230" y="108" width="180" height="32" rx="16" stroke="#3498db"></rect>
+                                    <text class="zt-chip-text" x="320" y="125" fill="#2980b9">Web 网页客服</text>
+                                    <rect class="zt-chip-box" x="430" y="108" width="180" height="32" rx="16" stroke="#3498db"></rect>
+                                    <text class="zt-chip-text" x="520" y="125" fill="#2980b9">微信公众号 / 小程序</text>
+                                    <rect class="zt-chip-box" x="630" y="108" width="180" height="32" rx="16" stroke="#3498db"></rect>
+                                    <text class="zt-chip-text" x="720" y="125" fill="#2980b9">移动 App 客服</text>
+                                </g>
+                            </g>
+
+                            <path class="zt-flow" d="M420,176 L420,210" stroke="#3498db" marker-end="url(#zt-mk-blue)"></path>
+                            <path class="zt-flow zt-flow-slow" d="M660,210 L660,176" stroke="#95a5a6" marker-end="url(#zt-mk-gray)"></path>
+                            <text class="zt-svg-label" x="432" y="198">提问 ↓</text>
+                            <text class="zt-svg-label" x="672" y="198">回答 ↑</text>
+
+                            <!-- ================= ② 接入层 ================= -->
+                            <g class="zt-layer" data-desc="② 接入层：API 网关统一入口。科研关注点：高并发会话管理、鉴权限流、敏感信息过滤。">
+                                <rect class="zt-layer-box" x="80" y="214" width="920" height="96" rx="12" stroke="#16a085"></rect>
+                                <rect x="96" y="230" width="112" height="64" rx="8" fill="#16a085"></rect>
+                                <text class="zt-layer-no" x="152" y="252">②</text>
+                                <text class="zt-layer-title" x="152" y="278">接入层</text>
+                                <g>
+                                    <rect class="zt-chip-box" x="230" y="246" width="180" height="32" rx="16" stroke="#16a085"></rect>
+                                    <text class="zt-chip-text" x="320" y="263" fill="#148f77">API 网关</text>
+                                    <rect class="zt-chip-box" x="430" y="246" width="180" height="32" rx="16" stroke="#16a085"></rect>
+                                    <text class="zt-chip-text" x="520" y="263" fill="#148f77">会话管理（多轮）</text>
+                                    <rect class="zt-chip-box" x="630" y="246" width="180" height="32" rx="16" stroke="#16a085"></rect>
+                                    <text class="zt-chip-text" x="720" y="263" fill="#148f77">鉴权 / 限流</text>
+                                </g>
+                            </g>
+
+                            <path class="zt-flow" d="M420,314 L420,348" stroke="#16a085" marker-end="url(#zt-mk-teal)"></path>
+                            <text class="zt-svg-label" x="432" y="336">标准化问题 ↓</text>
+
+                            <!-- ================= ③ 智能客服引擎 ================= -->
+                            <g class="zt-layer" data-desc="③ 智能客服引擎（核心）：意图识别 NLU → 对话管理 DM → 知识检索 → LLM 生成（RAG）。科研关注点：意图识别准确率、Top-K 召回排序、检索增强生成的忠实度。">
+                                <rect class="zt-layer-box" x="80" y="352" width="920" height="150" rx="12" stroke="#27ae60"></rect>
+                                <rect x="96" y="368" width="112" height="118" rx="8" fill="#27ae60"></rect>
+                                <text class="zt-layer-no" x="152" y="408">③</text>
+                                <text class="zt-layer-title" x="152" y="436">智能客服</text>
+                                <text class="zt-layer-title" x="152" y="460">引擎</text>
+
+                                <!-- 引擎内部流水线 -->
+                                <g>
+                                    <rect class="zt-chip-box" x="230" y="372" width="170" height="34" rx="17" stroke="#27ae60"></rect>
+                                    <text class="zt-chip-text" x="315" y="390" fill="#1e8449">NLU 意图识别</text>
+                                    <rect class="zt-chip-box" x="430" y="372" width="170" height="34" rx="17" stroke="#27ae60"></rect>
+                                    <text class="zt-chip-text" x="515" y="390" fill="#1e8449">对话管理 DM</text>
+                                    <rect class="zt-chip-box" x="630" y="372" width="170" height="34" rx="17" stroke="#27ae60"></rect>
+                                    <text class="zt-chip-text" x="715" y="390" fill="#1e8449">知识检索召回</text>
+                                    <rect class="zt-chip-box" x="820" y="372" width="160" height="34" rx="17" stroke="#27ae60"></rect>
+                                    <text class="zt-chip-text" x="900" y="390" fill="#1e8449">LLM 生成</text>
+
+                                    <path class="zt-flow" d="M402,389 L428,389" stroke="#27ae60" marker-end="url(#zt-mk-green)"></path>
+                                    <path class="zt-flow" d="M602,389 L628,389" stroke="#27ae60" marker-end="url(#zt-mk-green)"></path>
+                                    <path class="zt-flow" d="M802,389 L818,389" stroke="#27ae60" marker-end="url(#zt-mk-green)"></path>
+                                </g>
+
+                                <!-- RAG 标注 -->
+                                <rect x="230" y="430" width="750" height="52" rx="8" fill="#eafaf1" stroke="#27ae60" stroke-dasharray="6 4"></rect>
+                                <text class="zt-svg-badge" x="330" y="456" fill="#1e8449">RAG 流程</text>
+                                <text class="zt-chip-text" x="640" y="446" fill="#2c3e50">问题向量化（Embedding）→ 知识库 Top-K 召回 → 重排序 → 拼接上下文交给大模型</text>
+                                <text class="zt-chip-text" x="640" y="470" fill="#7f8c8d">生成带引用来源的回答，知识不足时兜底转人工</text>
+                            </g>
+
+                            <!-- 引擎与知识库双向箭头 -->
+                            <path class="zt-flow" d="M420,506 L420,540" stroke="#f39c12" marker-end="url(#zt-mk-orange)"></path>
+                            <path class="zt-flow zt-flow-slow" d="M660,540 L660,506" stroke="#f39c12" marker-end="url(#zt-mk-orange)"></path>
+                            <text class="zt-svg-label" x="432" y="528">检索请求 ↓</text>
+                            <text class="zt-svg-label" x="672" y="528">知识片段 ↑</text>
+
+                            <!-- ================= ④ 知识库层 ================= -->
+                            <g class="zt-layer" data-desc="④ 知识库层：智能客服的知识来源。科研关注点：FAQ 与文档的向量化、知识图谱构建、知识自动更新与去重。">
+                                <rect class="zt-layer-box" x="80" y="544" width="920" height="96" rx="12" stroke="#f39c12"></rect>
+                                <rect x="96" y="560" width="112" height="64" rx="8" fill="#f39c12"></rect>
+                                <text class="zt-layer-no" x="152" y="582">④</text>
+                                <text class="zt-layer-title" x="152" y="608">知识库层</text>
+                                <g>
+                                    <rect class="zt-chip-box" x="230" y="576" width="180" height="32" rx="16" stroke="#f39c12"></rect>
+                                    <text class="zt-chip-text" x="320" y="593" fill="#d68910">FAQ 问答对</text>
+                                    <rect class="zt-chip-box" x="430" y="576" width="180" height="32" rx="16" stroke="#f39c12"></rect>
+                                    <text class="zt-chip-text" x="520" y="593" fill="#d68910">文档向量库</text>
+                                    <rect class="zt-chip-box" x="630" y="576" width="180" height="32" rx="16" stroke="#f39c12"></rect>
+                                    <text class="zt-chip-text" x="720" y="593" fill="#d68910">知识图谱</text>
+                                    <rect class="zt-chip-box" x="820" y="576" width="160" height="32" rx="16" stroke="#f39c12"></rect>
+                                    <text class="zt-chip-text" x="900" y="593" fill="#d68910">业务数据库</text>
+                                </g>
+                            </g>
+
+                            <path class="zt-flow" d="M420,644 L420,656" stroke="#8e44ad" marker-end="url(#zt-mk-purple)"></path>
+
+                            <!-- ================= ⑤ 支撑层 ================= -->
+                            <g class="zt-layer" data-desc="⑤ 支撑层：训练与运营闭环。科研关注点：回答质量自动评估（准确率/召回率/忠实度）、坏例挖掘与知识库迭代优化。">
+                                <rect class="zt-layer-box" x="80" y="660" width="920" height="30" rx="8" stroke="#8e44ad"></rect>
+                                <text class="zt-chip-text" x="540" y="676" fill="#71368a">⑤ 支撑层：日志监控 · 效果评估（准确率 / 召回率 / 忠实度） · 知识运营 · 模型训练迭代</text>
+                            </g>
+                        </svg>
+                    </div>
+
+                    <div class="zt_toolbar">
+                        <button class="zt_btn zt-btn-gray zt-toggle" type="button">暂停流动动画</button>
+                        <span class="zt_tip">鼠标<b>悬停 / 点击</b>左侧任意层次，这里会显示该层的功能与科研关注点。</span>
+                    </div>
+
+                    <p class="zt_note">
+                        与 Canvas 版（18-2）不同，本图使用 <b>SVG 矢量格式</b>绘制：
+                        每个节点都是 SVG 元素，放大不模糊、可直接被浏览器搜索与无障碍朗读（aria-label），
+                        流动虚线由 CSS <b>stroke-dashoffset</b> 动画实现，无需 JavaScript 逐帧重绘。
+                    </p>
+                </div>
+            </div>
+
+            <!-- ==================== 二、核心代码 ==================== -->
+            <div class="zt_module">
+                <div class="zt_module-head">二、核心代码</div>
+                <div class="zt_module-body">
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>1</span>SVG 节点与分组</div>
+                        <div class="zt_code"><span class="zt-c-com">&lt;!-- 每一层是一个 &lt;g&gt; 分组：矩形底板 + 标题 + 胶囊节点 --&gt;</span>
+&lt;g class=<span class="zt-c-str">"zt-layer"</span> data-desc=<span class="zt-c-str">"③ 智能客服引擎：..."</span>&gt;
+  &lt;rect x=<span class="zt-c-str">"80"</span> y=<span class="zt-c-str">"352"</span> width=<span class="zt-c-str">"920"</span> height=<span class="zt-c-str">"150"</span> rx=<span class="zt-c-str">"12"</span> stroke=<span class="zt-c-str">"#27ae60"</span>/&gt;
+  &lt;text x=<span class="zt-c-str">"315"</span> y=<span class="zt-c-str">"390"</span>&gt;NLU 意图识别&lt;/text&gt;
+&lt;/g&gt;</div>
+                    </div>
+
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>2</span>流动虚线箭头（纯 CSS 动画）</div>
+                        <div class="zt_code"><span class="zt-c-com">/* stroke-dasharray 画出虚线，dashoffset 随时间偏移产生流动感 */</span>
+.zt-flow {
+    fill: none;
+    stroke-dasharray: <span class="zt-c-str">9 7</span>;
+    animation: zt-dash 1.2s linear infinite;
+}
+@keyframes zt-dash {
+    to { stroke-dashoffset: -32; }
+}</div>
+                    </div>
+
+                    <div class="zt_card">
+                        <div class="zt_card-title"><span>3</span>悬停联动说明面板</div>
+                        <div class="zt_code"><span class="zt-c-kw">var</span> layers = document.<span class="zt-c-fn">querySelectorAll</span>(<span class="zt-c-str">'.zt-layer'</span>);
+var tip = document.<span class="zt-c-fn">querySelector</span>(<span class="zt-c-str">'.zt_tip'</span>);
+layers.<span class="zt-c-fn">forEach</span>(<span class="zt-c-kw">function</span> (ly) {
+    ly.addEventListener(<span class="zt-c-str">'mouseenter'</span>, <span class="zt-c-kw">function</span> () {
+        tip.innerHTML = ly.dataset.desc;            <span class="zt-c-com">// 显示该层说明</span>
+        layers.forEach(o =&gt; o.classList.<span class="zt-c-fn">toggle</span>(<span class="zt-c-str">'zt-dim'</span>, o !== ly));
+    });
+});</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== 三、科研方向与层次说明 ==================== -->
+            <div class="zt_module">
+                <div class="zt_module-head">三、层次说明与科研方向</div>
+                <div class="zt_module-body">
+                    <div class="zt_grid">
+                        <div class="zt_card" style="border-top-color:#3498db;">
+                            <div class="zt_card-title">① 用户层 → ② 接入层</div>
+                            <p class="zt_note">多渠道问答入口与统一网关。科研点：多轮上下文建模、会话状态跟踪（DST）、高并发下的响应时延控制。</p>
+                        </div>
+                        <div class="zt_card" style="border-top-color:#27ae60;">
+                            <div class="zt_card-title">③ 智能客服引擎（核心）</div>
+                            <p class="zt_note">NLU 意图识别 + 对话管理 + 检索 + 生成。科研点：意图分类准确率、Embedding 模型选型、Top-K 召回与重排序策略。</p>
+                        </div>
+                        <div class="zt_card" style="border-top-color:#f39c12;">
+                            <div class="zt_card-title">④ 知识库层</div>
+                            <p class="zt_note">FAQ、文档向量库、知识图谱、业务库四类知识源。科研点：文档切分（Chunking）策略、向量检索与关键词检索的混合召回、知识自动更新。</p>
+                        </div>
+                        <div class="zt_card" style="border-top-color:#8e44ad;">
+                            <div class="zt_card-title">⑤ 支撑层 · RAG 评估闭环</div>
+                            <p class="zt_note">离线评估指标：准确率 Accuracy、召回率 Recall、答案忠实度 Faithfulness；在线指标：解决率、转人工率、平均响应时延。评估结果反哺知识库迭代。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <a class="zt_back" href="index.html">← 返回作品集首页</a>
+        </div>
+
+        <script>
+            // ===== 张涛：SVG 架构图交互 =====
+            var ztSvg = document.querySelector('.zt-svg');
+            var ztBtnToggle = document.querySelector('.zt-toggle');
+            var ztTip = document.querySelector('.zt_tip');
+            var ztTipDefault = ztTip.innerHTML;
+            var ztLayers = Array.prototype.slice.call(document.querySelectorAll('.zt-layer'));
+
+            // 悬停 / 点击某层：高亮该层，其他层变暗，说明面板更新
+            function zt_activate(ly) {
+                ztLayers.forEach(function (o) {
+                    o.classList.toggle('zt-dim', o !== ly);
+                    o.classList.toggle('zt-hover', o === ly);
+                });
+                ztTip.innerHTML = ly.getAttribute('data-desc');
+            }
+
+            function zt_reset() {
+                ztLayers.forEach(function (o) {
+                    o.classList.remove('zt-dim');
+                    o.classList.remove('zt-hover');
+                });
+                ztTip.innerHTML = ztTipDefault;
+            }
+
+            ztLayers.forEach(function (ly) {
+                ly.addEventListener('mouseenter', function () { zt_activate(ly); });
+                ly.addEventListener('mouseleave', zt_reset);
+                ly.addEventListener('click', function () { zt_activate(ly); }); // 触屏设备支持
+            });
+
+            // 暂停 / 继续流动动画
+            ztBtnToggle.addEventListener('click', function () {
+                var paused = ztSvg.classList.toggle('zt-svg-paused');
+                ztBtnToggle.textContent = paused ? '继续流动动画' : '暂停流动动画';
+            });
+        </script>
+    </body>
+</html>
