@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<!-- 姓名：张涛，日期：2026-11-05，功能名称：18-8 智能客服运营数据大屏（ECharts 多图表 + 实时刷新） -->
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>18-8 智能客服运营数据大屏</title>
+        <style>
+            :root {
+                --zt-cyan: #00e4ff;
+                --zt-blue: #2f8fff;
+                --zt-green: #22d47b;
+                --zt-orange: #ffa62b;
+                --zt-purple: #a06bff;
+                --zt-red: #ff5c72;
+                --zt-text: #d8ecff;
+                --zt-muted: #7fa4c4;
+                --zt-line: rgba(0, 228, 255, .22);
+                --zt-panel-bg: linear-gradient(180deg, rgba(14, 42, 70, .92), rgba(7, 22, 38, .95));
+            }
+
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+
+            .zt_body {
+                font-family: "Microsoft YaHei", Arial, sans-serif;
+                background: #061420;
+                color: var(--zt-text);
+                overflow: hidden;
+                height: 100vh;
+            }
+
+            /* ===== 1920×1080 设计稿等比缩放容器 ===== */
+            .zt_stage {
+                width: 100vw;
+                height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                overflow: hidden;
+            }
+
+            .zt_screen {
+                width: 1920px;
+                height: 1080px;
+                flex: 0 0 auto;
+                transform-origin: center center;
+                background:
+                    radial-gradient(1200px 620px at 50% -10%, rgba(0, 228, 255, .18), transparent 70%),
+                    radial-gradient(900px 500px at 8% 105%, rgba(47, 143, 255, .16), transparent 70%),
+                    #061420;
+                position: relative;
+            }
+
+            /* 网格底纹 */
+            .zt_screen::before {
+                content: "";
+                position: absolute;
+                inset: 0;
+                background-image:
+                    linear-gradient(rgba(0, 228, 255, .045) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(0, 228, 255, .045) 1px, transparent 1px);
+                background-size: 48px 48px;
+                pointer-events: none;
+            }
+
+            /* ===== 顶部标题 ===== */
+            .zt_head {
+                height: 88px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 28px;
+                position: relative;
+                border-bottom: 1px solid var(--zt-line);
+                background: linear-gradient(180deg, rgba(0, 228, 255, .10), transparent);
+            }
+
+            .zt_head::after {
+                content: "";
+                position: absolute;
+                left: 50%;
+                bottom: -1px;
+                width: 520px;
+                height: 2px;
+                transform: translateX(-50%);
+                background: linear-gradient(90deg, transparent, var(--zt-cyan), transparent);
+                box-shadow: 0 0 14px var(--zt-cyan);
+            }
+
+            .zt_head-title {
+                font-size: 34px;
+                font-weight: bold;
+                letter-spacing: 4px;
+                background: linear-gradient(180deg, #ffffff, #7fdcff);
+                -webkit-background-clip: text;
+                background-clip: text;
+                color: transparent;
+                text-shadow: 0 0 22px rgba(0, 228, 255, .35);
+                position: absolute;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+
+            .zt_head-side {
+                font-size: 15px;
+                color: var(--zt-muted);
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                z-index: 1;
+            }
+
+            .zt_head-side b { color: var(--zt-cyan); font-weight: normal; }
+
+            .zt_dot {
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: var(--zt-green);
+                box-shadow: 0 0 10px var(--zt-green);
+                animation: zt-blink 1.4s ease-in-out infinite;
+            }
+
+            @keyframes zt-blink {
+                0%, 100% { opacity: 1; transform: scale(1); }
+                50% { opacity: .35; transform: scale(.8); }
+            }
+
+            /* ===== 三栏布局 ===== */
+            .zt_main {
+                display: grid;
+                grid-template-columns: 470px 1fr 470px;
+                gap: 18px;
+                padding: 18px 22px 22px;
+                height: calc(1080px - 88px);
+            }
+
+            .zt_col {
+                display: flex;
+                flex-direction: column;
+                gap: 18px;
+                min-width: 0;
+            }
+
+            /* ===== 面板 ===== */
+            .zt_panel {
+                flex: 1;
+                min-height: 0;
+                background: var(--zt-panel-bg);
+                border: 1px solid var(--zt-line);
+                border-radius: 6px;
+                padding: 12px 14px 10px;
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                box-shadow: inset 0 0 42px rgba(0, 120, 200, .12);
+            }
+
+            .zt_panel::before,
+            .zt_panel::after {
+                content: "";
+                position: absolute;
+                width: 14px;
+                height: 14px;
+                border-color: var(--zt-cyan);
+                border-style: solid;
+                opacity: .85;
+            }
+
+            .zt_panel::before { left: -1px; top: -1px; border-width: 2px 0 0 2px; }
+            .zt_panel::after { right: -1px; bottom: -1px; border-width: 0 2px 2px 0; }
+
+            .zt_panel-head {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-size: 17px;
+                font-weight: bold;
+                color: #eaf6ff;
+                letter-spacing: 1px;
+                padding-bottom: 8px;
+                margin-bottom: 6px;
+                border-bottom: 1px dashed rgba(0, 228, 255, .18);
+                flex: 0 0 auto;
+            }
+
+            .zt_panel-head::before {
+                content: "";
+                width: 4px;
+                height: 16px;
+                background: var(--zt-cyan);
+                box-shadow: 0 0 10px var(--zt-cyan);
+                border-radius: 2px;
+            }
+
+            .zt_panel-head small {
+                margin-left: auto;
+                font-size: 12px;
+                font-weight: normal;
+                color: var(--zt-muted);
+                letter-spacing: 0;
+            }
+
+            .zt_chart {
+                width: 100%;
+                flex: 1;
+                min-height: 0;
+            }
+
+            /* ===== 指标卡片 ===== */
+            .zt_kpis {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+                flex: 1;
+                min-height: 0;
+            }
+
+            .zt_kpi {
+                border: 1px solid rgba(0, 228, 255, .18);
+                border-radius: 5px;
+                background: linear-gradient(180deg, rgba(0, 228, 255, .10), rgba(0, 228, 255, .02));
+                padding: 10px 12px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .zt_kpi-name {
+                font-size: 14px;
+                color: var(--zt-muted);
+                letter-spacing: 1px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+            .zt_kpi-value {
+                font-size: 32px;
+                font-weight: bold;
+                font-family: Consolas, "Microsoft YaHei", monospace;
+                color: #ffffff;
+                text-shadow: 0 0 18px rgba(0, 228, 255, .55);
+                line-height: 1.25;
+                margin-top: 2px;
+            }
+
+            .zt_kpi-value em {
+                font-style: normal;
+                font-size: 15px;
+                color: var(--zt-cyan);
+                margin-left: 4px;
+            }
+
+            .zt_kpi-trend {
+                font-size: 12px;
+                color: var(--zt-green);
+            }
+
+            .zt_kpi-trend.zt-down { color: var(--zt-red); }
+
+            /* ===== 实时会话列表 ===== */
+            .zt_list {
+                flex: 1;
+                min-height: 0;
+                overflow: hidden;
+                font-size: 14px;
+            }
+
+            .zt_list-head,
+            .zt_list-row {
+                display: grid;
+                grid-template-columns: 88px 88px 1fr 82px;
+                gap: 8px;
+                align-items: center;
+                padding: 8px 6px;
+                border-bottom: 1px solid rgba(0, 228, 255, .08);
+            }
+
+            .zt_list-head {
+                color: var(--zt-muted);
+                font-size: 13px;
+                background: rgba(0, 228, 255, .06);
+                border-radius: 4px;
+            }
+
+            .zt_list-row {
+                color: var(--zt-text);
+                animation: zt-slide .45s ease;
+            }
+
+            .zt_list-row span:nth-child(3) {
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                color: #c3dcf0;
+            }
+
+            @keyframes zt-slide {
+                from { opacity: 0; transform: translateY(-10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+
+            .zt_tag {
+                font-size: 12px;
+                text-align: center;
+                border-radius: 3px;
+                padding: 2px 0;
+                border: 1px solid currentColor;
+            }
+
+            .zt_tag.zt-ok { color: var(--zt-green); background: rgba(34, 212, 123, .10); }
+            .zt_tag.zt-human { color: var(--zt-orange); background: rgba(255, 166, 43, .10); }
+            .zt_tag.zt-ing { color: var(--zt-cyan); background: rgba(0, 228, 255, .10); }
+
+            /* ===== 底部 ===== */
+            .zt_foot {
+                position: absolute;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                height: 0;
+                color: var(--zt-muted);
+            }
+        </style>
+    </head>
+    <body class="zt_body">
+        <div class="zt_stage">
+            <div class="zt_screen">
+                <!-- ===== 顶部标题栏 ===== -->
+                <header class="zt_head">
+                    <div class="zt_head-side">
+                        <span class="zt_dot"></span>
+                        数据实时刷新中
+                    </div>
+                    <h1 class="zt_head-title">智能客服运营数据大屏</h1>
+                    <div class="zt_head-side">
+                        <b class="zt-clock">--:--:--</b>
+                        <span class="zt-date">----年--月--日</span>
+                    </div>
+                </header>
+
+                <!-- ===== 三栏内容 ===== -->
+                <main class="zt_main">
+                    <!-- ========== 左栏 ========== -->
+                    <section class="zt_col">
+                        <div class="zt_panel" style="flex:1.05;">
+                            <div class="zt_panel-head">核心运营指标 <small>今日累计</small></div>
+                            <div class="zt_kpis">
+                                <div class="zt_kpi">
+                                    <div class="zt_kpi-name">会话总量（次）</div>
+                                    <div class="zt_kpi-value zt-num" data-value="12846">0</div>
+                                    <div class="zt_kpi-trend">▲ 12.4% 较昨日</div>
+                                </div>
+                                <div class="zt_kpi">
+                                    <div class="zt_kpi-name">智能解决率</div>
+                                    <div class="zt_kpi-value zt-num" data-value="86.3" data-suffix="%">0</div>
+                                    <div class="zt_kpi-trend">▲ 3.1% 较昨日</div>
+                                </div>
+                                <div class="zt_kpi">
+                                    <div class="zt_kpi-name">平均响应时长</div>
+                                    <div class="zt_kpi-value zt-num" data-value="1.2" data-suffix="s" data-decimals="1">0</div>
+                                    <div class="zt_kpi-trend zt-down">▼ 0.3s 较昨日</div>
+                                </div>
+                                <div class="zt_kpi">
+                                    <div class="zt_kpi-name">转人工率</div>
+                                    <div class="zt_kpi-value zt-num" data-value="13.7" data-suffix="%">0</div>
+                                    <div class="zt_kpi-trend zt-down">▼ 1.8% 较昨日</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="zt_panel">
+                            <div class="zt_panel-head">各渠道会话量 <small>单位：次</small></div>
+                            <div class="zt_chart zt-ch-bar"></div>
+                        </div>
+
+                        <div class="zt_panel">
+                            <div class="zt_panel-head">咨询问题类型分布 <small>占比 %</small></div>
+                            <div class="zt_chart zt-ch-pie"></div>
+                        </div>
+                    </section>
+
+                    <!-- ========== 中栏 ========== -->
+                    <section class="zt_col">
+                        <div class="zt_panel" style="flex:1.5;">
+                            <div class="zt_panel-head">24 小时会话趋势 <small>会话量 / 转人工量</small></div>
+                            <div class="zt_chart zt-ch-line"></div>
+                        </div>
+
+                        <div class="zt_panel">
+                            <div class="zt_panel-head">实时会话流水 <small>最近 8 条 · 自动滚动</small></div>
+                            <div class="zt_list">
+                                <div class="zt_list-head">
+                                    <span>时间</span><span>渠道</span><span>用户问题</span><span>状态</span>
+                                </div>
+                                <div class="zt_list-body"></div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ========== 右栏 ========== -->
+                    <section class="zt_col">
+                        <div class="zt_panel">
+                            <div class="zt_panel-head">服务质量五维评估 <small>得分 0-100</small></div>
+                            <div class="zt_chart zt-ch-radar"></div>
+                        </div>
+
+                        <div class="zt_panel">
+                            <div class="zt_panel-head">用户满意度评分 <small>满分 5.0</small></div>
+                            <div class="zt_chart zt-ch-gauge"></div>
+                        </div>
+
+                        <div class="zt_panel">
+                            <div class="zt_panel-head">坐席接待量 TOP5 <small>单位：次</small></div>
+                            <div class="zt_chart zt-ch-agent"></div>
+                        </div>
+                    </section>
+                </main>
+            </div>
+        </div>
+
+        <script src="cdn/echarts.min.js"></script>
+        <script>
+            // ===== 张涛：智能客服运营数据大屏 =====
+            var ztScreen = document.querySelector('.zt_screen');
+            var ztColors = ['#00e4ff', '#2f8fff', '#22d47b', '#ffa62b', '#a06bff', '#ff5c72'];
+            var ztAxisColor = 'rgba(127, 164, 196, .8)';
+            var ztSplitColor = 'rgba(0, 228, 255, .10)';
+
+            // ---------- 1. 大屏等比缩放（1920×1080 适配任意屏幕） ----------
+            function zt_fit() {
+                var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+                ztScreen.style.transform = 'scale(' + scale + ')';
+            }
+            zt_fit();
+            window.addEventListener('resize', zt_fit);
+
+            // ---------- 2. 顶部时钟 ----------
+            function zt_tick() {
+                var d = new Date();
+                var p = function (n) { return n < 10 ? '0' + n : '' + n; };
+                document.querySelector('.zt-clock').textContent = p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+                var week = ['日', '一', '二', '三', '四', '五', '六'][d.getDay()];
+                document.querySelector('.zt-date').textContent =
+                    d.getFullYear() + '年' + p(d.getMonth() + 1) + '月' + p(d.getDate()) + '日 星期' + week;
+            }
+            zt_tick();
+            setInterval(zt_tick, 1000);
+
+            // ---------- 3. 数字滚动（KPI 入场动画） ----------
+            function zt_countUp(el) {
+                var target = parseFloat(el.dataset.value);
+                var decimals = parseInt(el.dataset.decimals || '0', 10);
+                var suffix = el.dataset.suffix || '';
+                var start = 0, duration = 1200, t0 = null;
+
+                function step(ts) {
+                    if (!t0) { t0 = ts; }
+                    var k = Math.min((ts - t0) / duration, 1);
+                    var v = start + (target - start) * (1 - Math.pow(1 - k, 3));  // easeOutCubic
+                    var txt = decimals ? v.toFixed(decimals) : Math.round(v).toLocaleString('zh-CN');
+                    el.innerHTML = txt + (suffix ? '<em>' + suffix + '</em>' : '');
+                    if (k < 1) { requestAnimationFrame(step); }
+                }
+                requestAnimationFrame(step);
+            }
+            document.querySelectorAll('.zt-num').forEach(zt_countUp);
+
+            // ---------- 4. 图表初始化 ----------
+            var chBar = echarts.init(document.querySelector('.zt-ch-bar'));
+            var chPie = echarts.init(document.querySelector('.zt-ch-pie'));
+            var chLine = echarts.init(document.querySelector('.zt-ch-line'));
+            var chRadar = echarts.init(document.querySelector('.zt-ch-radar'));
+            var chGauge = echarts.init(document.querySelector('.zt-ch-gauge'));
+            var chAgent = echarts.init(document.querySelector('.zt-ch-agent'));
+
+            // 4.1 各渠道会话量（横向柱状）
+            var ztChannels = [
+                { name: '网页客服', value: 4820 },
+                { name: '微信公众号', value: 3960 },
+                { name: 'App 客户端', value: 2240 },
+                { name: '小程序', value: 1210 },
+                { name: '电话', value: 420 },
+                { name: '邮件', value: 196 }
+            ];
+
+            function zt_barOption(data) {
+                var names = data.map(function (d) { return d.name; });
+                var values = data.map(function (d) { return d.value; });
+                return {
+                    grid: { left: 78, right: 56, top: 12, bottom: 8 },
+                    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+                    xAxis: {
+                        type: 'value',
+                        splitLine: { lineStyle: { color: ztSplitColor } },
+                        axisLabel: { color: ztAxisColor, fontSize: 11 }
+                    },
+                    yAxis: {
+                        type: 'category',
+                        inverse: true,
+                        data: names,
+                        axisLine: { lineStyle: { color: 'rgba(0,228,255,.25)' } },
+                        axisTick: { show: false },
+                        axisLabel: { color: '#c3dcf0', fontSize: 12 }
+                    },
+                    series: [{
+                        type: 'bar',
+                        barWidth: 13,
+                        data: values,
+                        itemStyle: {
+                            borderRadius: [0, 7, 7, 0],
+                            color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+                                { offset: 0, color: 'rgba(0,228,255,.35)' },
+                                { offset: 1, color: '#00e4ff' }
+                            ])
+                        },
+                        label: {
+                            show: true,
+                            position: 'right',
+                            color: '#8ee6ff',
+                            fontSize: 12,
+                            fontFamily: 'Consolas'
+                        }
+                    }]
+                };
+            }
+            chBar.setOption(zt_barOption(ztChannels));
+
+            // 4.2 问题类型分布（玫瑰环形）
+            function zt_pieOption() {
+                return {
+                    tooltip: { trigger: 'item', formatter: '{b}：{c}%' },
+                    legend: {
+                        orient: 'vertical',
+                        right: 6,
+                        top: 'center',
+                        itemWidth: 10,
+                        itemHeight: 10,
+                        textStyle: { color: '#a9c8de', fontSize: 12 }
+                    },
+                    color: ztColors,
+                    series: [{
+                        type: 'pie',
+                        radius: ['38%', '66%'],
+                        center: ['36%', '52%'],
+                        roseType: 'radius',
+                        itemStyle: { borderColor: '#0b1f33', borderWidth: 2 },
+                        label: { show: false },
+                        emphasis: { label: { show: true, color: '#fff', fontSize: 13, formatter: '{b}\n{c}%' } },
+                        data: [
+                            { name: '订单物流', value: 32 },
+                            { name: '售后退换', value: 24 },
+                            { name: '产品咨询', value: 18 },
+                            { name: '账户会员', value: 14 },
+                            { name: '其他问题', value: 12 }
+                        ]
+                    }]
+                };
+            }
+            chPie.setOption(zt_pieOption());
+
+            // 4.3 24 小时会话趋势
+            var ztHours = [];
+            for (var h = 0; h < 24; h++) { ztHours.push((h < 10 ? '0' + h : h) + ':00'); }
+            var ztHourBase = [120, 86, 64, 52, 58, 96, 210, 420, 760, 980, 1120, 1060,
+                              880, 940, 1080, 1160, 1240, 1120, 940, 860, 720, 560, 380, 220];
+            var ztSessionData = ztHourBase.slice();
+            var ztHumanData = ztHourBase.map(function (v) { return Math.round(v * 0.14); });
+
+            function zt_lineOption(session, human) {
+                return {
+                    tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
+                    legend: {
+                        data: ['会话量', '转人工量'],
+                        right: 10,
+                        top: 0,
+                        itemWidth: 14,
+                        itemHeight: 8,
+                        textStyle: { color: '#a9c8de', fontSize: 12 }
+                    },
+                    grid: { left: 54, right: 24, top: 42, bottom: 30 },
+                    xAxis: {
+                        type: 'category',
+                        boundaryGap: false,
+                        data: ztHours,
+                        axisLine: { lineStyle: { color: 'rgba(0,228,255,.25)' } },
+                        axisLabel: { color: ztAxisColor, fontSize: 11, interval: 2 }
+                    },
+                    yAxis: [
+                        {
+                            type: 'value',
+                            name: '会话量',
+                            nameTextStyle: { color: ztAxisColor, fontSize: 11 },
+                            splitLine: { lineStyle: { color: ztSplitColor } },
+                            axisLabel: { color: ztAxisColor, fontSize: 11 }
+                        },
+                        {
+                            type: 'value',
+                            name: '转人工',
+                            nameTextStyle: { color: ztAxisColor, fontSize: 11 },
+                            splitLine: { show: false },
+                            axisLabel: { color: ztAxisColor, fontSize: 11 }
+                        }
+                    ],
+                    series: [
+                        {
+                            name: '会话量',
+                            type: 'line',
+                            smooth: true,
+                            symbol: 'circle',
+                            symbolSize: 6,
+                            data: session,
+                            lineStyle: { width: 2.6, color: '#00e4ff', shadowColor: 'rgba(0,228,255,.6)', shadowBlur: 12 },
+                            itemStyle: { color: '#00e4ff' },
+                            areaStyle: {
+                                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                    { offset: 0, color: 'rgba(0,228,255,.42)' },
+                                    { offset: 1, color: 'rgba(0,228,255,.01)' }
+                                ])
+                            }
+                        },
+                        {
+                            name: '转人工量',
+                            type: 'line',
+                            yAxisIndex: 1,
+                            smooth: true,
+                            symbol: 'circle',
+                            symbolSize: 5,
+                            data: human,
+                            lineStyle: { width: 2, color: '#ffa62b' },
+                            itemStyle: { color: '#ffa62b' }
+                        }
+                    ]
+                };
+            }
+            chLine.setOption(zt_lineOption(ztSessionData, ztHumanData));
+
+            // 4.4 五维服务质量雷达
+            chRadar.setOption({
+                radar: {
+                    center: ['50%', '54%'],
+                    radius: '66%',
+                    indicator: [
+                        { name: '意图识别', max: 100 },
+                        { name: '知识命中', max: 100 },
+                        { name: '答案准确', max: 100 },
+                        { name: '响应速度', max: 100 },
+                        { name: '用户满意', max: 100 }
+                    ],
+                    axisName: { color: '#a9c8de', fontSize: 12 },
+                    splitLine: { lineStyle: { color: 'rgba(0,228,255,.18)' } },
+                    splitArea: { areaStyle: { color: ['rgba(0,228,255,.03)', 'rgba(0,228,255,.07)'] } },
+                    axisLine: { lineStyle: { color: 'rgba(0,228,255,.2)' } }
+                },
+                series: [{
+                    type: 'radar',
+                    symbolSize: 5,
+                    data: [{
+                        value: [92, 88, 90, 85, 94],
+                        name: '综合得分',
+                        lineStyle: { color: '#00e4ff', width: 2 },
+                        itemStyle: { color: '#00e4ff' },
+                        areaStyle: { color: 'rgba(0,228,255,.28)' }
+                    }]
+                }]
+            });
+
+            // 4.5 满意度仪表盘
+            chGauge.setOption({
+                series: [{
+                    type: 'gauge',
+                    startAngle: 210,
+                    endAngle: -30,
+                    min: 0,
+                    max: 5,
+                    splitNumber: 5,
+                    radius: '88%',
+                    center: ['50%', '58%'],
+                    progress: { show: true, width: 12, itemStyle: { color: '#22d47b' } },
+                    pointer: { width: 4, length: '62%', itemStyle: { color: '#22d47b' } },
+                    axisLine: { lineStyle: { width: 12, color: [[1, 'rgba(34,212,123,.16)']] } },
+                    axisTick: { distance: -14, length: 5, lineStyle: { color: 'rgba(127,164,196,.6)' } },
+                    splitLine: { distance: -16, length: 10, lineStyle: { color: 'rgba(127,164,196,.8)' } },
+                    axisLabel: { distance: -4, color: '#7fa4c4', fontSize: 11 },
+                    title: { offsetCenter: [0, '72%'], color: '#a9c8de', fontSize: 13 },
+                    detail: {
+                        offsetCenter: [0, '34%'],
+                        fontSize: 30,
+                        fontWeight: 'bold',
+                        color: '#22d47b',
+                        formatter: '{value}'
+                    },
+                    data: [{ value: 4.7, name: '平均评分（分）' }]
+                }]
+            });
+
+            // 4.6 坐席接待量 TOP5
+            var ztAgents = [
+                { name: '张伟', value: 328 },
+                { name: '李静', value: 302 },
+                { name: '王强', value: 288 },
+                { name: '刘敏', value: 265 },
+                { name: '陈晨', value: 241 }
+            ];
+            chAgent.setOption({
+                grid: { left: 66, right: 46, top: 8, bottom: 28 },
+                tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+                xAxis: {
+                    type: 'category',
+                    data: ztAgents.map(function (a) { return a.name; }),
+                    axisLine: { lineStyle: { color: 'rgba(0,228,255,.25)' } },
+                    axisTick: { show: false },
+                    axisLabel: { color: '#c3dcf0', fontSize: 12 }
+                },
+                yAxis: {
+                    type: 'value',
+                    splitLine: { lineStyle: { color: ztSplitColor } },
+                    axisLabel: { color: ztAxisColor, fontSize: 11 }
+                },
+                series: [{
+                    type: 'bar',
+                    barWidth: 22,
+                    data: ztAgents.map(function (a, i) { return { value: a.value, itemStyle: { color: ztColors[i] } }; }),
+                    itemStyle: { borderRadius: [5, 5, 0, 0], opacity: .85 },
+                    label: { show: true, position: 'top', color: '#8ee6ff', fontSize: 11 }
+                }]
+            });
+
+            // 图表随容器变化重绘
+            window.addEventListener('resize', function () {
+                [chBar, chPie, chLine, chRadar, chGauge, chAgent].forEach(function (c) { c.resize(); });
+            });
+
+            // ---------- 5. 实时会话流水（滚动插入） ----------
+            var ztQuestions = [
+                ['订单 30 天未发货怎么退款？', '订单物流'],
+                ['换货需要自己承担运费吗？', '售后退换'],
+                ['会员到期后权益还在吗？', '账户会员'],
+                ['这款耳机支持双设备连接吗？', '产品咨询'],
+                ['发票抬头可以开公司吗？', '其他问题'],
+                ['快递显示签收但没收到', '订单物流'],
+                ['七天无理由怎么计算时间？', '售后退换'],
+                ['会员积分怎么兑换？', '账户会员'],
+                ['保修期内维修要收费吗？', '产品咨询'],
+                ['改地址后配送时间会变吗？', '订单物流']
+            ];
+            var ztChannelsText = ['网页', '微信', 'App', '小程序'];
+            var ztStatuses = [
+                { text: '已解决', cls: 'zt-ok' },
+                { text: '转人工', cls: 'zt-human' },
+                { text: '进行中', cls: 'zt-ing' }
+            ];
+            var ztListBody = document.querySelector('.zt_list-body');
+            var ztRowCount = 0;
+
+            function zt_now() {
+                var d = new Date();
+                var p = function (n) { return n < 10 ? '0' + n : '' + n; };
+                return p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+            }
+
+            function zt_addRow() {
+                var q = ztQuestions[Math.floor(Math.random() * ztQuestions.length)];
+                var ch = ztChannelsText[Math.floor(Math.random() * ztChannelsText.length)];
+                var st = ztStatuses[Math.floor(Math.random() * ztStatuses.length)];
+
+                var row = document.createElement('div');
+                row.className = 'zt_list-row';
+                row.innerHTML = '<span>' + zt_now() + '</span>'
+                    + '<span>' + ch + '</span>'
+                    + '<span>' + q[0] + '</span>'
+                    + '<span class="zt_tag ' + st.cls + '">' + st.text + '</span>';
+                ztListBody.insertBefore(row, ztListBody.firstChild);
+                ztRowCount++;
+
+                while (ztListBody.children.length > 8) {
+                    ztListBody.removeChild(ztListBody.lastChild);
+                }
+            }
+
+            // 初始化 8 条
+            for (var i = 0; i < 8; i++) { zt_addRow(); }
+            setInterval(zt_addRow, 3200);
+
+            // ---------- 6. 数据刷新（模拟实时） ----------
+            setInterval(function () {
+                // 渠道数据小幅波动
+                var bars = ztChannels.map(function (c) {
+                    return { name: c.name, value: Math.round(c.value * (0.96 + Math.random() * 0.08)) };
+                });
+                chBar.setOption(zt_barOption(bars));
+
+                // 折线：最后一小时随机更新
+                var idx = 23;
+                ztSessionData[idx] = Math.max(80, Math.round(ztSessionData[idx] * (0.9 + Math.random() * 0.2)));
+                ztHumanData[idx] = Math.round(ztSessionData[idx] * 0.14);
+                chLine.setOption(zt_lineOption(ztSessionData, ztHumanData));
+            }, 6000);
+        </script>
+    </body>
+</html>
