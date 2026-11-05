@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>58同城</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="stage">
+  <div class="phone">
+    <div class="screen">
+
+      <!-- 状态栏 -->
+      <div class="statusbar">
+        <span class="sb-time" id="sbTime">9:41</span>
+        <span class="sb-notch"></span>
+        <span class="sb-right">
+          <i class="sig"></i><i class="sig"></i><i class="sig"></i><i class="sig"></i>
+          <b class="wifi"></b><b class="battery"></b>
+        </span>
+      </div>
+
+      <!-- 页面容器 -->
+      <div class="page-wrap" id="pageWrap"></div>
+
+      <!-- 二级页（覆盖层） -->
+      <div class="subpage-wrap" id="subWrap"></div>
+
+      <!-- 底部TabBar -->
+      <div class="tabbar" id="tabbar">
+        <div class="tab-item" data-tab="home"><i class="t-ico">🏠</i><span>首页</span></div>
+        <div class="tab-item" data-tab="near"><i class="t-ico">📍</i><span>附近</span></div>
+        <div class="tab-item tab-post" data-tab="post">
+          <div class="post-btn">+</div>
+          <span>发布</span>
+        </div>
+        <div class="tab-item" data-tab="message"><i class="t-ico">💬</i><span>消息</span><em class="dot">6</em></div>
+        <div class="tab-item" data-tab="mine"><i class="t-ico">👤</i><span>我的</span></div>
+      </div>
+
+      <!-- 发布弹层 -->
+      <div class="post-mask" id="postMask">
+        <div class="post-sheet">
+          <div class="ps-grid">
+            <div class="ps-item"><span class="ps-ico" style="background:#fff1e0">🏠</span>房屋租售</div>
+            <div class="ps-item"><span class="ps-ico" style="background:#e6f4ff">💼</span>发布招聘</div>
+            <div class="ps-item"><span class="ps-ico" style="background:#ffeaf0">🚗</span>卖二手车</div>
+            <div class="ps-item"><span class="ps-ico" style="background:#e9f9ee">🛋️</span>二手闲置</div>
+            <div class="ps-item"><span class="ps-ico" style="background:#f3ecff">🧹</span>家政服务</div>
+            <div class="ps-item"><span class="ps-ico" style="background:#fff6e0">🚚</span>搬家货运</div>
+            <div class="ps-item"><span class="ps-ico" style="background:#eafaf6">🔧</span>维修装修</div>
+            <div class="ps-item"><span class="ps-ico" style="background:#f0f4ff">🎯</span>本地服务</div>
+          </div>
+          <div class="ps-close" id="psClose">×</div>
+        </div>
+      </div>
+
+      <!-- Toast -->
+      <div class="toast" id="toast"></div>
+
+    </div>
+  </div>
+  <div class="stage-tip">58同城 · 高仿演示页面（仅前端界面，数据为模拟数据）</div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
