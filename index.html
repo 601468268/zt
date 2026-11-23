@@ -1,96 +1,247 @@
 <!DOCTYPE html>
-<!-- 姓名：张涛，日期：2026-10-29，功能名称：网页作业作品集首页（自动读取仓库里的 html 页面） -->
+<!-- 姓名：张涛，日期：2026-11-23，功能名称：作品集首页 · 张涛的《高级网页设计》课堂实践作品（原生代码 · 零 CDN 依赖） -->
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>张涛 · 网页作品集</title>
+    <title>张涛的《高级网页设计》课堂实践作品</title>
     <style>
         :root {
-            --zt-primary: #3b82f6;
-            --zt-primary-dark: #1d4ed8;
-            --zt-bg: #f6f7f9;
+            --zt-ink: #0f172a;
+            --zt-text: #334155;
+            --zt-muted: #64748b;
+            --zt-border: #e2e8f0;
             --zt-card: #ffffff;
-            --zt-text: #1f2937;
-            --zt-muted: #6b7280;
-            --zt-border: #e5e7eb;
+            --zt-bg: #f1f5f9;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: "Microsoft YaHei", "PingFang SC", -apple-system, "Segoe UI", sans-serif;
+            font-family: "Microsoft YaHei", "PingFang SC", "Segoe UI", sans-serif;
             background: var(--zt-bg);
             color: var(--zt-text);
             min-height: 100vh;
-            padding: 48px 20px 60px;
             -webkit-font-smoothing: antialiased;
         }
 
-        .zt-wrap { max-width: 1080px; margin: 0 auto; }
+        .zt-wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px 64px; }
 
-        /* ===== 头部 ===== */
-        .zt-header { margin-bottom: 32px; }
+        /* ===== 顶部主题横幅（纯 CSS 渐变，无图片） ===== */
+        .zt-hero {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0b1e4b 0%, #1e3a8a 45%, #4338ca 100%);
+            color: #fff;
+            padding: 58px 20px 84px;
+            text-align: center;
+        }
 
-        .zt-title {
-            font-size: 32px;
+        /* 装饰圆环与网格（纯 CSS 绘制） */
+        .zt-hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px);
+            background-size: 44px 44px;
+        }
+
+        .zt-hero::after {
+            content: "";
+            position: absolute;
+            width: 420px;
+            height: 420px;
+            border-radius: 50%;
+            right: -140px;
+            top: -180px;
+            background: radial-gradient(circle, rgba(96,165,250,.35), transparent 65%);
+        }
+
+        .zt-hero-deco {
+            position: absolute;
+            width: 260px;
+            height: 260px;
+            border-radius: 50%;
+            left: -110px;
+            bottom: -140px;
+            border: 30px solid rgba(255,255,255,.08);
+        }
+
+        .zt-hero-badge {
+            display: inline-block;
+            position: relative;
+            z-index: 1;
+            font-size: 13px;
+            letter-spacing: 3px;
+            padding: 7px 18px;
+            border: 1px solid rgba(255,255,255,.35);
+            border-radius: 999px;
+            background: rgba(255,255,255,.10);
+            margin-bottom: 18px;
+        }
+
+        .zt-hero-title {
+            position: relative;
+            z-index: 1;
+            font-size: 36px;
             font-weight: 800;
-            letter-spacing: .5px;
-            margin-bottom: 8px;
+            letter-spacing: 2px;
+            margin-bottom: 14px;
+            text-shadow: 0 4px 24px rgba(0,0,0,.25);
         }
 
-        .zt-subtitle {
+        .zt-hero-title em {
+            font-style: normal;
+            background: linear-gradient(90deg, #7dd3fc, #fbbf24);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .zt-hero-sub {
+            position: relative;
+            z-index: 1;
             font-size: 14px;
-            color: var(--zt-muted);
-            line-height: 1.8;
+            color: rgba(226,232,240,.85);
+            line-height: 2;
         }
 
-        .zt-subtitle b { color: var(--zt-primary); font-weight: 600; }
+        /* ===== 统计条 ===== */
+        .zt-stats {
+            position: relative;
+            z-index: 2;
+            max-width: 760px;
+            margin: -46px auto 0;
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
 
+        .zt-stat {
+            flex: 1;
+            min-width: 150px;
+            background: var(--zt-card);
+            border: 1px solid var(--zt-border);
+            border-radius: 14px;
+            padding: 16px 10px 14px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(15,23,42,.10);
+        }
+
+        .zt-stat b {
+            display: block;
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--zt-ink);
+            font-family: Consolas, "Microsoft YaHei", monospace;
+        }
+
+        .zt-stat span { font-size: 12.5px; color: var(--zt-muted); }
+
+        /* ===== 工具栏 ===== */
         .zt-toolbar {
             display: flex;
             align-items: center;
             gap: 12px;
             flex-wrap: wrap;
-            margin-top: 22px;
+            max-width: 1120px;
+            margin: 30px auto 6px;
+            padding: 0 20px;
         }
 
         .zt-search {
             flex: 1;
             min-width: 220px;
-            max-width: 340px;
-            padding: 11px 16px;
+            max-width: 380px;
+            padding: 11px 16px 11px 40px;
             border: 1px solid var(--zt-border);
             border-radius: 10px;
             font-size: 14px;
             font-family: inherit;
             outline: none;
-            background: #fff;
+            background: #fff url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2394a3b8'%3E%3Cpath d='M15.5 14h-.8l-.3-.3a6.5 6.5 0 1 0-.7.7l.3.3v.8l5 5 1.5-1.5-5-5zm-6 0a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9z'/%3E%3C/svg%3E") 12px center / 16px no-repeat;
             transition: border-color .2s, box-shadow .2s;
         }
 
         .zt-search:focus {
-            border-color: var(--zt-primary);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, .12);
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99,102,241,.14);
         }
 
-        .zt-count { font-size: 13px; color: var(--zt-muted); }
-
-        .zt-status {
+        .zt-count {
             font-size: 13px;
-            padding: 6px 12px;
+            color: var(--zt-muted);
+            background: #fff;
+            border: 1px solid var(--zt-border);
             border-radius: 999px;
-            background: #eff6ff;
-            color: var(--zt-primary-dark);
+            padding: 8px 14px;
         }
 
-        .zt-status.zt-warn { background: #fff7ed; color: #b45309; }
+        /* ===== 三级项目入口 ===== */
+        .zt-feature {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            max-width: 1120px;
+            margin: 18px auto 34px;
+            padding: 18px 22px;
+            text-decoration: none;
+            color: inherit;
+            background: linear-gradient(90deg, #eef2ff, #fff 55%);
+            border: 1px solid #c7d2fe;
+            border-left: 4px solid #6366f1;
+            border-radius: 14px;
+            transition: transform .18s, box-shadow .18s;
+        }
 
-        /* ===== 卡片网格 ===== */
+        .zt-feature:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 26px rgba(79,70,229,.16);
+        }
+
+        .zt-feature-badge {
+            flex: 0 0 auto;
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 700;
+            border-radius: 8px;
+            padding: 7px 13px;
+            letter-spacing: 2px;
+        }
+
+        .zt-feature-name { font-size: 19px; font-weight: 800; color: var(--zt-ink); margin-bottom: 4px; }
+        .zt-feature-desc { font-size: 13px; color: var(--zt-muted); }
+        .zt-feature-arrow { margin-left: auto; font-size: 22px; font-weight: bold; color: #6366f1; }
+
+        /* ===== 分组与卡片 ===== */
+        .zt-section { max-width: 1120px; margin: 0 auto 34px; padding: 0 20px; }
+
+        .zt-sec-head {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .zt-sec-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 4px;
+            background: var(--zt-accent, #3b82f6);
+            box-shadow: 0 0 0 4px color-mix(in srgb, var(--zt-accent, #3b82f6) 18%, transparent);
+        }
+
+        .zt-sec-name { font-size: 19px; font-weight: 800; color: var(--zt-ink); letter-spacing: 1px; }
+        .zt-sec-count { font-size: 12.5px; color: var(--zt-muted); background: #fff; border: 1px solid var(--zt-border); border-radius: 999px; padding: 3px 10px; }
+
         .zt-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 16px;
+            grid-template-columns: repeat(auto-fill, minmax(248px, 1fr));
+            gap: 14px;
         }
 
         .zt-card {
@@ -100,26 +251,24 @@
             background: var(--zt-card);
             border: 1px solid var(--zt-border);
             border-radius: 14px;
-            padding: 20px 20px 18px;
-            transition: transform .18s, box-shadow .18s, border-color .18s;
+            padding: 18px 18px 16px;
             position: relative;
             overflow: hidden;
+            transition: transform .18s, box-shadow .18s, border-color .18s;
         }
 
         .zt-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 10px 26px rgba(17, 24, 39, .10);
-            border-color: #c7d7fe;
+            box-shadow: 0 12px 26px rgba(15, 23, 42, .10);
+            border-color: color-mix(in srgb, var(--zt-accent, #3b82f6) 45%, #e2e8f0);
         }
 
         .zt-card::after {
             content: "";
             position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
+            left: 0; top: 0; bottom: 0;
             width: 4px;
-            background: linear-gradient(180deg, #60a5fa, #3b82f6);
+            background: var(--zt-accent, #3b82f6);
             opacity: 0;
             transition: opacity .18s;
         }
@@ -130,16 +279,17 @@
             display: inline-block;
             font-size: 12px;
             font-weight: 700;
-            color: var(--zt-primary);
-            background: #eff6ff;
+            color: var(--zt-accent, #3b82f6);
+            background: color-mix(in srgb, var(--zt-accent, #3b82f6) 10%, #fff);
             border-radius: 6px;
-            padding: 3px 8px;
+            padding: 3px 9px;
             margin-bottom: 12px;
         }
 
         .zt-card-name {
-            font-size: 17px;
+            font-size: 16.5px;
             font-weight: 700;
+            color: var(--zt-ink);
             line-height: 1.4;
             margin-bottom: 6px;
             white-space: nowrap;
@@ -159,249 +309,253 @@
         }
 
         .zt-card-file {
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 6px;
-            margin-top: 14px;
+            margin-top: 12px;
             font-size: 12px;
-            color: #9ca3af;
+            color: #94a3b8;
+            font-family: Consolas, monospace;
         }
 
         .zt-card-file svg { width: 13px; height: 13px; fill: currentColor; }
 
         .zt-empty {
-            grid-column: 1 / -1;
+            max-width: 1120px;
+            margin: 20px auto;
+            padding: 40px 20px;
             text-align: center;
             color: var(--zt-muted);
             font-size: 14px;
-            padding: 40px 0;
         }
 
+        /* ===== 返回顶部 ===== */
+        .zt-top {
+            position: fixed;
+            right: 26px;
+            bottom: 30px;
+            width: 44px;
+            height: 44px;
+            border: none;
+            border-radius: 50%;
+            background: #1e3a8a;
+            color: #fff;
+            font-size: 19px;
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .25s, transform .25s;
+            box-shadow: 0 8px 20px rgba(30,58,138,.35);
+        }
+
+        .zt-top.zt-show { opacity: 1; pointer-events: auto; }
+        .zt-top:hover { transform: translateY(-3px); }
+
         .zt-footer {
-            margin-top: 40px;
-            padding-top: 20px;
+            max-width: 1120px;
+            margin: 10px auto 0;
+            padding: 22px 20px 0;
             border-top: 1px solid var(--zt-border);
             font-size: 13px;
             color: var(--zt-muted);
             line-height: 1.9;
             text-align: center;
         }
-
-        /* ===== 三级项目固定入口 ===== */
-        .zt-feature {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 26px;
-            padding: 18px 22px;
-            text-decoration: none;
-            color: inherit;
-            background: linear-gradient(90deg, #eff6ff, #ffffff 55%);
-            border: 1px solid #bfd9f7;
-            border-left: 4px solid var(--zt-primary);
-            border-radius: 12px;
-            transition: transform .18s, box-shadow .18s;
-        }
-
-        .zt-feature:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 24px rgba(17, 24, 39, .10);
-        }
-
-        .zt-feature-badge {
-            flex: 0 0 auto;
-            background: var(--zt-primary);
-            color: #fff;
-            font-size: 13px;
-            font-weight: 700;
-            border-radius: 8px;
-            padding: 6px 12px;
-            letter-spacing: 1px;
-        }
-
-        .zt-feature-name {
-            font-size: 19px;
-            font-weight: 800;
-            color: var(--zt-text);
-            margin-bottom: 4px;
-        }
-
-        .zt-feature-desc {
-            font-size: 13px;
-            color: var(--zt-muted);
-        }
-
-        .zt-feature-arrow {
-            margin-left: auto;
-            font-size: 22px;
-            font-weight: bold;
-            color: var(--zt-primary);
-        }
     </style>
 </head>
 <body>
+    <!-- ===== 主题横幅 ===== -->
+    <header class="zt-hero">
+        <span class="zt-hero-deco"></span>
+        <span class="zt-hero-badge">高级网页设计 I · 课程实践</span>
+        <h1 class="zt-title">张涛的《高级网页设计》课堂实践作品</h1>
+        <p class="zt-hero-sub">
+            学号 24001010104 · 从 HTML / CSS 基础到 JavaScript、Canvas、SVG、ECharts、three.js 全流程实践<br>
+            点击任意卡片即可打开对应作品页面
+        </p>
+    </header>
+
+    <!-- ===== 统计条 ===== -->
+    <div class="zt-stats">
+        <div class="zt-stat"><b>40</b><span>实践页面</span></div>
+        <div class="zt-stat"><b>7</b><span>知识模块</span></div>
+        <div class="zt-stat"><b>1</b><span>三级项目</span></div>
+        <div class="zt-stat"><b>0</b><span>外部 CDN 依赖</span></div>
+    </div>
+
     <div class="zt-wrap">
-        <header class="zt-header">
-            <h1 class="zt-title">张涛 · 网页作品集</h1>
-            <p class="zt-subtitle">
-                学号 24001010104 ·《高级网页设计I》作业页面<br>
-                列表<b>自动读取</b>仓库文件，新推送一个 <b>.html</b> 页面，刷新本页就会自动出现。
-            </p>
+        <!-- ===== 搜索 ===== -->
+        <div class="zt-toolbar">
+            <input class="zt-search" type="text" placeholder="搜索页面，如 16-4、热榜、Canvas…">
+            <span class="zt-count">共 40 个页面</span>
+        </div>
 
-            <div class="zt-toolbar">
-                <input class="zt-search" type="text" placeholder="搜索页面名称，如 16-4、热榜…">
-                <span class="zt-count"></span>
-                <span class="zt-status">正在读取仓库…</span>
-            </div>
-        </header>
-
-        <!-- 三级项目固定入口：58同城 -->
+        <!-- ===== 三级项目固定入口 ===== -->
         <a class="zt-feature" href="58/index.html" target="_blank" rel="noopener">
             <span class="zt-feature-badge">三级项目</span>
             <div class="zt-feature-text">
                 <h2 class="zt-feature-name">58同城 · 分类信息网站</h2>
-                <p class="zt-feature-desc">《高级网页设计I》三级项目综合实战 · HTML / CSS / JavaScript · 完整页面与源码</p>
+                <p class="zt-feature-desc">三级项目综合实战 · HTML / CSS / JavaScript · 完整页面与源码、项目报告</p>
             </div>
             <span class="zt-feature-arrow">→</span>
         </a>
 
-        <main class="zt-grid"></main>
+        <!-- ===== 分组渲染区 ===== -->
+        <main id="zt-sections"></main>
+        <p class="zt-empty" hidden>没有匹配的页面，换个关键词试试</p>
 
         <footer class="zt-footer">
-            数据来源：GitHub 仓库 601468268/zt · 由 GitHub Pages 自动发布
+            张涛 · 24001010104 ·《高级网页设计I》课堂实践作品集 · 由 GitHub Pages 发布<br>
+            本页为纯原生 HTML / CSS / JavaScript 编写，无任何 CDN 与外部库依赖
         </footer>
     </div>
 
+    <button class="zt-top" type="button" title="返回顶部">↑</button>
+
     <script>
-        // ===== 配置 =====
-        var ZT_OWNER = '601468268';
-        var ZT_REPO = 'zt';
-        var ZT_API = 'https://api.github.com/repos/' + ZT_OWNER + '/' + ZT_REPO + '/contents/';
+        // ===== 张涛：作品集数据（静态清单，覆盖本目录全部网页） =====
+        var ZT_GROUPS = [
+            {
+                name: 'HTML 基础', accent: '#3b82f6',
+                pages: [
+                    { f: '2-1.html',  n: '2-1', d: 'HTML 入门 · 第一张网页' },
+                    { f: '2-2.html',  n: '2-2', d: 'HTML 图片与超链接' },
+                    { f: '3-2-css.html', n: '3-2', d: 'HTML 表格与列表' },
+                    { f: '4-1-css.html', n: '4-1', d: 'CSS 初体验 · 行内 / 内嵌样式' }
+                ]
+            },
+            {
+                name: 'CSS 样式', accent: '#8b5cf6',
+                pages: [
+                    { f: '5-1层叠与继承.html', n: '5-1', d: 'CSS 层叠与继承' },
+                    { f: '5-2盒模型.html',     n: '5-2', d: 'CSS 盒模型' },
+                    { f: '8-1css选择器.html',  n: '8-1', d: 'CSS 选择器' },
+                    { f: '9-1-transtion.html', n: '9-1', d: 'CSS 过渡 transition' }
+                ]
+            },
+            {
+                name: 'CSS 布局', accent: '#06b6d4',
+                pages: [
+                    { f: '6-1-flex.html',      n: '6-1',  d: 'Flex 弹性布局' },
+                    { f: '6-2.html',           n: '6-2',  d: 'Flex 布局练习' },
+                    { f: '7-1上图下文.html',   n: '7-1',  d: '上图下文卡片布局' },
+                    { f: '7-2左图右文.html',   n: '7-2',  d: '左图右文卡片布局' },
+                    { f: '10-3.html',          n: '10-3', d: 'CSS 定位与层级' },
+                    { f: '10-4.html',          n: '10-4', d: 'CSS 定位练习' },
+                    { f: '12个盒子居中.html',  n: '12',   d: '12 个盒子多种居中方案' }
+                ]
+            },
+            {
+                name: '图标与移动端导航', accent: '#f59e0b',
+                pages: [
+                    { f: '13-1.html', n: '13-1', d: '图标字体 font-awesome 应用' },
+                    { f: '13-2.html', n: '13-2', d: 'lucide 图标库应用' },
+                    { f: '13-3.html', n: '13-3', d: '移动端底部导航 · 字体图标版' },
+                    { f: '13-4.html', n: '13-4', d: '移动端底部导航 · SVG Symbol 图标版' }
+                ]
+            },
+            {
+                name: 'JavaScript 基础', accent: '#10b981',
+                pages: [
+                    { f: '14-2.html',          n: '14-2', d: 'JavaScript 基本数据类型' },
+                    { f: '15-1.html',          n: '15-1', d: '数字 7 规则 · 100 个盒子' },
+                    { f: '15-2.html',          n: '15-2', d: 'JavaScript 程序结构（顺序 / 条件 / 循环）' },
+                    { f: '16-2.html',          n: '16-2', d: 'JavaScript DOM 操作与事件' },
+                    { f: '16-3.html',          n: '16-3', d: '热榜列表卡片' },
+                    { f: '16-4.html',          n: '16-4', d: '文学社科图书频道（三栏 + Tab 切换）' },
+                    { f: '16-4-单文件版.html', n: '16-4', d: '文学社科图书频道（图片内嵌版）' }
+                ]
+            },
+            {
+                name: '网络与异步', accent: '#ec4899',
+                pages: [
+                    { f: '17-1.html',         n: '17-1',       d: 'JSON 数据格式（语法 / 解析 / 生成 / 校验）' },
+                    { f: '17-2.html',         n: '17-2',       d: 'fetch 获取接口数据并展示（fakestoreapi）' },
+                    { f: '17-3.html',         n: '17-3',       d: '商品列表页（dummyjson 接口）' },
+                    { f: '17-3.detail.html',  n: '17-3.detail', d: '商品详情页（按 ?id= 请求单个商品）' },
+                    { f: '17-4.html',         n: '17-4',       d: '远程接口测试工具（GET / POST / PUT / PATCH / DELETE）' },
+                    { f: '17-5.html',         n: '17-5',       d: 'JavaScript 两种定时器（setTimeout / setInterval）' },
+                    { f: '17-6.html',         n: '17-6',       d: 'Promise + async/await 异步流程（包饺子）' }
+                ]
+            },
+            {
+                name: '图形与数据可视化', accent: '#6366f1',
+                pages: [
+                    { f: '18-1.html', n: '18-1', d: 'Canvas 动画（姓名文字动画 + 粒子特效）' },
+                    { f: '18-2.html', n: '18-2', d: '基于 Canvas 的全站系统架构图' },
+                    { f: '18-3.html', n: '18-3', d: '基于知识库的智能客服系统架构图（SVG · 科研方向）' },
+                    { f: '18-4.html', n: '18-4', d: 'ECharts 数据可视化（折线图 + 环形饼图）' },
+                    { f: '18-6.html', n: '18-6', d: 'Mermaid 智能客服系统流程图与 ER 图' },
+                    { f: '18-7.html', n: '18-7', d: 'three.js 三维图表（3D 柱状图 + 3D 环形图）' },
+                    { f: '18-8.html', n: '18-8', d: '智能客服运营数据大屏（ECharts · 实时刷新）' }
+                ]
+            }
+        ];
 
-        // 已知页面的中文说明（未收录的页面显示默认说明，不影响使用）
-        var ZT_DESC = {
-            '2-1': 'HTML 入门 · 第一张网页',
-            '2-2': 'HTML 图片与超链接',
-            '3-2': 'HTML 表格与列表',
-            '4-1': 'CSS 初体验 · 行内 / 内嵌样式',
-            '5-1': 'CSS 层叠与继承',
-            '5-2': 'CSS 盒模型',
-            '6-1': 'Flex 弹性布局',
-            '6-2': 'Flex 布局练习',
-            '7-1': '上图下文卡片布局',
-            '7-2': '左图右文卡片布局',
-            '8-1': 'CSS 选择器',
-            '9-1': 'CSS 过渡 transition',
-            '10-3': 'CSS 定位与层级',
-            '10-4': 'CSS 定位练习',
-            '12个盒子居中': '12 个盒子多种居中方案',
-            '13-1': '图标字体 font-awesome 应用',
-            '13-2': 'lucide 图标库应用',
-            '13-3': '移动端底部导航 · 字体图标版',
-            '13-4': '移动端底部导航 · SVG Symbol 图标版',
-            '14-2': 'JavaScript 基本数据类型',
-            '15-1': '数字 7 规则 · 100 个盒子',
-            '15-2': 'JavaScript 程序结构（顺序 / 条件 / 循环）',
-            '16-2': 'JavaScript DOM 操作与事件',
-            '16-3': '热榜列表卡片',
-            '16-4': '文学社科图书频道（三栏 + Tab 切换）',
-            '16-4-单文件版': '文学社科图书频道（图片内嵌版）',
-            '17-1': 'JSON 数据格式（语法 / 解析 / 生成 / 校验）',
-            '17-2': 'fetch 获取接口数据并展示（fakestoreapi）',
-            '17-3': '商品列表页（dummyjson 接口）',
-            '17-3.detail': '商品详情页（按 ?id= 请求单个商品，默认 id=1）',
-            '17-4': '远程接口测试工具（GET/POST/PUT/PATCH/DELETE）',
-            '17-5': 'JavaScript 两种定时器（setTimeout / setInterval）',
-            '17-6': 'Promise + async/await 异步流程（包饺子）',
-            '18-1': 'Canvas 动画（姓名文字动画 + 粒子特效）',
-            '18-2': '基于 Canvas 的全站系统架构图',
-            '18-3': '基于知识库的智能客服系统架构图（SVG · 科研方向）',
-            '18-4': 'ECharts 数据可视化（折线图 + 环形饼图）',
-            '18-6': 'Mermaid 智能客服系统流程图与 ER 图',
-            '18-7': 'three.js 三维图表（3D 柱状图 + 3D 环形图）',
-            '18-8': '智能客服运营数据大屏（ECharts · 实时刷新）'
-        };
-
-        // 接口失败时的兜底列表
-        var ZT_FALLBACK = ['16-4-单文件版.html', '16-4.html', '16-3.html', '16-2.html', '15-2.html', '15-1.html', '14-2.html', '13-4.html', '13-3.html'];
-
-        var ztGrid = document.querySelector('.zt-grid');
+        var ztRoot = document.getElementById('zt-sections');
         var ztSearch = document.querySelector('.zt-search');
         var ztCount = document.querySelector('.zt-count');
-        var ztStatus = document.querySelector('.zt-status');
-        var ztAll = [];
+        var ztEmpty = document.querySelector('.zt-empty');
+        var ztTotal = 0;
 
-        // 自然排序：13-3 < 14-2 < 15-10 < 16-4
-        function zt_sortNames(a, b) {
-            return a.localeCompare(b, 'zh-CN', { numeric: true, sensitivity: 'base' });
-        }
+        // 文件图标（内联 SVG，非外部资源）
+        var ZT_FILE_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm0 2 4 4h-4V4z"/></svg>';
 
-        // 渲染卡片
-        function zt_render(list, keyword) {
+        // 渲染全部分组
+        function zt_render(keyword) {
             var kw = (keyword || '').trim().toLowerCase();
-            var show = list.filter(function (name) {
-                return name.toLowerCase().indexOf(kw) > -1;
-            });
-            // 新的（编号大的）排在前面
-            show.sort(zt_sortNames).reverse();
-
-            if (show.length === 0) {
-                ztGrid.innerHTML = '<p class="zt-empty">没有匹配的页面</p>';
-                ztCount.textContent = '共 ' + list.length + ' 个页面';
-                return;
-            }
-
+            var shown = 0;
             var html = '';
-            show.forEach(function (name) {
-                var base = name.replace(/\.html?$/i, '');
-                var no = base.split('-')[0] || '·';
-                var desc = ZT_DESC[base] || '网页作业页面';
-                html += '<a class="zt-card" href="' + encodeURI(name) + '" target="_blank" rel="noopener">'
-                    + '<span class="zt-card-no">' + no + '</span>'
-                    + '<h2 class="zt-card-name">' + base + '</h2>'
-                    + '<p class="zt-card-desc">' + desc + '</p>'
-                    + '<span class="zt-card-file">'
-                    + '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm0 2 4 4h-4V4z"/></svg>'
-                    + name + '</span></a>';
-            });
-            ztGrid.innerHTML = html;
-            ztCount.textContent = '共 ' + list.length + ' 个页面';
-        }
 
-        // 读取仓库根目录的 html 文件
-        function zt_load() {
-            fetch(ZT_API, { headers: { 'Accept': 'application/vnd.github+json' } })
-                .then(function (res) {
-                    if (!res.ok) { throw new Error('HTTP ' + res.status); }
-                    return res.json();
-                })
-                .then(function (data) {
-                    var names = data
-                        .filter(function (f) { return f.type === 'file' && /\.html?$/i.test(f.name) && f.name !== 'index.html'; })
-                        .map(function (f) { return f.name; });
-                    ztAll = names;
-                    zt_render(ztAll, ztSearch.value);
-                    ztStatus.textContent = '已同步仓库 · ' + new Date().toLocaleTimeString('zh-CN', { hour12: false });
-                    ztStatus.classList.remove('zt-warn');
-                })
-                .catch(function (err) {
-                    console.warn('读取仓库文件失败，使用内置列表：', err);
-                    ztAll = ZT_FALLBACK.slice();
-                    zt_render(ztAll, ztSearch.value);
-                    ztStatus.textContent = '接口暂时不可用，显示内置列表';
-                    ztStatus.classList.add('zt-warn');
+            ZT_GROUPS.forEach(function (g) {
+                var hits = g.pages.filter(function (p) {
+                    return !kw || p.f.toLowerCase().indexOf(kw) > -1 || p.d.toLowerCase().indexOf(kw) > -1;
                 });
+                if (hits.length === 0) { return; }
+                shown += hits.length;
+
+                html += '<section class="zt-section" style="--zt-accent:' + g.accent + '">'
+                    + '<div class="zt-sec-head">'
+                    + '<span class="zt-sec-dot"></span>'
+                    + '<h2 class="zt-sec-name">' + g.name + '</h2>'
+                    + '<span class="zt-sec-count">' + hits.length + ' 个页面</span>'
+                    + '</div>'
+                    + '<div class="zt-grid">';
+
+                hits.forEach(function (p) {
+                    var base = p.f.replace(/\.html?$/i, '');
+                    html += '<a class="zt-card" href="' + encodeURI(p.f) + '" target="_blank" rel="noopener">'
+                        + '<span class="zt-card-no">' + p.n + '</span>'
+                        + '<h3 class="zt-card-name">' + base + '</h3>'
+                        + '<p class="zt-card-desc">' + p.d + '</p>'
+                        + '<span class="zt-card-file">' + ZT_FILE_ICON + p.f + '</span>'
+                        + '</a>';
+                });
+
+                html += '</div></section>';
+            });
+
+            ztRoot.innerHTML = html;
+            ztCount.textContent = '匹配 ' + shown + ' / 共 ' + ztTotal + ' 个页面';
+            ztEmpty.hidden = shown !== 0;
         }
 
-        // 搜索
+        ztTotal = ZT_GROUPS.reduce(function (sum, g) { return sum + g.pages.length; }, 0);
+        zt_render('');
+
+        // 搜索过滤
         ztSearch.addEventListener('input', function () {
-            zt_render(ztAll, ztSearch.value);
+            zt_render(ztSearch.value);
         });
 
-        // 先用兜底列表占位，避免白屏
-        zt_render(ZT_FALLBACK, '');
-        ztStatus.textContent = '正在读取仓库…';
-        zt_load();
+        // 返回顶部
+        var ztBtnTop = document.querySelector('.zt-top');
+        window.addEventListener('scroll', function () {
+            ztBtnTop.classList.toggle('zt-show', window.scrollY > 400);
+        });
+        ztBtnTop.addEventListener('click', function () {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
     </script>
 </body>
 </html>
