@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>盒模型,框模型,box model</title>
+    <style>
+        #a{
+            width: 200px;
+            height: 200px;
+            background-color: blue;
+            margin: 40px;
+            padding: 50px 40px 30px 20px;
+            border: 50px solid white;
+        }
+        #b{
+            width: 200px;
+            height: 200px;
+            background-color: red;
+            margin: 50px;
+            padding: 50px;
+            border: 50px solid blueviolet;
+            box-sizing:border-box;/*盒模型，border-box,content-box*/
+        }
+        #c{
+            width: 200px;
+            height: 200px;
+            background-color: red;
+            margin: 50px;
+            padding: 50px;
+            border: 50px solid yellow;
+            box-sizing:border-box;/*盒模型，border-box,content-box*/
+        }
+        #d{
+            width: 200px;
+            height: 200px;
+            background-color: red;
+            margin: 50px;
+            padding: 50px;
+            border: 50px solid yellow;
+        }
+    </style>
+</head>
+<body>
+    <div id="a">104张涛</div>
+    <div id="b">104张涛</div>
+    <div id="c">104张涛</div>
+    <div id="d">104张涛</div>
+</body>
+</html>

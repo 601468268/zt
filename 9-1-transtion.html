@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>四种颜色循环动画</title>
+	<style>
+		* {
+			box-sizing: border-box;
+		}
+
+		body {
+			min-height: 100vh;
+			margin: 0;
+			display: grid;
+			place-items: center;
+			background: #f3f5f4;
+			font-family: "Segoe UI", sans-serif;
+		}
+
+		.color-box {
+			width: min(320px, 80vw);
+			aspect-ratio: 1;
+			border-radius: 18px;
+			animation: color-cycle 8s linear infinite;
+		}
+
+		@keyframes color-cycle {
+			0% {
+				background-color: #ef476f;
+			}
+			33.333% {
+				background-color: #06d6a0;
+			}
+			66.666% {
+				background-color: #ffd166;
+			}
+			100% {
+				background-color: #118ab2;
+			}
+		}
+	</style>
+</head>
+<body>
+	<div class="color-box" aria-label="背景颜色循环变化的盒子"></div>
+</body>
+</html>

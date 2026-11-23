@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{
+            margin:0;
+            padding:0;
+        }
+        .box{}
+        .zitem{
+            display:flex;
+            padding:10px;
+            margin:5px;
+            border-bottom:1px dotted #ccc;
+        }
+        .zitem img{
+           width: 100px;
+        }
+        .ytext{
+            flex-grow:1;
+            margin-left:10px;
+            display:flex;
+            flex-wrap:wrap;
+        }
+        .ytext h3{
+            width:100%;
+            font-size:16px;
+            line-height: 40px;
+            color:#333;
+        }
+        .author{
+            
+            flex-grow:1;
+            padding-left:3px;
+        }
+        .time{
+           margin-right:20px; 
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <div class="zitem">
+            <img src="image/1.jpg">
+        <div class="ytext">
+            <h3>标题</h3>
+            <span class="author">
+
+            </span>
+        
+
+      
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>左图右文</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .box {
+            width: 600px;
+            margin: 0;
+        }
+
+        .zitem {
+            display: flex;
+            justify-content: flex-start;
+            padding: 10px 0;
+            border-bottom: 1px dotted #ccc;
+        }
+
+        .zitem img {
+            width: 100px;
+            height: 75px;
+            object-fit: cover;
+        }
+
+        .ytext {
+            margin-left: 10px;
+            text-align: left;
+        }
+
+        .ytext h3 {
+            font-size: 16px;
+            line-height: 40px;
+            color: #333;
+        }
+
+        .author {
+            color: #888;
+        }
+
+        .time {
+            margin-left: 20px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <div class="zitem">
+            <img src="image/1.jpg" alt="图片一">
+            <div class="ytext">
+                <h3>第一个标题</h3>
+                <span class="author">作者：张三</span>
+                <span class="time">2026-09-21</span>
+            </div>
+        </div>
+
+        <div class="zitem">
+            <img src="image/2.jpg" alt="图片二">
+            <div class="ytext">
+                <h3>第二个标题</h3>
+                <span class="author">作者：李四</span>
+                <span class="time">2026-09-20</span>
+            </div>
+        </div>
+
+        <div class="zitem">
+            <img src="image/3.jpg" alt="图片三">
+            <div class="ytext">
+                <h3>第三个标题</h3>
+                <span class="author">作者：王五</span>
+                <span class="time">2026-09-19</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+    </div>
+</body>
+</html>

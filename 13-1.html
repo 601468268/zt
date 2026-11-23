@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>13-1 Font Awesome 字体图标（Icon Font）</title>
+    <!-- 本地 CDN：字体图标 = CSS + 字体文件 -->
+    <link rel="stylesheet" href="cdn/font-awesome/css/all.min.css">
+    <style>
+        :root {
+            --primary: #528dd7;
+            --primary-dark: #2b6cb0;
+            --text: #2d3748;
+            --text-light: #718096;
+            --bg: #f5f7fa;
+            --card: #ffffff;
+            --border: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            padding-bottom: 60px;
+        }
+
+        /* ---------- 顶部 ---------- */
+        .hero {
+            background: linear-gradient(135deg, #528dd7 0%, #339af0 100%);
+            color: #fff;
+            padding: 48px 24px 40px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: .5px;
+        }
+
+        .hero p {
+            font-size: 15px;
+            opacity: .92;
+            margin-bottom: 18px;
+        }
+
+        .hero i.fa-brands {
+            font-size: 56px;
+            margin-bottom: 14px;
+            display: inline-block;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, .22);
+            border: 1px solid rgba(255, 255, 255, .35);
+            padding: 5px 14px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-family: ui-monospace, Consolas, monospace;
+        }
+
+        /* ---------- 容器 ---------- */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        section {
+            margin-top: 34px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 26px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .05);
+        }
+
+        h2 {
+            font-size: 20px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h2 .num {
+            background: var(--primary);
+            color: #fff;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .desc {
+            color: var(--text-light);
+            font-size: 14px;
+            margin-bottom: 18px;
+        }
+
+        /* ---------- 代码 ---------- */
+        pre {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 16px 18px;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: ui-monospace, Consolas, monospace;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        pre .c { color: #7f9c9f; }   /* 注释 */
+        pre .t { color: #63b3ed; }   /* 标签 */
+        pre .a { color: #f6ad55; }   /* 属性 */
+        pre .v { color: #9ae6b4; }   /* 值 */
+
+        code.inline {
+            background: #edf2f7;
+            color: #c53030;
+            padding: 2px 7px;
+            border-radius: 5px;
+            font-size: 13px;
+            font-family: ui-monospace, Consolas, monospace;
+        }
+
+        /* ---------- 图标网格 ---------- */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+            gap: 12px;
+        }
+
+        .icon-box {
+            background: #fafbfc;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 6px 10px;
+            text-align: center;
+            transition: all .18s;
+            cursor: default;
+        }
+
+        .icon-box:hover {
+            background: #ebf5ff;
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(82, 141, 215, .18);
+        }
+
+        .icon-box i {
+            font-size: 26px;
+            color: var(--primary-dark);
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .icon-box span {
+            font-size: 11px;
+            color: var(--text-light);
+            word-break: break-all;
+            font-family: ui-monospace, Consolas, monospace;
+            line-height: 1.3;
+            display: block;
+        }
+
+        /* ---------- 演示行 ---------- */
+        .demo-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 26px;
+            padding: 18px 0;
+            border-bottom: 1px dashed var(--border);
+        }
+
+        .demo-row:last-child { border-bottom: none; }
+
+        .demo-item {
+            text-align: center;
+            min-width: 68px;
+        }
+
+        .demo-item i { display: block; }
+
+        .demo-item small {
+            display: block;
+            font-size: 11px;
+            color: var(--text-light);
+            margin-top: 8px;
+            font-family: ui-monospace, Consolas, monospace;
+        }
+
+        /* 尺寸 */
+        .size-demo i { color: var(--primary-dark); }
+
+        /* 颜色 */
+        .color-demo i { font-size: 32px; }
+
+        /* 动画 */
+        .anim-demo i { font-size: 30px; color: var(--primary-dark); }
+
+        /* ---------- 列表对齐 ---------- */
+        .fa-list-demo {
+            list-style: none;
+            max-width: 300px;
+        }
+
+        .fa-list-demo li {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .fa-list-demo li:last-child { border-bottom: none; }
+
+        .fa-list-demo i {
+            color: var(--primary-dark);
+            margin-right: 8px;
+        }
+
+        /* ---------- 应用 ---------- */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all .18s;
+            font-family: inherit;
+        }
+
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-primary:hover { background: var(--primary-dark); }
+
+        .btn-danger { background: #e53e3e; color: #fff; }
+        .btn-danger:hover { background: #c53030; }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover { background: var(--primary); color: #fff; }
+
+        .nav-demo {
+            display: flex;
+            gap: 4px;
+            background: #2d3748;
+            padding: 8px;
+            border-radius: 10px;
+            flex-wrap: wrap;
+        }
+
+        .nav-demo a {
+            color: #cbd5e0;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all .18s;
+        }
+
+        .nav-demo a:hover, .nav-demo a.active {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .search-demo {
+            position: relative;
+            max-width: 320px;
+        }
+
+        .search-demo input {
+            width: 100%;
+            padding: 10px 16px 10px 42px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+        }
+
+        .search-demo input:focus { border-color: var(--primary); }
+
+        .search-demo i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+        }
+
+        .info-item {
+            background: #fafbfc;
+            border-left: 3px solid var(--primary);
+            padding: 14px 16px;
+            border-radius: 0 8px 8px 0;
+            font-size: 14px;
+        }
+
+        .info-item strong { display: block; margin-bottom: 4px; }
+
+        footer {
+            text-align: center;
+            color: var(--text-light);
+            font-size: 13px;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ============ 顶部 ============ -->
+<div class="hero">
+    <i class="fa-brands fa-font-awesome"></i>
+    <h1>Font Awesome 字体图标</h1>
+    <p>Icon Font · 通过 CSS 伪元素 + 图标字体文件渲染</p>
+    <span class="badge">cdn/font-awesome/css/all.min.css</span>
+</div>
+
+<div class="container">
+
+    <!-- ============ 1. 原理 ============ -->
+    <section>
+        <div class="card">
+            <h2><span class="num">1</span>什么是字体图标</h2>
+            <p class="desc">Font Awesome 把每个图标做成<b>字体里的一个字符</b>。写 <code class="inline">&lt;i class="fa-solid fa-house"&gt;&lt;/i&gt;</code> 时，CSS 用 <code class="inline">::before</code> 伪元素插入该字符，再用图标字体渲染出来。</p>
+            <pre><span class="c">&lt;!-- HTML：只需要一个空标签 + class --&gt;</span>
+&lt;<span class="t">i</span> <span class="a">class</span>=<span class="v">"fa-solid fa-house"</span>&gt;&lt;/<span class="t">i</span>&gt;
+
+<span class="c">/* CSS（all.min.css 内部已定义好） */</span>
+<span class="t">.fa-house</span>::<span class="a">before</span> {
+  <span class="a">content</span>: <span class="v">"\f015"</span>;              <span class="c">/* 图标对应的字符编码 */</span>
+  <span class="a">font-family</span>: <span class="v">"Font Awesome 6 Free"</span>; <span class="c">/* 图标字体 */</span>
+  <span class="a">font-weight</span>: <span class="v">900</span>;               <span class="c">/* fa-solid=900 / fa-regular=400 */</span>
+}</pre>
+            <div class="info-grid" style="margin-top:18px">
+                <div class="info-item"><strong>优点</strong>一个字体文件包含全部图标，请求少；可用 color / font-size 直接控制颜色和大小。</div>
+                <div class="info-item"><strong>缺点</strong>只能是单色；浏览器需下载完整字体（体积偏大）；存在字体加载闪烁（FOUT）。</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 2. 基础用法 ============ -->
+    <section>
+        <div class="card">
+            <h2><span class="num">2</span>基础用法：三种风格</h2>
+            <p class="desc">Font Awesome 免费版提供三种风格前缀：<code class="inline">fa-solid</code>（实心）、<code class="inline">fa-regular</code>（线框）、<code class="inline">fa-brands</code>（品牌）。</p>
+
+            <p style="font-size:14px;font-weight:600;margin:16px 0 10px">fa-solid（实心）</p>
+            <div class="grid">
+                <div class="icon-box"><i class="fa-solid fa-house"></i><span>fa-house</span></div>
+                <div class="icon-box"><i class="fa-solid fa-user"></i><span>fa-user</span></div>
+                <div class="icon-box"><i class="fa-solid fa-gear"></i><span>fa-gear</span></div>
+                <div class="icon-box"><i class="fa-solid fa-heart"></i><span>fa-heart</span></div>
+                <div class="icon-box"><i class="fa-solid fa-star"></i><span>fa-star</span></div>
+                <div class="icon-box"><i class="fa-solid fa-bell"></i><span>fa-bell</span></div>
+                <div class="icon-box"><i class="fa-solid fa-envelope"></i><span>fa-envelope</span></div>
+                <div class="icon-box"><i class="fa-solid fa-magnifying-glass"></i><span>fa-magnifying-glass</span></div>
+                <div class="icon-box"><i class="fa-solid fa-cart-shopping"></i><span>fa-cart-shopping</span></div>
+                <div class="icon-box"><i class="fa-solid fa-trash"></i><span>fa-trash</span></div>
+                <div class="icon-box"><i class="fa-solid fa-pen"></i><span>fa-pen</span></div>
+                <div class="icon-box"><i class="fa-solid fa-check"></i><span>fa-check</span></div>
+                <div class="icon-box"><i class="fa-solid fa-xmark"></i><span>fa-xmark</span></div>
+                <div class="icon-box"><i class="fa-solid fa-clock"></i><span>fa-clock</span></div>
+                <div class="icon-box"><i class="fa-solid fa-location-dot"></i><span>fa-location-dot</span></div>
+                <div class="icon-box"><i class="fa-solid fa-phone"></i><span>fa-phone</span></div>
+                <div class="icon-box"><i class="fa-solid fa-camera"></i><span>fa-camera</span></div>
+                <div class="icon-box"><i class="fa-solid fa-folder"></i><span>fa-folder</span></div>
+                <div class="icon-box"><i class="fa-solid fa-cloud"></i><span>fa-cloud</span></div>
+                <div class="icon-box"><i class="fa-solid fa-bolt"></i><span>fa-bolt</span></div>
+            </div>
+
+            <p style="font-size:14px;font-weight:600;margin:22px 0 10px">fa-regular（线框）</p>
+            <div class="grid">
+                <div class="icon-box"><i class="fa-regular fa-heart"></i><span>fa-heart</span></div>
+                <div class="icon-box"><i class="fa-regular fa-star"></i><span>fa-star</span></div>
+                <div class="icon-box"><i class="fa-regular fa-bell"></i><span>fa-bell</span></div>
+                <div class="icon-box"><i class="fa-regular fa-envelope"></i><span>fa-envelope</span></div>
+                <div class="icon-box"><i class="fa-regular fa-user"></i><span>fa-user</span></div>
+                <div class="icon-box"><i class="fa-regular fa-clock"></i><span>fa-clock</span></div>
+                <div class="icon-box"><i class="fa-regular fa-face-smile"></i><span>fa-face-smile</span></div>
+                <div class="icon-box"><i class="fa-regular fa-bookmark"></i><span>fa-bookmark</span></div>
+                <div class="icon-box"><i class="fa-regular fa-flag"></i><span>fa-flag</span></div>
+                <div class="icon-box"><i class="fa-regular fa-folder"></i><span>fa-folder</span></div>
+                <div class="icon-box"><i class="fa-regular fa-comment"></i><span>fa-comment</span></div>
+                <div class="icon-box"><i class="fa-regular fa-lightbulb"></i><span>fa-lightbulb</span></div>
+            </div>
+
+            <p style="font-size:14px;font-weight:600;margin:22px 0 10px">fa-brands（品牌）</p>
+            <div class="grid">
+                <div class="icon-box"><i class="fa-brands fa-github"></i><span>fa-github</span></div>
+                <div class="icon-box"><i class="fa-brands fa-weixin"></i><span>fa-weixin</span></div>
+                <div class="icon-box"><i class="fa-brands fa-qq"></i><span>fa-qq</span></div>
+                <div class="icon-box"><i class="fa-brands fa-weibo"></i><span>fa-weibo</span></div>
+                <div class="icon-box"><i class="fa-brands fa-bilibili"></i><span>fa-bilibili</span></div>
+                <div class="icon-box"><i class="fa-brands fa-html5"></i><span>fa-html5</span></div>
+                <div class="icon-box"><i class="fa-brands fa-css3-alt"></i><span>fa-css3-alt</span></div>
+                <div class="icon-box"><i class="fa-brands fa-js"></i><span>fa-js</span></div>
+                <div class="icon-box"><i class="fa-brands fa-python"></i><span>fa-python</span></div>
+                <div class="icon-box"><i class="fa-brands fa-java"></i><span>fa-java</span></div>
+                <div class="icon-box"><i class="fa-brands fa-node-js"></i><span>fa-node-js</span></div>
+                <div class="icon-box"><i class="fa-brands fa-react"></i><span>fa-react</span></div>
+                <div class="icon-box"><i class="fa-brands fa-vuejs"></i><span>fa-vuejs</span></div>
+                <div class="icon-box"><i class="fa-brands fa-git-alt"></i><span>fa-git-alt</span></div>
+                <div class="icon-box"><i class="fa-brands fa-docker"></i><span>fa-docker</span></div>
+                <div class="icon-box"><i class="fa-brands fa-linux"></i><span>fa-linux</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 3. 尺寸 ============ -->
+    <section>
+        <div class="card">
+            <h2><span class="num">3</span>控制大小</h2>
+            <p class="desc">字体图标本质是「文字」，所以用 <code class="inline">font-size</code> 就能改大小；Font Awesome 也内置了 <code class="inline">fa-xs ~ fa-2xl</code> 和 <code class="inline">fa-2x ~ fa-10x</code> 便捷类。</p>
+
+            <div class="demo-row size-demo">
+                <div class="demo-item"><i class="fa-solid fa-cat fa-xs"></i><small>fa-xs</small></div>
+                <div class="demo-item"><i class="fa-solid fa-cat fa-sm"></i><small>fa-sm</small></div>
+                <div class="demo-item"><i class="fa-solid fa-cat"></i><small>默认</small></div>
+                <div class="demo-item"><i class="fa-solid fa-cat fa-lg"></i><small>fa-lg</small></div>
+                <div class="demo-item"><i class="fa-solid fa-cat fa-xl"></i><small>fa-xl</small></div>
+                <div class="demo-item"><i class="fa-solid fa-cat fa-2xl"></i><small>fa-2xl</small></div>
+            </div>
+
+            <div class="demo-row size-demo">
+                <div class="demo-item"><i class="fa-solid fa-dog fa-2x"></i><small>fa-2x</small></div>
+                <div class="demo-item"><i class="fa-solid fa-dog fa-3x"></i><small>fa-3x</small></div>
+                <div class="demo-item"><i class="fa-solid fa-dog fa-4x"></i><small>fa-4x</small></div>
+                <div class="demo-item"><i class="fa-solid fa-dog fa-5x"></i><small>fa-5x</small></div>
+                <div class="demo-item"><i class="fa-solid fa-dog fa-6x"></i><small>fa-6x</small></div>
+            </div>
+
+            <pre style="margin-top:16px"><span class="c">&lt;!-- 方式一：内置尺寸类 --&gt;</span>
+&lt;<span class="t">i</span> <span class="a">class</span>=<span class="v">"fa-solid fa-dog fa-3x"</span>&gt;&lt;/<span class="t">i</span>&gt;
+
+<span class="c">&lt;!-- 方式二：直接写 font-size（因为是字体！） --&gt;</span>
+&lt;<span class="t">i</span> <span class="a">class</span>=<span class="v">"fa-solid fa-dog"</span> <span class="a">style</span>=<span class="v">"font-size: 48px"</span>&gt;&lt;/<span class="t">i</span>&gt;</pre>
+        </div>
+    </section>
+
+    <!-- ============ 4. 颜色 ============ -->
+    <section>
+        <div class="card">
+            <h2><span class="num">4</span>控制颜色</h2>
+            <p class="desc">同样因为是「文字」，用 <code class="inline">color</code> 就能改颜色，而且可以跟随父元素继承。</p>
+            <div class="demo-row color-demo">
+                <div class="demo-item"><i class="fa-solid fa-heart" style="color:#e53e3e"></i><small>#e53e3e</small></div>
+                <div class="demo-item"><i class="fa-solid fa-star" style="color:#d69e2e"></i><small>#d69e2e</small></div>
+                <div class="demo-item"><i class="fa-solid fa-leaf" style="color:#38a169"></i><small>#38a169</small></div>
+                <div class="demo-item"><i class="fa-solid fa-droplet" style="color:#3182ce"></i><small>#3182ce</small></div>
+                <div class="demo-item"><i class="fa-solid fa-moon" style="color:#805ad5"></i><small>#805ad5</small></div>
+                <div class="demo-item" style="color:#dd6b20"><i class="fa-solid fa-sun"></i><small>继承父级</small></div>
+            </div>
+            <pre style="margin-top:16px"><span class="c">&lt;!-- 单独设置 --&gt;</span>
+&lt;<span class="t">i</span> <span class="a">class</span>=<span class="v">"fa-solid fa-heart"</span> <span class="a">style</span>=<span class="v">"color:#e53e3e"</span>&gt;&lt;/<span class="t">i</span>&gt;
+
+<span class="c">&lt;!-- 跟随父元素 color 继承 --&gt;</span>
+&lt;<span class="t">div</span> <span class="a">style</span>=<span class="v">"color:#dd6b20"</span>&gt;
+  &lt;<span class="t">i</span> <span class="a">class</span>=<span class="v">"fa-solid fa-sun"</span>&gt;&lt;/<span class="t">i</span>&gt;
+&lt;/<span class="t">div</span>&gt;</pre>
+        </div>
+    </section>
+
+    <!-- ============ 5. 动画 ============ -->
+    <section>
+        <div class="card">
+            <h2><span class="num">5</span>内置动画</h2>
+            <p class="desc">Font Awesome 自带动画类，加在图标上即可（配合 <code class="inline">fa-spin</code> 等）。</p>
+            <div class="demo-row anim-demo">
+                <div class="demo-item"><i class="fa-solid fa-arrows-rotate fa-spin"></i><small>fa-spin</small></div>
+                <div class="demo-item"><i class="fa-solid fa-circle-notch fa-spin"></i><small>fa-spin</small></div>
+                <div class="demo-item"><i class="fa-solid fa-spinner fa-spin-pulse"></i><small>fa-spin-pulse</small></div>
+                <div class="demo-item"><i class="fa-solid fa-heart fa-beat"></i><small>fa-beat</small></div>
+                <div class="demo-item"><i class="fa-solid fa-bell fa-shake"></i><small>fa-shake</small></div>
+                <div class="demo-item"><i class="fa-solid fa-star fa-fade"></i><small>fa-fade</small></div>
+                <div class="demo-item"><i class="fa-solid fa-arrow-down fa-bounce"></i><small>fa-bounce</small></div>
+                <div class="demo-item"><i class="fa-solid fa-lightbulb fa-flip"></i><small>fa-flip</small></div>
+            </div>
+            <pre style="margin-top:16px"><span class="c">&lt;!-- 加载中常用 --&gt;</span>
+&lt;<span class="t">i</span> <span class="a">class</span>=<span class="v">"fa-solid fa-spinner fa-spin"</span>&gt;&lt;/<span class="t">i</span>&gt;</pre>
+        </div>
+    </section>
+
+    <!-- ============ 6. 旋转翻转 + 固定宽度 ============ -->
+    <section>
+        <div class="card">
+            <h2><span class="num">6</span>旋转 / 翻转 / 固定宽度</h2>
+            <p class="desc"><code class="inline">fa-rotate-*</code> 旋转、<code class="inline">fa-flip-*</code> 翻转；<code class="inline">fa-fw</code> 让所有图标等宽，列表中可完美对齐。</p>
+
+            <div class="demo-row anim-demo">
+                <div class="demo-item"><i class="fa-solid fa-arrow-up"></i><small>原图</small></div>
+                <div class="demo-item"><i class="fa-solid fa-arrow-up fa-rotate-90"></i><small>rotate-90</small></div>
+                <div class="demo-item"><i class="fa-solid fa-arrow-up fa-rotate-180"></i><small>rotate-180</small></div>
+                <div class="demo-item"><i class="fa-solid fa-arrow-up fa-rotate-270"></i><small>rotate-270</small></div>
+                <div class="demo-item"><i class="fa-solid fa-arrow-up fa-flip-horizontal"></i><small>flip-h</small></div>
+                <div class="demo-item"><i class="fa-solid fa-arrow-up fa-flip-vertical"></i><small>flip-v</small></div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px;margin-top:20px">
+                <div>
+                    <p style="font-size:13px;color:var(--text-light);margin-bottom:8px">❌ 不加 fa-fw（宽度不齐）</p>
+                    <ul class="fa-list-demo">
+                        <li><i class="fa-solid fa-house"></i> 首页</li>
+                        <li><i class="fa-solid fa-magnifying-glass"></i> 搜索</li>
+                        <li><i class="fa-solid fa-gear"></i> 设置</li>
+                    </ul>
+                </div>
+                <div>
+                    <p style="font-size:13px;color:var(--text-light);margin-bottom:8px">✅ 加 fa-fw（完美对齐）</p>
+                    <ul class="fa-list-demo">
+                        <li><i class="fa-solid fa-house fa-fw"></i> 首页</li>
+                        <li><i class="fa-solid fa-magnifying-glass fa-fw"></i> 搜索</li>
+                        <li><i class="fa-solid fa-gear fa-fw"></i> 设置</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 7. 堆叠 ============ -->
+    <section>
+        <div class="card">
+            <h2><span class="num">7</span>堆叠图标 fa-stack</h2>
+            <p class="desc">把多个图标叠在一起，常用于「徽章 / 角标」效果。</p>
+            <div class="demo-row">
+                <span class="fa-stack" style="font-size:32px">
+                    <i class="fa-solid fa-square fa-stack-2x" style="color:#3182ce"></i>
+                    <i class="fa-solid fa-star fa-stack-1x" style="color:#fff"></i>
+                </span>
+                <span class="fa-stack" style="font-size:32px">
+                    <i class="fa-solid fa-circle fa-stack-2x" style="color:#e53e3e"></i>
+                    <i class="fa-solid fa-flag fa-stack-1x" style="color:#fff"></i>
+                </span>
+                <span class="fa-stack" style="font-size:32px">
+                    <i class="fa-solid fa-camera fa-stack-1x"></i>
+                    <i class="fa-solid fa-ban fa-stack-2x" style="color:#e53e3e;opacity:.85"></i>
+                </span>
+                <span class="fa-stack" style="font-size:32px">
+                    <i class="fa-solid fa-comment fa-stack-2x" style="color:#38a169"></i>
+                    <i class="fa-solid fa-plus fa-stack-1x fa-inverse" style="font-size:12px"></i>
+                </span>
+            </div>
+            <pre style="margin-top:16px">&lt;<span class="t">span</span> <span class="a">class</span>=<span class="v">"fa-stack"</span>&gt;
+  &lt;<span class="t">i</span> <span class="a">class</span>=<span class="v">"fa-solid fa-square fa-stack-2x"</span>&gt;&lt;/<span class="t">i</span>&gt;   <span class="c">&lt;!-- 底层 --&gt;</span>
+  &lt;<span class="t">i</span> <span class="a">class</span>=<span class="v">"fa-solid fa-star fa-stack-1x"</span>&gt;&lt;/<span class="t">i</span>&gt;    <span class="c">&lt;!-- 上层 --&gt;</span>
+&lt;/<span class="t">span</span>&gt;</pre>
+        </div>
+    </section>
+
+    <!-- ============ 8. 实际应用 ============ -->
+    <section>
+        <div class="card">
+            <h2><span class="num">8</span>实际应用场景</h2>
+            <p class="desc">按钮、导航、搜索框中的图标。</p>
+
+            <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:22px">
+                <button class="btn btn-primary"><i class="fa-solid fa-plus"></i> 新建</button>
+                <button class="btn btn-outline"><i class="fa-solid fa-download"></i> 下载</button>
+                <button class="btn btn-danger"><i class="fa-solid fa-trash"></i> 删除</button>
+            </div>
+
+            <nav class="nav-demo" style="margin-bottom:22px">
+                <a href="#" class="active"><i class="fa-solid fa-house"></i> 首页</a>
+                <a href="#"><i class="fa-solid fa-compass"></i> 发现</a>
+                <a href="#"><i class="fa-solid fa-bell"></i> 消息</a>
+                <a href="#"><i class="fa-solid fa-user"></i> 我的</a>
+            </nav>
+
+            <div class="search-demo">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="搜索图标...">
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<footer>13-1 · Font Awesome 6.5.1 · 本地 CDN（cdn/font-awesome）</footer>
+
+</body>
+</html>

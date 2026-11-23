@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>媒体查询盒子布局</title>
+	<style>
+		* {
+			box-sizing: border-box;
+		}
+
+		body {
+			min-width: 320px;
+			min-height: 100vh;
+			margin: 0;
+			padding: 32px 20px;
+			background: #f2f5f3;
+			color: #20312b;
+			font-family: "Segoe UI", sans-serif;
+		}
+
+		main {
+			width: min(100%, 1200px);
+			margin: 0 auto;
+		}
+
+		h1 {
+			margin: 0 0 24px;
+			font-size: 28px;
+			font-weight: 700;
+		}
+
+		.boxes {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 12px;
+		}
+
+		.box {
+			min-width: 0;
+			aspect-ratio: 1;
+			display: grid;
+			place-items: center;
+			background: #e76f51;
+			color: #fff;
+			font-size: 24px;
+			font-weight: 700;
+		}
+
+		.box:nth-child(3n + 2) {
+			background: #2a9d8f;
+		}
+
+		.box:nth-child(3n) {
+			background: #457b9d;
+		}
+
+		@media (min-width: 600px) {
+			.boxes {
+				grid-template-columns: repeat(4, minmax(0, 1fr));
+			}
+		}
+
+		@media (min-width: 1000px) {
+			.boxes {
+				grid-template-columns: repeat(8, minmax(0, 1fr));
+			}
+		}
+	</style>
+</head>
+<body>
+	<main>
+		<h1>张涛的媒体查询布局</h1>
+		<section class="boxes" aria-label="八个响应式盒子">
+			<div class="box">1</div>
+			<div class="box">2</div>
+			<div class="box">3</div>
+			<div class="box">4</div>
+			<div class="box">5</div>
+			<div class="box">6</div>
+			<div class="box">7</div>
+			<div class="box">8</div>
+		</section>
+	</main>
+</body>
+</html>

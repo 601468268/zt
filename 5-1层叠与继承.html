@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html> Lang="en
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        p{
+            color: #f00;
+            font-size: 100px;
+        }
+        #text{
+            color:  green;
+            /* 优先级：id>class>标签 */
+        }
+
+        .box{
+            color: yellow;
+        }
+        #box{
+            color: silver;
+        }
+        .text{
+            color: pink!important;
+        }
+        #box{
+            /* 宽400，高400，灰色背景 ，距离，字间距50px*/
+            width: 400px;
+            height: 400px;
+            background-color: #ccc;
+            margin: 50px;
+            letter-spacing: 50px;
+            /* 圆角矩形50% */
+        }
+    </style>
+    <!-- 后定义的覆盖前定义的 -->
+    <link rel="stylesheet" href="#css.css"></link>
+</head>
+<boby>
+    <h2>层叠与继承</h2>
+    <div id="box" class="box">
+        <p> id=""text" 104 zhangtao</p>
+        <p>层叠与继承的优先级</p>
+    </div>
+</boby>
+</html>

@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>视口变化与 rem 字号</title>
+	<style>
+		* {
+			box-sizing: border-box;
+		}
+
+		html {
+			font-size: 16px;
+		}
+
+		body {
+			min-width: 280px;
+			min-height: 100vh;
+			margin: 0;
+		}
+
+		.screen-box {
+			width: 100%;
+			min-height: 100vh;
+			display: grid;
+			place-items: center;
+			padding: 2rem;
+			background-color: #e76f51;
+			color: #fff;
+			text-align: center;
+			transition: background-color 300ms ease;
+		}
+
+		.name {
+			margin: 0;
+			font-size: 3rem;
+			font-weight: 700;
+		}
+
+		@media (min-width: 600px) {
+			html {
+				font-size: 18px;
+			}
+
+			.screen-box {
+				background-color: #2a9d8f;
+			}
+		}
+
+		@media (min-width: 1024px) {
+			html {
+				font-size: 22px;
+			}
+
+			.screen-box {
+				background-color: #457b9d;
+			}
+		}
+	</style>
+</head>
+<body>
+	<main class="screen-box">
+		<p class="name">张涛</p>
+	</main>
+</body>
+</html>
