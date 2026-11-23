@@ -186,6 +186,57 @@
             line-height: 1.9;
             text-align: center;
         }
+
+        /* ===== 三级项目固定入口 ===== */
+        .zt-feature {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 26px;
+            padding: 18px 22px;
+            text-decoration: none;
+            color: inherit;
+            background: linear-gradient(90deg, #eff6ff, #ffffff 55%);
+            border: 1px solid #bfd9f7;
+            border-left: 4px solid var(--zt-primary);
+            border-radius: 12px;
+            transition: transform .18s, box-shadow .18s;
+        }
+
+        .zt-feature:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 24px rgba(17, 24, 39, .10);
+        }
+
+        .zt-feature-badge {
+            flex: 0 0 auto;
+            background: var(--zt-primary);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 700;
+            border-radius: 8px;
+            padding: 6px 12px;
+            letter-spacing: 1px;
+        }
+
+        .zt-feature-name {
+            font-size: 19px;
+            font-weight: 800;
+            color: var(--zt-text);
+            margin-bottom: 4px;
+        }
+
+        .zt-feature-desc {
+            font-size: 13px;
+            color: var(--zt-muted);
+        }
+
+        .zt-feature-arrow {
+            margin-left: auto;
+            font-size: 22px;
+            font-weight: bold;
+            color: var(--zt-primary);
+        }
     </style>
 </head>
 <body>
@@ -203,6 +254,16 @@
                 <span class="zt-status">正在读取仓库…</span>
             </div>
         </header>
+
+        <!-- 三级项目固定入口：58同城 -->
+        <a class="zt-feature" href="58/index.html" target="_blank" rel="noopener">
+            <span class="zt-feature-badge">三级项目</span>
+            <div class="zt-feature-text">
+                <h2 class="zt-feature-name">58同城 · 分类信息网站</h2>
+                <p class="zt-feature-desc">《高级网页设计I》三级项目综合实战 · HTML / CSS / JavaScript · 完整页面与源码</p>
+            </div>
+            <span class="zt-feature-arrow">→</span>
+        </a>
 
         <main class="zt-grid"></main>
 
