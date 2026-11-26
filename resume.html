@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<!-- 姓名：张涛，日期：2026-11-26，功能名称：个人简历 HTML 版（市场版） -->
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>张涛 - 个人简历 | 前端开发工程师</title>
+        <style>
+            * { box-sizing: border-box; margin: 0; padding: 0; }
+            html { scroll-behavior: smooth; }
+            body.yl_body {
+                font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+                background-color: #f3f6fb;
+                color: #2b3445;
+                line-height: 1.7;
+            }
+            /* canvas 背景动画 */
+            #yl_canvas {
+                position: fixed;
+                inset: 0;
+                z-index: 0;
+                display: block;
+            }
+            .yl_wrapper {
+                position: relative;
+                z-index: 1;
+                max-width: 920px;
+                margin: 28px auto 60px;
+                padding: 0 16px;
+            }
+            /* 简历主体卡片 */
+            .yl_resume {
+                background: rgba(255, 255, 255, 0.94);
+                border-radius: 14px;
+                box-shadow: 0 8px 32px rgba(30, 64, 130, 0.12);
+                overflow: hidden;
+            }
+            /* 头部 */
+            .yl_header {
+                background: linear-gradient(135deg, #1d3f8f 0%, #2563eb 55%, #3b82f6 100%);
+                color: #ffffff;
+                padding: 34px 40px 28px;
+                position: relative;
+            }
+            .yl_header::after {
+                content: '';
+                position: absolute;
+                left: 0; right: 0; bottom: 0;
+                height: 6px;
+                background: linear-gradient(90deg, #f59e0b, #ef4444, #8b5cf6, #2563eb);
+            }
+            .yl_name-row {
+                display: flex;
+                align-items: baseline;
+                gap: 16px;
+                flex-wrap: wrap;
+            }
+            .yl_name { font-size: 34px; font-weight: bold; letter-spacing: 6px; }
+            .yl_job {
+                font-size: 15px;
+                background: rgba(255,255,255,0.18);
+                border: 1px solid rgba(255,255,255,0.35);
+                padding: 3px 14px;
+                border-radius: 999px;
+            }
+            .yl_contact {
+                margin-top: 14px;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px 22px;
+                font-size: 13.5px;
+                opacity: 0.96;
+            }
+            .yl_contact span::before {
+                content: '◆';
+                font-size: 9px;
+                margin-right: 6px;
+                color: #fbbf24;
+            }
+            /* 区块 */
+            .yl_section { padding: 22px 40px 8px; }
+            .yl_section-title {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-size: 19px;
+                font-weight: bold;
+                color: #1d3f8f;
+                margin-bottom: 12px;
+            }
+            .yl_section-title::before {
+                content: '';
+                width: 5px;
+                height: 20px;
+                border-radius: 3px;
+                background: linear-gradient(180deg, #2563eb, #60a5fa);
+            }
+            .yl_section-title .yl_no {
+                font-size: 12px;
+                color: #94a3b8;
+                font-weight: normal;
+                letter-spacing: 2px;
+            }
+            /* 核心优势卡片 */
+            .yl_adv-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+            .yl_adv-card {
+                background: #f5f8ff;
+                border: 1px solid #e3ebfb;
+                border-left: 4px solid #2563eb;
+                border-radius: 8px;
+                padding: 12px 16px;
+                font-size: 13.5px;
+                color: #4b5563;
+            }
+            .yl_adv-card b {
+                display: block;
+                color: #1d3f8f;
+                font-size: 14.5px;
+                margin-bottom: 4px;
+            }
+            /* 教育背景 */
+            .yl_edu-line {
+                display: flex;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                gap: 8px;
+                font-size: 15px;
+                font-weight: bold;
+                color: #1f2937;
+            }
+            .yl_edu-line .yl_time { color: #6b7280; font-weight: normal; font-size: 13.5px; }
+            .yl_edu-detail { font-size: 13.5px; color: #4b5563; margin-top: 6px; }
+            .yl_edu-detail b { color: #1d3f8f; }
+            /* 技能表 */
+            .yl_skill-row {
+                display: flex;
+                gap: 14px;
+                padding: 9px 0;
+                border-bottom: 1px dashed #e5e7eb;
+                font-size: 13.5px;
+            }
+            .yl_skill-row:last-child { border-bottom: none; }
+            .yl_skill-label {
+                flex-shrink: 0;
+                width: 130px;
+                font-weight: bold;
+                color: #1d3f8f;
+            }
+            .yl_skill-level {
+                font-size: 11.5px;
+                color: #2563eb;
+                background: #eaf1fe;
+                border-radius: 3px;
+                padding: 1px 6px;
+                margin-left: 6px;
+                white-space: nowrap;
+            }
+            .yl_skill-val { color: #4b5563; }
+            /* AI 流程横幅 */
+            .yl_flow {
+                background: linear-gradient(90deg, #eef4ff, #f0f9ff);
+                border: 1px solid #dbeafe;
+                border-radius: 8px;
+                padding: 12px 16px;
+                font-size: 13.5px;
+                color: #1e40af;
+                margin-bottom: 10px;
+            }
+            .yl_flow b { margin-right: 8px; }
+            .yl_flow .yl_arrow { color: #60a5fa; font-weight: bold; margin: 0 2px; }
+            /* 列表条目 */
+            .yl_list { list-style: none; }
+            .yl_list li {
+                position: relative;
+                padding-left: 18px;
+                font-size: 13.5px;
+                color: #4b5563;
+                margin-bottom: 7px;
+            }
+            .yl_list li::before {
+                content: '▪';
+                position: absolute;
+                left: 0;
+                color: #2563eb;
+            }
+            .yl_list li b { color: #1f2937; }
+            /* 项目时间线 */
+            .yl_timeline { position: relative; padding-left: 22px; }
+            .yl_timeline::before {
+                content: '';
+                position: absolute;
+                left: 5px;
+                top: 6px;
+                bottom: 6px;
+                width: 2px;
+                background: #dbeafe;
+            }
+            .yl_project { position: relative; padding-bottom: 18px; }
+            .yl_project::before {
+                content: '';
+                position: absolute;
+                left: -22px;
+                top: 7px;
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                background: #ffffff;
+                border: 3px solid #2563eb;
+            }
+            .yl_proj-head {
+                display: flex;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                gap: 8px;
+                font-size: 15.5px;
+                font-weight: bold;
+                color: #1f2937;
+            }
+            .yl_proj-head .yl_time { font-weight: normal; color: #6b7280; font-size: 13px; }
+            .yl_proj-role { font-size: 12.5px; color: #d97706; margin: 2px 0 4px; }
+            .yl_proj-stack {
+                display: inline-block;
+                font-size: 12px;
+                font-family: Consolas, monospace;
+                color: #475569;
+                background: #f1f5f9;
+                border-radius: 4px;
+                padding: 2px 8px;
+                margin-bottom: 8px;
+            }
+            /* 自我评价 */
+            .yl_summary {
+                background: #f8fafc;
+                border-radius: 8px;
+                padding: 14px 18px;
+                font-size: 13.5px;
+                color: #4b5563;
+                border: 1px solid #eef2f7;
+            }
+            /* 链接 */
+            .yl_links a {
+                color: #2563eb;
+                text-decoration: none;
+                border-bottom: 1px dashed #93c5fd;
+                margin-right: 26px;
+                font-size: 14px;
+            }
+            .yl_links a:hover { color: #1d3f8f; }
+            .yl_footer {
+                text-align: center;
+                color: #94a3b8;
+                font-size: 12px;
+                padding: 18px 0 22px;
+                letter-spacing: 2px;
+            }
+            /* ===== AI 问答助手浮窗 ===== */
+            .yl_chat-btn {
+                position: fixed;
+                right: 22px;
+                bottom: 22px;
+                z-index: 100;
+                width: 56px;
+                height: 56px;
+                border: none;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #1d3f8f, #2563eb);
+                color: #ffffff;
+                font-size: 15px;
+                font-weight: bold;
+                cursor: pointer;
+                box-shadow: 0 6px 18px rgba(37, 99, 235, 0.4);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+                line-height: 1.2;
+            }
+            .yl_chat-btn:hover { transform: scale(1.06); }
+            .yl_chat-btn .yl_chat-btn-icon { font-size: 20px; }
+            .yl_chat-btn .yl_chat-btn-text { font-size: 10px; letter-spacing: 1px; }
+            .yl_chat-panel {
+                position: fixed;
+                right: 22px;
+                bottom: 90px;
+                z-index: 101;
+                width: 370px;
+                height: 540px;
+                max-width: calc(100vw - 32px);
+                max-height: calc(100vh - 130px);
+                background: #ffffff;
+                border-radius: 14px;
+                box-shadow: 0 12px 40px rgba(15, 40, 100, 0.25);
+                display: none;
+                flex-direction: column;
+                overflow: hidden;
+            }
+            .yl_chat-panel.yl_open { display: flex; }
+            .yl_chat-head {
+                background: linear-gradient(135deg, #1d3f8f, #2563eb);
+                color: #ffffff;
+                padding: 12px 16px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .yl_chat-avatar {
+                width: 34px;
+                height: 34px;
+                border-radius: 50%;
+                background: rgba(255,255,255,0.2);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 17px;
+            }
+            .yl_chat-head-title { font-size: 14.5px; font-weight: bold; }
+            .yl_chat-head-sub { font-size: 11px; opacity: 0.85; }
+            .yl_chat-close {
+                margin-left: auto;
+                background: none;
+                border: none;
+                color: #ffffff;
+                font-size: 18px;
+                cursor: pointer;
+                opacity: 0.9;
+            }
+            .yl_chat-msgs {
+                flex: 1;
+                overflow-y: auto;
+                padding: 14px;
+                background: #f6f8fc;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+            .yl_msg {
+                max-width: 86%;
+                padding: 9px 13px;
+                border-radius: 12px;
+                font-size: 13px;
+                line-height: 1.7;
+                white-space: pre-wrap;
+                word-break: break-word;
+            }
+            .yl_msg-ai {
+                align-self: flex-start;
+                background: #ffffff;
+                border: 1px solid #e5e9f2;
+                color: #2b3445;
+                border-top-left-radius: 3px;
+            }
+            .yl_msg-user {
+                align-self: flex-end;
+                background: linear-gradient(135deg, #2563eb, #3b82f6);
+                color: #ffffff;
+                border-top-right-radius: 3px;
+            }
+            .yl_msg-typing { display: inline-flex; gap: 4px; padding: 4px 0; }
+            .yl_msg-typing i {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: #94a3b8;
+                animation: yl_blink 1s infinite;
+            }
+            .yl_msg-typing i:nth-child(2) { animation-delay: 0.2s; }
+            .yl_msg-typing i:nth-child(3) { animation-delay: 0.4s; }
+            @keyframes yl_blink { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
+            .yl_chat-chips {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+                padding: 10px 14px 4px;
+                background: #f6f8fc;
+            }
+            .yl_chat-chips button {
+                border: 1px solid #c7d8f8;
+                background: #ffffff;
+                color: #2563eb;
+                font-size: 12px;
+                border-radius: 999px;
+                padding: 4px 11px;
+                cursor: pointer;
+            }
+            .yl_chat-chips button:hover { background: #eaf1fe; }
+            .yl_chat-input-row {
+                display: flex;
+                gap: 8px;
+                padding: 10px 14px 14px;
+                background: #f6f8fc;
+                border-top: 1px solid #eef1f7;
+            }
+            .yl_chat-input-row input {
+                flex: 1;
+                border: 1px solid #dbe3ef;
+                border-radius: 8px;
+                padding: 9px 12px;
+                font-size: 13px;
+                font-family: inherit;
+                outline: none;
+            }
+            .yl_chat-input-row input:focus { border-color: #2563eb; }
+            .yl_chat-send {
+                border: none;
+                border-radius: 8px;
+                background: linear-gradient(135deg, #1d3f8f, #2563eb);
+                color: #ffffff;
+                font-size: 13px;
+                padding: 9px 18px;
+                cursor: pointer;
+            }
+            .yl_chat-send:hover { opacity: 0.92; }
+            @media (max-width: 640px) {
+                .yl_chat-panel { right: 16px; bottom: 84px; }
+                .yl_chat-btn { right: 16px; bottom: 16px; }
+            }
+            /* 打印优化 */
+            @media print {
+                #yl_canvas, .yl_footer, .yl_chat-btn, .yl_chat-panel { display: none !important; }
+                body.yl_body { background: #ffffff; }
+                .yl_wrapper { margin: 0; padding: 0; max-width: none; }
+                .yl_resume { box-shadow: none; border-radius: 0; background: #ffffff; }
+                .yl_section { padding: 14px 30px 4px; }
+            }
+            /* 移动端 */
+            @media (max-width: 640px) {
+                .yl_header, .yl_section { padding-left: 20px; padding-right: 20px; }
+                .yl_adv-grid { grid-template-columns: 1fr; }
+                .yl_name { font-size: 26px; letter-spacing: 3px; }
+                .yl_skill-row { flex-direction: column; gap: 4px; }
+                .yl_skill-label { width: auto; }
+            }
+            /* 减弱动画偏好 */
+            @media (prefers-reduced-motion: reduce) {
+                #yl_canvas { display: none; }
+            }
+        </style>
+    </head>
+    <body class="yl_body">
+        <canvas id="yl_canvas"></canvas>
+
+        <div class="yl_wrapper">
+            <main class="yl_resume">
+                <!-- 头部信息 -->
+                <header class="yl_header">
+                    <div class="yl_name-row">
+                        <h1 class="yl_name">张 涛</h1>
+                        <span class="yl_job">求职意向｜前端开发工程师（实习） / AI 应用开发（初级）</span>
+                    </div>
+                    <div class="yl_contact">
+                        <span>电话 138-0000-0000</span>
+                        <span>邮箱 zhangtao@example.com</span>
+                        <span>GitHub github.com/zhangtao</span>
+                        <span>现居 辽宁·大连</span>
+                        <span>可实习 5 天/周 · 连续 6 个月</span>
+                    </div>
+                </header>
+
+                <!-- 核心优势 -->
+                <section class="yl_section">
+                    <h2 class="yl_section-title">核心优势<span class="yl_no">HIGHLIGHTS</span></h2>
+                    <div class="yl_adv-grid">
+                        <div class="yl_adv-card"><b>Web 前端</b>熟悉 HTML5 / CSS3 / 原生 JavaScript，独立完成 9 页站点与后台管理，熟悉语义化标签、Flex、媒体查询、CSS 过渡与 Canvas 绘制。</div>
+                        <div class="yl_adv-card"><b>全栈与上线能力</b>Node.js + Express + SQLite、Supabase（BAAS）完成 8 个 RESTful 接口与 JWT 鉴权，项目已部署公网，可 clone 后按 README 在本地跑通。</div>
+                        <div class="yl_adv-card"><b>AI 工具链熟练</b>日常使用 Trae、CodeBuddy、Codex、OpenCode、WorkBuddy 与豆包，用规则文件 + 提示词记录 + 人工 Review 约束 AI 产出，而不是把代码丢给 AI 就不管。</div>
+                        <div class="yl_adv-card"><b>工程化习惯</b>Git 按功能提交、commit message 规范；接口文档、数据库文档、提示词记录三件套齐全，能讲清每处代码为什么这么写。</div>
+                    </div>
+                </section>
+
+                <!-- 教育背景 -->
+                <section class="yl_section">
+                    <h2 class="yl_section-title">教育背景<span class="yl_no">EDUCATION</span></h2>
+                    <div class="yl_edu-line">
+                        <span>大连东软信息学院 ｜ 计算机科学与技术（本科）</span>
+                        <span class="yl_time">2022.09 – 2026.06 ｜ GPA 3.5 / 4.0（专业前 20%）｜ CET-4</span>
+                    </div>
+                    <p class="yl_edu-detail"><b>核心课程：</b>数据结构与算法、计算机网络、数据库原理、Java / Python 程序设计、Web 前端开发、高级网页设计（HTML5 / CSS3 / JavaScript）、OpenHarmony 应用开发</p>
+                    <p class="yl_edu-detail"><b>荣誉：</b>校级二等奖学金（2023—2024）、三等奖学金（2024—2025）、优秀学生干部</p>
+                </section>
+
+                <!-- 专业技能 -->
+                <section class="yl_section">
+                    <h2 class="yl_section-title">专业技能<span class="yl_no">SKILLS</span></h2>
+                    <div class="yl_skill-row">
+                        <span class="yl_skill-label">前端<span class="yl_skill-level">熟练</span></span>
+                        <span class="yl_skill-val">HTML5 语义化 / CSS3（Flex、Grid、媒体查询、过渡动画）/ 原生 JavaScript（DOM、事件、ES6+、异步）/ TypeScript 基础 / Canvas / Swiper / ECharts / iconfont / animate.css</span>
+                    </div>
+                    <div class="yl_skill-row">
+                        <span class="yl_skill-label">后端与数据<span class="yl_skill-level">掌握</span></span>
+                        <span class="yl_skill-val">Node.js + Express、RESTful 接口设计、JWT 鉴权、MySQL / SQLite、Supabase（BAAS）、fetch / AJAX 联调、bcrypt 加密</span>
+                    </div>
+                    <div class="yl_skill-row">
+                        <span class="yl_skill-label">AI 工具链<span class="yl_skill-level">熟练</span></span>
+                        <span class="yl_skill-val">Trae、CodeBuddy、Codex、OpenCode、WorkBuddy、豆包 / 豆包·工作；MCP 工具调用、Prompt 工程、AGENTS.md 规则约束、AI 代码复核</span>
+                    </div>
+                    <div class="yl_skill-row">
+                        <span class="yl_skill-label">工程与部署<span class="yl_skill-level">掌握</span></span>
+                        <span class="yl_skill-val">Git / GitHub / Gitee、Conventional Commits、ESLint、Vite、Nginx、Linux 常用命令、Vercel / 云服务器部署、Lighthouse 调优</span>
+                    </div>
+                    <div class="yl_skill-row">
+                        <span class="yl_skill-label">了解<span class="yl_skill-level">了解</span></span>
+                        <span class="yl_skill-val">Vue3、React、UniApp 微信小程序、LangChain、FAISS 向量检索、OpenHarmony（ArkTS）、Android（Java）</span>
+                    </div>
+                </section>
+
+                <!-- AI 工具链与工程化实践 -->
+                <section class="yl_section">
+                    <h2 class="yl_section-title">AI 工具链与工程化实践<span class="yl_no">AI WORKFLOW</span></h2>
+                    <div class="yl_flow"><b>我的 AI 协作流程</b>需求拆解 <span class="yl_arrow">→</span> 让 AI 出方案 <span class="yl_arrow">→</span> 人工确认边界 <span class="yl_arrow">→</span> 分文件实现 <span class="yl_arrow">→</span> 自测与 Review <span class="yl_arrow">→</span> 提交留痕</div>
+                    <ul class="yl_list">
+                        <li><b>工具分工：</b>Trae 负责多文件需求拆解与页面改造，CodeBuddy 做单文件补全和单元测试，Codex / OpenCode 在终端批量重构，WorkBuddy 编排跨文件任务，豆包负责资料整理、文档润色与接口文档初稿。</li>
+                        <li><b>用规则约束 AI：</b>在项目根目录维护 AGENTS.md，约定 yl_ 命名前缀、前后端目录分层、统一 JSON 响应与注释头（姓名 | 学号 | 时间 | 大模型），让 AI 产出自动符合同一套规范。</li>
+                        <li><b>过程留痕：</b>提示词记录只追加不覆盖，逐条记录时间、提示词与模型名称，并与 Git 提交一一对应，答辩时可追溯“哪句提示词改出了哪段代码”。</li>
+                        <li><b>复核机制：</b>AI 代码先读懂再合并，重点检查鉴权、SQL 拼接与异常分支，用 ESLint 与自测用例兜底，不接受“能跑但说不清”的实现。</li>
+                    </ul>
+                </section>
+
+                <!-- 项目经历 -->
+                <section class="yl_section">
+                    <h2 class="yl_section-title">项目经历<span class="yl_no">PROJECTS</span></h2>
+                    <div class="yl_timeline">
+                        <div class="yl_project">
+                            <div class="yl_proj-head"><span>校园二手交易平台</span><span class="yl_time">2025.09 – 2025.11</span></div>
+                            <div class="yl_proj-role">独立开发 · 高级网页设计课程大作业</div>
+                            <span class="yl_proj-stack">HTML5 / CSS3 / JavaScript(ES6+) + Node.js / Express + SQLite + ECharts + iconfont</span>
+                            <ul class="yl_list">
+                                <li>完成 9 个前端页面（首页、列表、详情、登录、注册、我的、发布、消息、关于），详情页通过 URL 传参按 id 请求接口加载；Flex + 媒体查询适配移动端，viewport 设置规范。</li>
+                                <li>后端提供列表、详情、搜索、发布、收藏、登录、注册、上传 8 个接口，统一 JSON 响应结构；JWT 中间件拦截未登录的写操作，密码 bcrypt 加密后入库。</li>
+                                <li>实现轮播、tab 切换、滚动加载、搜索过滤、表单校验、图片预览、本地存储等 7 个原生 JS 交互，以及 transition / animation / Canvas 共 4 处动画。</li>
+                                <li>后台覆盖商品、用户、分类 3 个实体的增删改查 + 搜索分页，仪表盘用 ECharts 展示 30 天发布趋势；前端部署 Vercel、数据与接口使用 Supabase，GitHub 提交 46 次并按 feat / fix 拆分。</li>
+                            </ul>
+                        </div>
+                        <div class="yl_project">
+                            <div class="yl_proj-head"><span>课程知识库智能问答</span><span class="yl_time">2025.03 – 2025.06</span></div>
+                            <div class="yl_proj-role">3 人小组 · 负责检索链路与前端</div>
+                            <span class="yl_proj-stack">Python + LangChain + FAISS + DeepSeek API + Vue3 + SSE</span>
+                            <ul class="yl_list">
+                                <li>将 200+ 份课程资料（PPT、实验指导书、FAQ）解析切片后写入向量库，打通“检索 → 拼接上下文 → 大模型生成”的最小可用链路。</li>
+                                <li>采用向量检索 + BM25 关键词混合召回，用父子块策略保留上下文；自建 50 条问题抽检，答案可用率由 62% 提升至 84%。</li>
+                                <li>前端用 Vue3 + SSE 实现流式输出与引用来源展示，点击引用可定位到原文段落；提示词要求必须给出处、无法回答时明确拒答，降低编造。</li>
+                            </ul>
+                        </div>
+                        <div class="yl_project">
+                            <div class="yl_proj-head"><span>智慧校园数据大屏</span><span class="yl_time">2024.09 – 2024.12</span></div>
+                            <div class="yl_proj-role">前端负责人 · 3 人团队</div>
+                            <span class="yl_proj-stack">JavaScript + ECharts + WebSocket + Node.js + MySQL</span>
+                            <ul class="yl_list">
+                                <li>展示人流、能耗、设备在线率 4 类指标，WebSocket 增量推送 + 前端节流合并渲染，1s 刷新下保持流畅。</li>
+                                <li>封装 8 个可复用图表与卡片组件，新增大屏页面的开发时间由 3 天缩短到 1 天。</li>
+                                <li>按需加载与图片压缩，首屏资源由 2.1MB 降至 720KB，Lighthouse 性能分 68 → 92。</li>
+                                <li><b>其他项目：</b>京东商城 Web + 微信小程序双端复刻（Vue3 + UniApp），业务逻辑双端复用约 80%；OpenHarmony 智能备忘录（ArkTS + Canvas）获评课程优秀设计。</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 实践经历与荣誉 -->
+                <section class="yl_section">
+                    <h2 class="yl_section-title">实践经历与荣誉<span class="yl_no">EXPERIENCE & HONORS</span></h2>
+                    <ul class="yl_list">
+                        <li><b>SOVO 大学生创业中心 · 技术组</b>　参与组织 3 场 AI 编程工具分享（Trae / CodeBuddy、AGENTS.md 规则与提示词记录），100+ 人次。</li>
+                        <li><b>班级学习委员</b>　牵头每周代码互评，整理命名与注释规范文档，班级专业课程通过率 98%。</li>
+                        <li><b>竞赛</b>　蓝桥杯 Java 程序设计省赛二等奖（2024）、“互联网+”创新创业大赛校级三等奖（2025）。</li>
+                        <li><b>技术输出</b>　GitHub 维护 3 个公开仓库（课程项目模板、iconfont 图标方案、AI 工具配置示例），技术笔记 12 篇。</li>
+                    </ul>
+                </section>
+
+                <!-- 自我评价 -->
+                <section class="yl_section">
+                    <h2 class="yl_section-title">自我评价<span class="yl_no">SELF EVALUATION</span></h2>
+                    <p class="yl_summary">计算机科学与技术科班，原生前端基础扎实，能独立走完“页面 → 接口 → 数据库 → 上线”全流程。习惯用 AI 提效，但坚持先定规则、再让 AI 写、最后人工复核，交付的代码可读、可维护、可复现。</p>
+                </section>
+
+                <!-- 作品链接 -->
+                <section class="yl_section yl_links">
+                    <h2 class="yl_section-title">作品链接<span class="yl_no">PORTFOLIO</span></h2>
+                    <a href="https://github.com/zhangtao" target="_blank" rel="noopener">GitHub / Gitee：github.com/zhangtao</a>
+                    <a href="javascript:void(0)">在线 Demo：校园二手交易平台</a>
+                </section>
+
+                <div class="yl_footer">张 涛 · 前端开发工程师（实习）简历 · 感谢您的阅读</div>
+            </main>
+        </div>
+
+        <!-- AI 简历问答助手 -->
+        <button class="yl_chat-btn" id="yl_chat-btn" title="AI 简历问答">
+            <span class="yl_chat-btn-icon">🤖</span>
+            <span class="yl_chat-btn-text">问TA</span>
+        </button>
+        <div class="yl_chat-panel" id="yl_chat-panel">
+            <div class="yl_chat-head">
+                <div class="yl_chat-avatar">🤖</div>
+                <div>
+                    <div class="yl_chat-head-title">AI 简历助手</div>
+                    <div class="yl_chat-head-sub">基于张涛的简历内容回答 · 想了解什么尽管问</div>
+                </div>
+                <button class="yl_chat-close" id="yl_chat-close" title="收起">✕</button>
+            </div>
+            <div class="yl_chat-msgs" id="yl_chat-msgs"></div>
+            <div class="yl_chat-chips" id="yl_chat-chips"></div>
+            <div class="yl_chat-input-row">
+                <input type="text" id="yl_chat-input" placeholder="例如：他做过哪些项目？" maxlength="60">
+                <button class="yl_chat-send" id="yl_chat-send">发送</button>
+            </div>
+        </div>
+
+        <script>
+            // ===== Canvas 粒子网络背景动画 =====
+            var yl_canvas = document.getElementById('yl_canvas');
+            var yl_ctx = yl_canvas.getContext('2d');
+            var yl_particles = [];
+            var yl_mouse = { x: null, y: null };
+            var yl_reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            // 根据窗口大小调整画布并初始化粒子
+            function yl_resize() {
+                yl_canvas.width = window.innerWidth;
+                yl_canvas.height = window.innerHeight;
+                var count = Math.min(110, Math.floor(yl_canvas.width * yl_canvas.height / 16000));
+                yl_particles = [];
+                for (var i = 0; i < count; i++) {
+                    yl_particles.push({
+                        x: Math.random() * yl_canvas.width,
+                        y: Math.random() * yl_canvas.height,
+                        vx: (Math.random() - 0.5) * 0.45,
+                        vy: (Math.random() - 0.5) * 0.45,
+                        r: Math.random() * 1.8 + 1
+                    });
+                }
+            }
+
+            function yl_draw() {
+                yl_ctx.clearRect(0, 0, yl_canvas.width, yl_canvas.height);
+
+                // 更新并绘制粒子
+                for (var i = 0; i < yl_particles.length; i++) {
+                    var p = yl_particles[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    // 边界反弹
+                    if (p.x < 0 || p.x > yl_canvas.width) p.vx *= -1;
+                    if (p.y < 0 || p.y > yl_canvas.height) p.vy *= -1;
+
+                    yl_ctx.beginPath();
+                    yl_ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    yl_ctx.fillStyle = 'rgba(37, 99, 235, 0.35)';
+                    yl_ctx.fill();
+                }
+
+                // 粒子间距小于 120px 时连线
+                for (var j = 0; j < yl_particles.length; j++) {
+                    for (var k = j + 1; k < yl_particles.length; k++) {
+                        var a = yl_particles[j], b = yl_particles[k];
+                        var dx = a.x - b.x, dy = a.y - b.y;
+                        var dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 120) {
+                            yl_ctx.beginPath();
+                            yl_ctx.moveTo(a.x, a.y);
+                            yl_ctx.lineTo(b.x, b.y);
+                            yl_ctx.strokeStyle = 'rgba(37, 99, 235, ' + (0.12 * (1 - dist / 120)) + ')';
+                            yl_ctx.lineWidth = 1;
+                            yl_ctx.stroke();
+                        }
+                    }
+                }
+
+                // 鼠标附近粒子高亮连线
+                if (yl_mouse.x !== null) {
+                    for (var m = 0; m < yl_particles.length; m++) {
+                        var pm = yl_particles[m];
+                        var dmx = pm.x - yl_mouse.x, dmy = pm.y - yl_mouse.y;
+                        var dMouse = Math.sqrt(dmx * dmx + dmy * dmy);
+                        if (dMouse < 150) {
+                            yl_ctx.beginPath();
+                            yl_ctx.moveTo(pm.x, pm.y);
+                            yl_ctx.lineTo(yl_mouse.x, yl_mouse.y);
+                            yl_ctx.strokeStyle = 'rgba(217, 119, 6, ' + (0.25 * (1 - dMouse / 150)) + ')';
+                            yl_ctx.lineWidth = 1;
+                            yl_ctx.stroke();
+                        }
+                    }
+                }
+
+                requestAnimationFrame(yl_draw);
+            }
+
+            window.addEventListener('resize', yl_resize);
+            window.addEventListener('mousemove', function (e) {
+                yl_mouse.x = e.clientX;
+                yl_mouse.y = e.clientY;
+            });
+            window.addEventListener('mouseout', function () {
+                yl_mouse.x = null;
+                yl_mouse.y = null;
+            });
+
+            // 系统开启“减弱动画”时不播放动画，静态绘制一帧
+            yl_resize();
+            if (yl_reduced) {
+                yl_draw_once();
+            } else {
+                requestAnimationFrame(yl_draw);
+            }
+
+            function yl_draw_once() {
+                for (var i = 0; i < yl_particles.length; i++) {
+                    var p = yl_particles[i];
+                    yl_ctx.beginPath();
+                    yl_ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    yl_ctx.fillStyle = 'rgba(37, 99, 235, 0.35)';
+                    yl_ctx.fill();
+                }
+            }
+        </script>
+        <script>
+            // ===== AI 简历问答助手（基于简历内容的本地知识库，无需后端） =====
+            var yl_kb = [
+                {
+                    keywords: ['技能', '掌握哪些', '会什么', '技术栈', '会哪些'],
+                    answer: '张涛的技能分四档：\n· 前端（熟练）：HTML5 / CSS3 / 原生 JavaScript / TypeScript 基础 / Canvas / ECharts 等\n· 后端与数据（掌握）：Node.js + Express、JWT、MySQL / SQLite、Supabase\n· AI 工具链（熟练）：Trae、CodeBuddy、Codex、Prompt 工程、AGENTS.md 约束\n· 工程与部署（掌握）：Git、ESLint、Vite、Nginx、Vercel 部署、Lighthouse 调优\n另了解 Vue3、React、UniApp 小程序、LangChain、OpenHarmony 等。想深入了解哪一块可以继续问我～'
+                },
+                {
+                    keywords: ['项目', '做过哪些项目', '项目经历', '有哪些项目', '作品集'],
+                    answer: '他有三个主要项目：\n1. 校园二手交易平台（独立开发）：9 个页面 + 8 个接口 + ECharts 后台，已部署 Vercel + Supabase\n2. 课程知识库智能问答（3 人小组）：LangChain + FAISS + DeepSeek，答案可用率 62% → 84%\n3. 智慧校园数据大屏（前端负责人）：WebSocket 实时推送，Lighthouse 性能分 68 → 92\n另有京东商城双端复刻、OpenHarmony 智能备忘录等项目。想了解哪个项目的细节，直接点名问我就行～'
+                },
+                {
+                    keywords: ['求职', '意向', '岗位', '找什么工作', '应聘', '实习岗位', '职位'],
+                    answer: '张涛的求职意向是「前端开发工程师（实习） / AI 应用开发（初级）」，目前可实习 5 天/周、连续 6 个月，现居辽宁大连。'
+                },
+                {
+                    keywords: ['联系', '电话', '邮箱', 'email', 'github', '微信', '怎么找到他', '方式'],
+                    answer: '联系方式：\n电话 138-0000-0000\n邮箱 zhangtao@example.com\nGitHub github.com/zhangtao\n现居辽宁·大连。'
+                },
+                {
+                    keywords: ['学校', '教育', '学历', '学院', '本科', 'gpa', '成绩', '专业', '课程', '东软'],
+                    answer: '张涛就读于大连东软信息学院，计算机科学与技术专业（本科），2022.09 – 2026.06，GPA 3.5/4.0（专业前 20%），已过 CET-4。\n核心课程：数据结构与算法、计算机网络、数据库原理、Java/Python 程序设计、Web 前端开发、高级网页设计、OpenHarmony 应用开发。'
+                },
+                {
+                    keywords: ['奖学金', '荣誉', '优秀学生干部', '表彰'],
+                    answer: '他曾获校级二等奖学金（2023—2024）、三等奖学金（2024—2025），并被评为优秀学生干部。'
+                },
+                {
+                    keywords: ['竞赛', '比赛', '蓝桥杯', '互联网+', '获奖', '奖项'],
+                    answer: '竞赛方面：蓝桥杯 Java 程序设计省赛二等奖（2024）、“互联网+”创新创业大赛校级三等奖（2025）。'
+                },
+                {
+                    keywords: ['前端技能', 'html', 'css', 'javascript', 'js', '前端', 'canvas'],
+                    answer: '前端方面他比较熟练：HTML5 语义化、CSS3（Flex、Grid、媒体查询、过渡动画）、原生 JavaScript（DOM、事件、ES6+、异步）、TypeScript 基础，还会 Canvas、Swiper、ECharts、iconfont、animate.css。他曾独立完成 9 页站点与后台管理。'
+                },
+                {
+                    keywords: ['后端', 'node', 'express', '接口', '数据库', 'mysql', 'sqlite', 'supabase', 'jwt'],
+                    answer: '后端与数据方面（掌握）：Node.js + Express、RESTful 接口设计、JWT 鉴权、MySQL / SQLite、Supabase（BAAS）、fetch / AJAX 联调、bcrypt 加密。他能独立走完“页面 → 接口 → 数据库 → 上线”全流程。'
+                },
+                {
+                    keywords: ['ai', '工具', 'trae', 'codebuddy', 'codex', '豆包', 'prompt', '提示词', '大模型'],
+                    answer: '他日常熟练使用 AI 工具链：Trae、CodeBuddy、Codex、OpenCode、WorkBuddy、豆包，掌握 MCP 工具调用、Prompt 工程、AGENTS.md 规则约束与 AI 代码复核。他的原则是“先定规则、再让 AI 写、最后人工复核”，不把代码丢给 AI 就不管。'
+                },
+                {
+                    keywords: ['部署', '工程化', 'git', 'linux', 'nginx', 'vercel', 'eslint', 'vite'],
+                    answer: '工程与部署方面（掌握）：Git / GitHub / Gitee、Conventional Commits 规范提交、ESLint、Vite、Nginx、Linux 常用命令、Vercel / 云服务器部署、Lighthouse 性能调优。'
+                },
+                {
+                    keywords: ['了解', 'vue', 'react', '小程序', 'uniapp', '鸿蒙', 'openharmony', 'langchain', 'faiss', 'android'],
+                    answer: '此外他还了解：Vue3、React、UniApp 微信小程序、LangChain、FAISS 向量检索、OpenHarmony（ArkTS）、Android（Java）。'
+                },
+                {
+                    keywords: ['二手交易', '交易平台', '大作业', '购物'],
+                    answer: '「校园二手交易平台」是他独立开发的高级网页设计课程大作业（2025.09–2025.11），技术栈为原生 HTML5/CSS3/JavaScript + Node.js/Express + SQLite + ECharts：\n· 9 个前端页面，Flex + 媒体查询适配移动端\n· 后端 8 个 RESTful 接口，JWT 拦截未登录写操作，bcrypt 加密\n· 7 个原生 JS 交互 + 4 处动画\n· 前端部署 Vercel、数据用 Supabase，GitHub 提交 46 次'
+                },
+                {
+                    keywords: ['问答', 'rag', '知识库', 'langchain 项目', '智能问答', '向量', 'deepseek'],
+                    answer: '「课程知识库智能问答」项目（2025.03–2025.06，3 人小组，他负责检索链路与前端），技术栈 Python + LangChain + FAISS + DeepSeek API + Vue3 + SSE：\n· 200+ 份课程资料切片入向量库，打通检索→上下文→生成的最小链路\n· 向量 + BM25 混合召回，答案可用率由 62% 提升至 84%\n· 前端流式输出 + 引用来源定位，降低大模型编造'
+                },
+                {
+                    keywords: ['大屏', '数据可视化', 'websocket', 'echarts 项目', '校园大屏'],
+                    answer: '「智慧校园数据大屏」项目（2024.09–2024.12，他任前端负责人，3 人团队），技术栈 JavaScript + ECharts + WebSocket + Node.js + MySQL：\n· WebSocket 增量推送 + 节流合并渲染，1s 刷新保持流畅\n· 封装 8 个可复用图表组件，新页面开发从 3 天缩到 1 天\n· 首屏资源 2.1MB → 720KB，Lighthouse 性能分 68 → 92'
+                },
+                {
+                    keywords: ['其他项目', '小程序项目', '备忘录', '京东', '复刻'],
+                    answer: '其他项目：京东商城 Web + 微信小程序双端复刻（Vue3 + UniApp），业务逻辑双端复用约 80%；OpenHarmony 智能备忘录（ArkTS + Canvas）获评课程优秀设计。'
+                },
+                {
+                    keywords: ['流程', '协作', '工程化实践', 'agents', '规则', '怎么用ai', '如何用ai'],
+                    answer: '他的 AI 协作流程：需求拆解 → 让 AI 出方案 → 人工确认边界 → 分文件实现 → 自测与 Review → 提交留痕。\n· 工具分工明确：Trae 拆解需求、CodeBuddy 补全测试、Codex/OpenCode 批量重构、豆包整理文档\n· 项目根目录维护 AGENTS.md 约束 AI 产出规范\n· 提示词记录只追加不覆盖，与 Git 提交一一对应，可追溯'
+                },
+                {
+                    keywords: ['实践', 'sovo', '创业中心', '学习委员', '班级', '社团', '经历'],
+                    answer: '实践经历：\n· SOVO 大学生创业中心技术组，参与组织 3 场 AI 编程工具分享，覆盖 100+ 人次\n· 班级学习委员，牵头每周代码互评，班级专业课程通过率 98%\n· GitHub 维护 3 个公开仓库，技术笔记 12 篇'
+                },
+                {
+                    keywords: ['自我评价', '评价', '性格', '优点', '总结', '人品'],
+                    answer: '他的自我评价：计算机科学与技术科班，原生前端基础扎实，能独立走完“页面 → 接口 → 数据库 → 上线”全流程。习惯用 AI 提效，但坚持先定规则、再让 AI 写、最后人工复核，交付的代码可读、可维护、可复现。'
+                },
+                {
+                    keywords: ['作品', 'demo', '链接', '仓库', '项目在哪看', '在线'],
+                    answer: '作品链接：GitHub / Gitee 地址 github.com/zhangtao，页面底部“作品链接”区也有入口；在线 Demo 为校园二手交易平台。'
+                },
+                {
+                    keywords: ['实习时间', '多久', '几天', '到岗', '多久能来', '连续'],
+                    answer: '他可实习 5 天/周，可连续实习 6 个月，现居辽宁·大连。'
+                },
+                {
+                    keywords: ['优势', '亮点', '核心竞争力', '为什么录用', '强项'],
+                    answer: '他的四大核心优势：\n1. Web 前端：原生三件套扎实，独立完成 9 页站点\n2. 全栈与上线：8 个 RESTful 接口 + JWT，项目已部署公网\n3. AI 工具链：多工具熟练且有一套规则约束与复核方法论\n4. 工程化习惯：文档三件套齐全，代码可追溯'
+                }
+            ];
+
+            var yl_chatBtn = document.getElementById('yl_chat-btn');
+            var yl_chatPanel = document.getElementById('yl_chat-panel');
+            var yl_chatMsgs = document.getElementById('yl_chat-msgs');
+            var yl_chatInput = document.getElementById('yl_chat-input');
+            var yl_chatSend = document.getElementById('yl_chat-send');
+            var yl_chatChips = document.getElementById('yl_chat-chips');
+            var yl_chatClose = document.getElementById('yl_chat-close');
+            var yl_answering = false;
+
+            // 开关面板
+            yl_chatBtn.onclick = function () {
+                var open = yl_chatPanel.classList.toggle('yl_open');
+                if (open && yl_chatMsgs.children.length === 0) {
+                    var hello = yl_addMsg('', false);
+                    yl_typeOut(hello, '你好，我是张涛的 AI 简历助手 👋 他的教育背景、技能、项目经历、获奖情况都可以问我～', yl_renderChips);
+                }
+            };
+            yl_chatClose.onclick = function () { yl_chatPanel.classList.remove('yl_open'); };
+
+            // 推荐问题
+            var yl_chipTexts = ['他掌握哪些技能？', '做过哪些项目？', '教育背景如何？', '用过哪些 AI 工具？', '怎么联系他？', '有哪些获奖？'];
+            function yl_renderChips() {
+                yl_chipTexts.forEach(function (t) {
+                    var b = document.createElement('button');
+                    b.textContent = t;
+                    b.onclick = function () { yl_ask(t); };
+                    yl_chatChips.appendChild(b);
+                });
+            }
+
+            // 消息 DOM
+            function yl_addMsg(text, isUser) {
+                var div = document.createElement('div');
+                div.className = 'yl_msg ' + (isUser ? 'yl_msg-user' : 'yl_msg-ai');
+                div.textContent = text;
+                yl_chatMsgs.appendChild(div);
+                yl_chatMsgs.scrollTop = yl_chatMsgs.scrollHeight;
+                return div;
+            }
+
+            // 打字机效果输出
+            function yl_typeOut(el, text, done) {
+                var i = 0;
+                var timer = setInterval(function () {
+                    i += 2;
+                    el.textContent = text.slice(0, i);
+                    yl_chatMsgs.scrollTop = yl_chatMsgs.scrollHeight;
+                    if (i >= text.length) {
+                        clearInterval(timer);
+                        if (done) done();
+                    }
+                }, 18);
+            }
+
+            // 显示“正在输入”气泡
+            function yl_showTyping() {
+                var div = document.createElement('div');
+                div.className = 'yl_msg yl_msg-ai';
+                div.id = 'yl_typing';
+                div.innerHTML = '<span class="yl_msg-typing"><i></i><i></i><i></i></span>';
+                yl_chatMsgs.appendChild(div);
+                yl_chatMsgs.scrollTop = yl_chatMsgs.scrollHeight;
+            }
+
+            // 知识库匹配：按关键词命中数打分
+            function yl_match(q) {
+                var best = null, bestScore = 0;
+                yl_kb.forEach(function (item) {
+                    var score = 0;
+                    item.keywords.forEach(function (kw) {
+                        if (q.indexOf(kw) !== -1) score += kw.length >= 3 ? 2 : 1;
+                    });
+                    if (score > bestScore) { bestScore = score; best = item; }
+                });
+                return best;
+            }
+
+            // 提问主流程
+            function yl_ask(q) {
+                q = (q || '').trim();
+                if (!q || yl_answering) return;
+                yl_addMsg(q, true);
+                yl_chatInput.value = '';
+                yl_answering = true;
+                yl_showTyping();
+
+                setTimeout(function () {
+                    var typing = document.getElementById('yl_typing');
+                    if (typing) typing.remove();
+                    var hit = yl_match(q);
+                    var answer = hit ? hit.answer
+                        : '这个问题我暂时没有从简历里找到答案 🤔 你可以问我：教育背景、专业技能、项目经历、AI 工具链、获奖情况、联系方式、实习时间等话题～';
+                    var div = yl_addMsg('', false);
+                    yl_typeOut(div, answer, function () { yl_answering = false; });
+                }, 700);
+            }
+
+            yl_chatSend.onclick = function () { yl_ask(yl_chatInput.value); };
+            yl_chatInput.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') yl_ask(yl_chatInput.value);
+            });
+        </script>
+    </body>
+</html>
